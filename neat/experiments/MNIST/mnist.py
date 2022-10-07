@@ -6,6 +6,7 @@ from neat.phenotype.feed_forward import FeedForwardNet
 from torchvision import datasets, transforms
 
 from matplotlib import pyplot as plt
+import numpy as np
 
 
 
@@ -14,8 +15,8 @@ class MNISTConfig:
     DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     VERBOSE = True
 
-    NUM_INPUTS = 2
-    NUM_OUTPUTS = 1
+    NUM_INPUTS = 28*28
+    NUM_OUTPUTS = 10
     USE_BIAS = True
 
     ACTIVATION = 'sigmoid'
@@ -39,57 +40,69 @@ class MNISTConfig:
 
     mnist_data = datasets.MNIST(root="./data", train=True, download=True)
     train = mnist_data.train_data
-    # Convert to grayscale
-    # train = transforms.Grayscale(num_output_channels=1)(train)
     train = train.view(train.size(0), -1).float()
     train = train / 255
     train_labels = mnist_data.train_labels
+
     test = mnist_data.test_data
-    # test = transforms.Grayscale(num_output_channels=1)(test)
     test = test.view(test.size(0), -1).float()
     test = test / 255
     test_labels = mnist_data.test_labels
-    
-    # Convert to grayscale
 
 
     # Show the first image in the training set
-    plt.imshow(train[0].view(28, 28))
-    plt.show()
+    # plt.imshow(train[0].view(28, 28))
+    # plt.show()
 
-    # Print the shape of the train dataset
-    print("Train shape:", train.shape)
-    # Print the shape of the test dataset
-    print("Test shape:", test.shape)
+
     
 
     # Split all of the examples into a python list
-    inputs = torch.split(train, 1, dim=0)
-    # print(len(inputs))
-    # exit()
-    targets = torch.split(train_labels, 1, dim=0)
+    # inputs = list([print(i.shape) for i in train])
+    # # print(len(inputs))
+    # # exit()
+    # targets = [i for i in train_labels]
     # print(len(targets))
+    # exit()
+
+    # Use the first 100 examples
+    train = train[:10]
+    train_labels = train_labels[:10]
+    test = test[:10]
+    test_labels = test_labels[:10]
+
+    # Print the shape of the train dataset
+    print("Train shape:", type(train))
+    # Print the shape of the test dataset
+    print("Test shape:", test.shape)
+    
     # exit()
 
     # targets = list(map(lambda s: torch.Tensor([s]), [[0],[1],[1],[0]]))
     # Print the targets
+    targets = train_labels
     print(targets)
 
     def fitness_fn(self, genome):
-        fitness = 4.0  # Max fitness for XOR
 
         phenotype = FeedForwardNet(genome, self)
         phenotype.to(self.DEVICE)
-        criterion = nn.MSELoss()
+        fitness = np.inf
 
         for input, target in zip(self.inputs, self.targets):  # 4 training examples
             input, target = input.to(self.DEVICE), target.to(self.DEVICE)
 
             pred = phenotype(input)
-            loss = (float(pred) - float(target)) ** 2
-            loss = float(loss)
+            # Run softmax on the output
+            pred = nn.functional.softmax(pred, dim=0)
+            # Get the index of the max log-probability
+            # pred = pred.argmax(dim=0, keepdim=True)
+            # Compute the loss
 
-            fitness -= loss
+            loss = nn.functional.nll_loss(pred, target)
+
+            # Compute the fitness
+            fitness -= loss.item()
             # loss = criterion(pred, target)
 
         return fitness
