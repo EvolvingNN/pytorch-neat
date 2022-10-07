@@ -70,15 +70,13 @@ class MNISTConfig:
     train_labels = train_labels[:10]
     test = test[:10]
     test_labels = test_labels[:10]
+    inputs = train
 
     # Print the shape of the train dataset
     print("Train shape:", type(train))
     # Print the shape of the test dataset
     print("Test shape:", test.shape)
     
-    # exit()
-
-    # targets = list(map(lambda s: torch.Tensor([s]), [[0],[1],[1],[0]]))
     # Print the targets
     targets = train_labels
     print(targets)
