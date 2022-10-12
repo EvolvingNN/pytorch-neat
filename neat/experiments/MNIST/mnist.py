@@ -22,10 +22,10 @@ class MNISTConfig:
     ACTIVATION = 'sigmoid'
     SCALE_ACTIVATION = 4.9
 
-    FITNESS_THRESHOLD = 3.9
+    FITNESS_THRESHOLD = 1000
 
-    POPULATION_SIZE = 150
-    NUMBER_OF_GENERATIONS = 150
+    POPULATION_SIZE = 5
+    NUMBER_OF_GENERATIONS = 5
     SPECIATION_THRESHOLD = 3.0
 
     CONNECTION_MUTATION_RATE = 0.80
@@ -38,48 +38,49 @@ class MNISTConfig:
     # Top percentage of species to be saved before mating
     PERCENTAGE_TO_SAVE = 0.30
 
-    mnist_data = datasets.MNIST(root="./data", train=True, download=True)
-    train = mnist_data.train_data
-    train = train.view(train.size(0), -1).float()
-    train = train / 255
-    train_labels = mnist_data.train_labels
+    def __init__(self):
+        mnist_data = datasets.MNIST(root="./data", train=True, download=True)
+        train = mnist_data.train_data
+        train = train.view(train.size(0), -1).float()
+        train = train / 255
+        train_labels = mnist_data.train_labels
 
-    test = mnist_data.test_data
-    test = test.view(test.size(0), -1).float()
-    test = test / 255
-    test_labels = mnist_data.test_labels
-
-
-    # Show the first image in the training set
-    # plt.imshow(train[0].view(28, 28))
-    # plt.show()
+        test = mnist_data.test_data
+        test = test.view(test.size(0), -1).float()
+        test = test / 255
+        test_labels = mnist_data.test_labels
 
 
+        # Show the first image in the training set
+        # plt.imshow(train[0].view(28, 28))
+        # plt.show()
+
+
+        
+
+        # Split all of the examples into a python list
+        # inputs = list([print(i.shape) for i in train])
+        # # print(len(inputs))
+        # # exit()
+        # targets = [i for i in train_labels]
+        # print(len(targets))
+        # exit()
+
+        # Use the first 100 examples
+        train = train[:10]
+        train_labels = train_labels[:10]
+        test = test[:10]
+        test_labels = test_labels[:10]
+        self.inputs = train
+
+        # Print the shape of the train dataset
+        print("Train shape:", type(train))
+        # Print the shape of the test dataset
+        print("Test shape:", test.shape)
     
-
-    # Split all of the examples into a python list
-    # inputs = list([print(i.shape) for i in train])
-    # # print(len(inputs))
-    # # exit()
-    # targets = [i for i in train_labels]
-    # print(len(targets))
-    # exit()
-
-    # Use the first 100 examples
-    train = train[:10]
-    train_labels = train_labels[:10]
-    test = test[:10]
-    test_labels = test_labels[:10]
-    inputs = train
-
-    # Print the shape of the train dataset
-    print("Train shape:", type(train))
-    # Print the shape of the test dataset
-    print("Test shape:", test.shape)
-    
-    # Print the targets
-    targets = train_labels
-    print(targets)
+        # Print the targets
+        self.targets = torch.from_numpy(np.eye(10)[train_labels])
+        print(self.targets)
 
     def fitness_fn(self, genome):
 
@@ -90,6 +91,7 @@ class MNISTConfig:
         for input, target in zip(self.inputs, self.targets):  # 4 training examples
             input, target = input.to(self.DEVICE), target.to(self.DEVICE)
 
+            print(input.shape)
             pred = phenotype(input)
             # Run softmax on the output
             pred = nn.functional.softmax(pred, dim=0)
