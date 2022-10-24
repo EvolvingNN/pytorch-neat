@@ -15,14 +15,14 @@ class MNISTConfig:
     DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     VERBOSE = True
 
-    NUM_INPUTS = 28*28
+    NUM_INPUTS = 784
     NUM_OUTPUTS = 10
     USE_BIAS = True
 
     ACTIVATION = 'sigmoid'
     SCALE_ACTIVATION = 4.9
 
-    FITNESS_THRESHOLD = 1000
+    FITNESS_THRESHOLD = 10
 
     POPULATION_SIZE = 5
     NUMBER_OF_GENERATIONS = 5
@@ -71,16 +71,23 @@ class MNISTConfig:
         train_labels = train_labels[:10]
         test = test[:10]
         test_labels = test_labels[:10]
-        self.inputs = train
+        # Split all training examples into a python list
+        self.inputs = list(train)
+        self.inputs = [i.reshape(1, 784) for i in self.inputs]
+        print(len(self.inputs))
+        print(self.inputs[0].shape)
 
         # Print the shape of the train dataset
-        print("Train shape:", type(train))
+        print("Train shape:", train.shape)
         # Print the shape of the test dataset
         print("Test shape:", test.shape)
     
         # Print the targets
         self.targets = torch.from_numpy(np.eye(10)[train_labels])
-        print(self.targets)
+        self.targets = list(self.targets)
+        self.targets = [i.reshape(1, 10) for i in self.targets]
+        print("Targets:", len(self.targets))
+        print("Target shape:", self.targets[0].shape)
 
     def fitness_fn(self, genome):
 
@@ -98,8 +105,20 @@ class MNISTConfig:
             # Get the index of the max log-probability
             # pred = pred.argmax(dim=0, keepdim=True)
             # Compute the loss
+            print("Pred:", pred.shape)
+            print("Target:", target.shape)
 
-            loss = nn.functional.nll_loss(pred, target)
+            pred = pred.reshape(10)
+            # Convert pred to long
+            pred = pred
+
+            target = target.reshape(10)
+            # Convert target to long
+            target = target
+
+
+            # Compute the loss
+            loss = nn.functional.mse_loss(pred, target)
 
             # Compute the fitness
             fitness -= loss.item()
