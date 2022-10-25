@@ -1,5 +1,7 @@
 import logging
 import copy
+import math
+import random
 
 import torch
 import numpy as np
@@ -49,3 +51,22 @@ def cache_genomes_results(genomes, dataset, config):
             results.append(prediction.numpy())
         genomes_to_results[genome] = np.array(results)
     return genomes_to_results
+
+
+def ensemble_picker(genomes, k=None):
+    '''A generator that randomly picks an ensemble from the given genomes of length k
+    genomes (list): the genomes to pick from
+    k (None | int): None (for random size ensembles) or the ensemble size
+    '''
+    n = len(genomes)
+    seen = set()
+    total_combinations = 2**n - 1 if k is None else math.comb(n, k)
+    while len(seen) < total_combinations / 2:
+        ensemble_length = random.randint(1, n) if k is None else k
+        all_indices = list(range(n))
+        random.shuffle(all_indices)
+        ensemble_indices = all_indices[0:ensemble_length]
+        ensemble = {genomes[i] for i in ensemble_indices}
+        if ensemble not in seen:
+            yield ensemble
+            seen.add(ensemble)
