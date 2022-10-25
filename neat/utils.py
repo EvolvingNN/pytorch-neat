@@ -40,6 +40,20 @@ def get_best_genome(population):
 
 
 def cache_genomes_results(genomes, dataset, config):
+    '''
+    Creates a prediction mapping of genomes to their 2D arrays of predictions
+
+    Each array in the 2D array is the prediction (activation outputs) for the given input
+    There is one array in each 2D array for each input in the dataset
+
+    Parameters:
+        genomes (iterable): the population of genomes
+        dataset (list of tensors): the list of tensor inputs
+        config (neat.config): the neat configuration
+
+    Returns:
+        dict of genome to the genome's predictions
+    '''
     genomes_to_results = {}
     for genome in genomes:
         results = []
@@ -54,14 +68,16 @@ def cache_genomes_results(genomes, dataset, config):
 
 
 def ensemble_generator(genomes, k=None, limit=None):
-    '''A generator that randomly picks an ensemble from the given genomes of length k
+    '''
+    A generator that randomly picks an ensemble from the given genomes of length k
 
     Parameters:
-        genomes (iterable): the genomes to pick from
-        k (None | int): None (for random size ensembles) or the ensemble size
+        genomes (iterable): the whole population of genomes to sample from
+        k (None | int): None (for random size ensembles) or the size of ensembles to create 
+        limit: the number of ensembles to yield before iterable exhaustion
 
     Yields:
-        set of genomes to use in ensemble
+       A set of genomes to use in an ensemble
     '''
     genomes = list(genomes)
     n = len(genomes)
@@ -83,6 +99,19 @@ def ensemble_generator(genomes, k=None, limit=None):
 
 
 def ensemble_generator_for_static_genome(genome, genomes, k=None, limit=None):
+    '''
+    A generator that randomly picks the rest of an ensemble of size k including a given genome
+
+    Parameters:
+        genome: the genome to include in the resulting ensembles
+        genomes (iterable): the whole population of genomes to sample from
+        k (None | int): None (for random size ensembles) or the size of ensembles to create 
+        limit: the number of ensembles to yield before iterable exhaustion
+
+    Yields:
+        A set of genomes to use in an ensemble
+    '''
     genomes = [g for g in genomes if g != genome]
+    k = None if k is None else k - 1
     for ensemble in ensemble_generator(genomes=genomes, k=k, limit=limit):
         yield {genome, *ensemble}
