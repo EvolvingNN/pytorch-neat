@@ -53,7 +53,7 @@ def cache_genomes_results(genomes, dataset, config):
     return genomes_to_results
 
 
-def ensemble_picker(genomes, k=None, limit=None):
+def ensemble_generator(genomes, k=None, limit=None):
     '''A generator that randomly picks an ensemble from the given genomes of length k
 
     Parameters:
@@ -80,3 +80,9 @@ def ensemble_picker(genomes, k=None, limit=None):
             seen.add(ensemble_indices)
             ensemble = {genomes[i] for i in ensemble_indices}
             yield ensemble
+
+
+def ensemble_generator_for_static_genome(genome, genomes, k=None, limit=None):
+    genomes = [g for g in genomes if g != genome]
+    for ensemble in ensemble_generator(genomes=genomes, k=k, limit=limit):
+        yield {genome, *ensemble}
