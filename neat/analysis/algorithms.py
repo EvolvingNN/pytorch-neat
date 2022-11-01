@@ -76,6 +76,7 @@ def greedy_2_selection_accuracies(pred_map, eval_func):
         accuracies.append(eval_func(ensemble_member_results))
     return accuracies
 
+
 def diversity_rr_selection_accuracies(pred_map, eval_func, speciation_threshold=0.8):
     # TODO round robin style picking from different species (based on threshold)
     # each species sorted by top accuracy down to lowest accuracy
