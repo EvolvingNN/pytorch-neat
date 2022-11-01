@@ -1,5 +1,6 @@
 import numpy as np
-from utils import random_ensemble_generator
+from neat.species import Species
+from neat.utils import random_ensemble_generator
 
 """
 A set of algoritms needed for each trial's analysis
@@ -47,7 +48,7 @@ def greedy_1_selection_accuracies(pred_map, eval_func):
     while genomes_left:
 
         # Initialize this round's variables
-        best_accuracy = float('-inf')
+        best_accuracy = float("-inf")
         best_genome = None
 
         # Find the genome that best improves the current ensemble (genomes_picked)
@@ -77,7 +78,29 @@ def greedy_2_selection_accuracies(pred_map, eval_func):
     return accuracies
 
 
+def __speciate(genomes, speciation_threshold):
+    """
+    Copied and modified from population.py
+    """
+
+    species = []
+
+    for genome in genomes:
+        for s in species:
+            if Species.species_distance(genome, s.model_genome) <= speciation_threshold:
+                s.members.append(genome)
+                return
+
+        # Did not match any current species. Create a new one
+        new_species = Species(len(species), genome, 0)
+        new_species.members.append(genome)
+        species.append(new_species)
+
+    return species
+
+
 def diversity_rr_selection_accuracies(pred_map, eval_func, speciation_threshold=0.8):
     # TODO round robin style picking from different species (based on threshold)
     # each species sorted by top accuracy down to lowest accuracy
+    species = __speciate(pred_map.keys(), speciation_threshold)
     pass
