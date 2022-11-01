@@ -1,3 +1,4 @@
+from collections import deque
 import numpy as np
 from neat.species import Species
 from neat.utils import random_ensemble_generator
@@ -70,22 +71,58 @@ def greedy_1_selection_accuracies(pred_map, eval_func):
 def greedy_2_selection_accuracies(pred_map, eval_func):
     genomes = list(pred_map.keys())
     genomes.sort(reverse=True, key=lambda g: g.fitness)
-    accuracies = []
-    for k in range(1, len(pred_map) + 1):
-        ensemble = genomes[0:k]
-        ensemble_member_results = [pred_map[x] for x in ensemble]
-        accuracies.append(eval_func(ensemble_member_results))
-    return accuracies
+    predictions_in_order = [pred_map[g] for g in genomes]
+    return __accuracies_for_predictions_in_order(predictions_in_order, eval_func)
+
+
+def diversity_rr_selection_accuracies(pred_map, eval_func, speciation_threshold=0.8):
+
+    # Step 1: Divide genomes up based on speciation threshold
+    species = __speciate(pred_map.keys(), speciation_threshold)
+
+    # Step 2: Sort genomes in each species in descending order by their fitness
+    for s in species:
+        s.sort(reverse=True, key=lambda g: g.fitness)
+
+    # Step 3: Pick the genomes from each species round-robin style
+    species = [deque(s) for s in species]
+    genomes_in_order = []
+    while species:
+
+        # Pick best genome for each species
+        for s in species:
+            genomes_in_order.append(s.popleft())
+
+        # Remove empty species
+        species = [s for s in species if s]
+
+    # Step 4: Calculate the accuracies based on the picked genomes in order
+    predictions_in_order = [pred_map[g] for g in genomes_in_order]
+    return __accuracies_for_predictions_in_order(predictions_in_order, eval_func)
+
+
+def __accuracies_for_predictions_in_order(predictions_in_order, eval_func):
+    """
+    Creates the accuracies for a list of networks' predictions in their ensemble order
+    E.g. the predictions for an ensemble of size 1 would be predictions_in_order[0:1],
+    and the predictions for an ensemble of size k would be predictions_in_order[0:k]
+    """
+    return [
+        eval_func(predictions_in_order[0:k])
+        for k in range(1, len(predictions_in_order) + 1)
+    ]
 
 
 def __speciate(genomes, speciation_threshold):
     """
     Copied and modified from population.py
+    Creates a list of species, where each species is a list of genomes
+    The speciation takes place based on genomes' genetic diversity
     """
 
     species = []
 
-    for genome in genomes:
+    def speciate(genome):
         for s in species:
             if Species.species_distance(genome, s.model_genome) <= speciation_threshold:
                 s.members.append(genome)
@@ -96,11 +133,7 @@ def __speciate(genomes, speciation_threshold):
         new_species.members.append(genome)
         species.append(new_species)
 
-    return species
+    for genome in genomes:
+        speciate(genome)
 
-
-def diversity_rr_selection_accuracies(pred_map, eval_func, speciation_threshold=0.8):
-    # TODO round robin style picking from different species (based on threshold)
-    # each species sorted by top accuracy down to lowest accuracy
-    species = __speciate(pred_map.keys(), speciation_threshold)
-    pass
+    return [s.members for s in species]
