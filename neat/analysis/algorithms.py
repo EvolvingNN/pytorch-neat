@@ -75,9 +75,9 @@ def greedy_2_selection_accuracies(pred_map, eval_func):
     return __accuracies_for_predictions_in_order(predictions_in_order, eval_func)
 
 
-def diversity_rr_selection_accuracies(pred_map, eval_func, speciation_threshold=0.8):
+def diversity_rr_selection_accuracies(pred_map, eval_func, speciation_threshold=3.0):
 
-    # Step 1: Divide genomes up based on speciation threshold
+    # Step 1: Divide genomes based on speciation threshold
     species = __speciate(pred_map.keys(), speciation_threshold)
 
     # Step 2: Sort genomes in each species in descending order by their fitness
@@ -87,6 +87,8 @@ def diversity_rr_selection_accuracies(pred_map, eval_func, speciation_threshold=
     # Step 3: Pick the genomes from each species round-robin style
     species = [deque(s) for s in species]
     genomes_in_order = []
+
+    # For each round-robin round while we still have species left to choose from
     while species:
 
         # Pick best genome for each species
