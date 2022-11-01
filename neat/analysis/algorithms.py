@@ -1,7 +1,6 @@
 from collections import deque
 import numpy as np
-from neat.species import Species
-from neat.utils import random_ensemble_generator
+from neat.utils import random_ensemble_generator, speciate
 
 """
 A set of algoritms needed for each trial's analysis
@@ -78,7 +77,7 @@ def greedy_2_selection_accuracies(pred_map, eval_func):
 def diversity_rr_selection_accuracies(pred_map, eval_func, speciation_threshold=3.0):
 
     # Step 1: Divide genomes based on speciation threshold
-    species = __speciate(pred_map.keys(), speciation_threshold)
+    species = speciate(pred_map.keys(), speciation_threshold)
 
     # Step 2: Sort genomes in each species in descending order by their fitness
     for s in species:
@@ -113,29 +112,3 @@ def __accuracies_for_predictions_in_order(predictions_in_order, eval_func):
         eval_func(predictions_in_order[0:k])
         for k in range(1, len(predictions_in_order) + 1)
     ]
-
-
-def __speciate(genomes, speciation_threshold):
-    """
-    Copied and modified from population.py
-    Creates a list of species, where each species is a list of genomes
-    The speciation takes place based on genomes' genetic diversity
-    """
-
-    species = []
-
-    def speciate(genome):
-        for s in species:
-            if Species.species_distance(genome, s.model_genome) <= speciation_threshold:
-                s.members.append(genome)
-                return
-
-        # Did not match any current species. Create a new one
-        new_species = Species(len(species), genome, 0)
-        new_species.members.append(genome)
-        species.append(new_species)
-
-    for genome in genomes:
-        speciate(genome)
-
-    return [s.members for s in species]
