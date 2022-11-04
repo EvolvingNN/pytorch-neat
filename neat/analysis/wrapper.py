@@ -1,8 +1,14 @@
 import pandas as pd
-from analysis.algorithms import *
+
+from neat.analysis.algorithms import (
+    random_selection_accuracies,
+    greedy_1_selection_accuracies,
+    greedy_2_selection_accuracies,
+    diversity_rr_selection_accuracies,
+)
 
 
-def run_analysis(final_population_prediction_map, ensemble_evaluator):
+def run_trial_analysis(final_population_prediction_map, ensemble_evaluator):
     algorithms_to_run = {
         "random": random_selection_accuracies,
         "greedy1": greedy_1_selection_accuracies,
