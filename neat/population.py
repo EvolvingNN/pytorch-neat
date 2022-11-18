@@ -27,7 +27,6 @@ class Population:
 
     def run(self):
         for generation in range(1, self.Config.NUMBER_OF_GENERATIONS):
-            print(f"GEN {generation} of {self.Config.NUMBER_OF_GENERATIONS}")
             # Get Fitness of Every Genome
             if hasattr(self.Config, 'eval_genomes'):
                 self.Config.eval_genomes(self.population)
@@ -41,7 +40,6 @@ class Population:
                     'Config does not have fitness_fn or eval_genomes!',
                 )
 
-            print("getting best genome...")
             best_genome = utils.get_best_genome(self.population)
             
 
@@ -49,7 +47,6 @@ class Population:
             all_fitnesses = []
             remaining_species = []
 
-            print("pruning stagnant species...")
             for species, is_stagnant in Species.stagnation(self.species, generation):
                 if is_stagnant:
                     self.species.remove(species)
@@ -72,7 +69,6 @@ class Population:
             adj_fitness_sum = sum(adj_fitnesses)
 
             # Get the number of offspring for each species
-            print(f"breeding offspring from {len(remaining_species)} remaining species...")
             new_population = []
             for species in remaining_species:
                 if species.adjusted_fitness > 0:
@@ -96,7 +92,6 @@ class Population:
                 purge_index = max(2, purge_index)
                 cur_members = cur_members[:purge_index]
 
-                print(f"generating {size} offspring from species: {species.id}...")
                 for i in range(size):
                     parent_1 = random.choice(cur_members)
                     parent_2 = random.choice(cur_members)
@@ -106,7 +101,6 @@ class Population:
                     new_population.append(child)
 
             # Set new population
-            print(f"Setting new population of size {len(new_population)}")
             self.population = new_population
             Population.current_gen_innovation = []
 
