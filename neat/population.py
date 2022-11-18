@@ -42,7 +42,6 @@ class Population:
 
             best_genome = utils.get_best_genome(self.population)
             
-
             # Reproduce
             all_fitnesses = []
             remaining_species = []
@@ -176,7 +175,6 @@ class Population:
                     new_genome.add_connection_gene(bias.id, output.id)
 
             pop.append(new_genome)
-        print(f"Population Created...")
         return pop
 
     @staticmethod
