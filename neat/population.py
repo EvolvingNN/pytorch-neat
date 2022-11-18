@@ -41,7 +41,7 @@ class Population:
                 )
 
             best_genome = utils.get_best_genome(self.population)
-            
+
             # Reproduce
             all_fitnesses = []
             remaining_species = []
