@@ -33,4 +33,3 @@ DEFAULT_KWARGS = {
         'PERCENTAGE_TO_SAVE' : 0.80
 
 }        
-        
