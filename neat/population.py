@@ -148,7 +148,6 @@ class Population:
 
     def set_initial_population(self):
         pop = []
-        print(f"Creating population of size {self.Config.POPULATION_SIZE}")
         for i in range(self.Config.POPULATION_SIZE):
             new_genome = Genome()
             inputs = []
