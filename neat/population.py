@@ -175,6 +175,7 @@ class Population:
                     new_genome.add_connection_gene(bias.id, output.id)
 
             pop.append(new_genome)
+        
         return pop
 
     @staticmethod
