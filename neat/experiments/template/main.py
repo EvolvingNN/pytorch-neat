@@ -23,4 +23,4 @@ with open(params_file, "r") as f:
     pred_map = config.create_activation_map(final_pop)
     ensemble_evaluator = config.ensemble_activations_evaluator
     df = run_trial_analysis(pred_map, ensemble_evaluator)
-    df.to_csv('analysis_results.csv', encoding='utf-8')
+    df.to_csv(os.path.join(workdir, 'analysis_results.csv'), encoding='utf-8')
