@@ -7,7 +7,7 @@ import torch
 import numpy as np
 
 from neat.phenotype.feed_forward import FeedForwardNet
-from species import Species
+from neat.species import Species
 
 logger = logging.getLogger(__name__)
 
