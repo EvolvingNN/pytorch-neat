@@ -6,6 +6,7 @@ from neat.experiments.template.default_kwargs import DEFAULT_KWARGS
 
 from neat.visualize import draw_net
 from tqdm import tqdm
+from multiprocessing import Pool
 
 logger = logging.getLogger(__name__)
 
@@ -21,10 +22,20 @@ logger = logging.getLogger(__name__)
 
 # neat = pop.Population(c.MNISTConfig(**DEFAULT_KWARGS))
 # solution, generation = neat.run()
-
-for i in tqdm(range(1)):
+def run(q):
+    DEFAULT_KWARGS = q[0]
+    DEFAULT_KWARGS['BINARY_CLASS'] = q[1]
     neat = pop.Population(c.MNISTConfig(**DEFAULT_KWARGS))
     solution, generation = neat.run()
+    return solution,generation
+
+if __name__ == '__main__':
+
+    for i in tqdm(range(1)):
+        queue = [(DEFAULT_KWARGS, digit) for digit in range(10)] 
+        with Pool(10) as p:
+            p.map(run, queue)
+        
 
 #     if solution is not None:
 #         #avg_num_generations = ((avg_num_generations * num_of_solutions) + generation) / (num_of_solutions + 1)

@@ -3,24 +3,24 @@ DEFAULT_KWARGS = {
         'VERBOSE' : True,
 
         'NUM_INPUTS' : 784,
-        'NUM_OUTPUTS' : 10,
+        'NUM_OUTPUTS' : 2,
         'USE_BIAS' : False, 
 
         'USE_CONV' : True,
 
-        'GENERATIONAL_ENSEMBLE_SIZE' : 5,
-        'CANDIDATE_LIMIT' : 25,
+        'GENERATIONAL_ENSEMBLE_SIZE' : 2,
+        'CANDIDATE_LIMIT' : 10,
 
         'ACTIVATION' : 'sigmoid',
-        'SCALE_ACTIVATION' : 4.9,
+        'SCALE_ACTIVATION' : 1,
 
         'FITNESS_THRESHOLD' : float("inf"),
 
         'INITIAL_FITNESS_COEFFICIENT' : 0.1,
         'FINAL_FITNESS_COEFFICIENT' : 0.9,
 
-        'POPULATION_SIZE' : 10,
-        'NUMBER_OF_GENERATIONS' : 100,
+        'POPULATION_SIZE' : 5,
+        'NUMBER_OF_GENERATIONS' : 30,
         'SPECIATION_THRESHOLD' : 3.0,
 
         'CONNECTION_MUTATION_RATE' : 0.80,
@@ -30,6 +30,6 @@ DEFAULT_KWARGS = {
 
         'CROSSOVER_REENABLE_CONNECTION_GENE_RATE' : 0.25,
 
-        'PERCENTAGE_TO_SAVE' : 0.80
+        'PERCENTAGE_TO_SAVE' : 0.6
 
 }     

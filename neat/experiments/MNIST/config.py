@@ -31,32 +31,7 @@ class MNISTConfig:
         mnist_data = datasets.MNIST(root="./data", train=True, download=True)
         data = mnist_data.data
         data = data.view(data.size(0), -1).float()
-        targets = mnist_data.targets
-
-        # data = data.view(data.size(0), -1).float()
-        # data = data / 255
-        # 
-
-        # self.test = mnist_data.test_data
-        # self.test = self.test.view(self.test.size(0), -1).float()
-        # self.test = self.test / 255
-        # self.test_labels = mnist_data.test_labels
-
-        # train = train[:10]
-        # train_labels = train_labels[:10]
-        # test = test[:10]
-        # test_labels = test_labels[:10]
-
-        # Split all training examples into a python list
-        # self.data = list(data)
-        # self.data = [i.reshape(1, 784) for i in self.data]
-        # print(len(self.data))
-        # print(self.data[0].shape)
-
-        # self.data = self.data[:10]
-        # self.targets = self.targets[:10]
-
-        print(data.shape)
+        data = data / np.linalg.norm(data)
         
         if(self.USE_CONV):  # type: ignore
             conv_data = []
@@ -64,23 +39,27 @@ class MNISTConfig:
             for x in data:
                 x = x.float().reshape(1,28,28)
                 conv_data.append(conv(x).flatten())
-            print(conv_data[0].shape)
+            #print(conv_data[0].shape)
             size = conv_data[0].flatten().shape[0]
             self.data = [i.reshape(1, size) for i in conv_data]
             self.NUM_INPUTS = conv_data[0].flatten().shape[0]
         
-        print(self.data[0])
-        # Print the shape of the train dataset
-        #print("Data shape:", self.data)
-        # Print the shape of the test dataset
-        #print("Test shape:", self.test.shape)
-    
-        # Print the targets
-        targets = torch.from_numpy(np.eye(10)[targets])
-        targets = list(targets)
-        self.targets = [i.reshape(1, 10) for i in targets]
-        print("Targets:", len(self.targets))
-        print("Target shape:", self.targets[0].shape)
+        
+        targets = mnist_data.targets
+        
+        if ("BINARY_CLASS" in kwargs):
+            
+            self.targets = np.array([int(y == self.BINARY_CLASS) for y in list(targets)]) #type: ignore
+            #print("Target:", self.targets)
+            print(f"Targets {self.BINARY_CLASS}:", sum(self.targets)) #type: ignore
+            print("Target shape:", self.targets.shape)
+
+        else:
+            targets = torch.from_numpy(np.eye(10)[targets])
+            targets = list(targets)
+            self.targets = [i.reshape(1, 10) for i in targets]
+            print("Targets:", len(self.targets))
+            print("Target shape:", self.targets[0].shape)
 
     def __call__(self):
         return self
@@ -90,18 +69,25 @@ class MNISTConfig:
 
         dataset = self.data #TODO get [tensors] self.DATASET
         y = [np.squeeze(np.array(y_)) for y_ in self.targets] #TDOD get [actuals]
+        y_bin = self.targets
         self.y = y
+        self.y_bin = y_bin
 
         #GET RID OF THIS | REPLACE WITH ALG SELECTED BY KWARG
-        @staticmethod
+        # @staticmethod
         def softmax(x):
             """Compute softmax values for each sets of scores in x."""
             return np.exp(x)/np.sum(np.exp(x),axis=0)
 
-        @staticmethod
+        # @staticmethod
         def cross_entropy(y,y_pred):
-            loss=-np.sum(y*np.log(y_pred))
-            return loss/float(y_pred.shape[0])
+            if y_pred.shape[1] > 2:
+                loss=-np.sum(y*np.log(y_pred))
+                return loss/float(y_pred.shape[0])
+            else: #binary cross entropy
+                #y = np.concatenate(y, axis=0)
+                y = np.array(self.y_bin).reshape(-1,1)
+                return -(y * np.log(y_pred) + (1 - y) * np.log(1 - y_pred)).mean()
 
         def create_activation_map(self, population):  #for expieriment wrapper eval
             return create_prediction_map(population, self.data, self)
