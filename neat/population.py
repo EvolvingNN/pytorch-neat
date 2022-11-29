@@ -53,8 +53,8 @@ class Population:
                     all_fitnesses.extend(g.fitness for g in species.members)
                     remaining_species.append(species)
 
-            min_fitness = min(all_fitnesses)
-            max_fitness = max(all_fitnesses)
+            min_fitness = np.min(all_fitnesses)
+            max_fitness = np.max(all_fitnesses)
 
             fit_range = max(1.0, (max_fitness-min_fitness))
             for species in remaining_species:

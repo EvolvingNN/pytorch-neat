@@ -7,8 +7,10 @@ from torchvision import datasets
 from tqdm import tqdm
 
 from neat.utils import create_prediction_map, random_ensemble_generator_for_static_genome
-
-import numpy as np
+try: 
+    import cupy as np
+except ImportError:
+    import numpy as np
 
 
 class MNISTConfig:
@@ -32,6 +34,9 @@ class MNISTConfig:
         data = mnist_data.data
         data = data.view(data.size(0), -1).float()
         targets = mnist_data.targets
+        # Get the first 10
+        data = data[:10]
+        targets = targets[:10]
 
         # data = data.view(data.size(0), -1).float()
         # data = data / 255

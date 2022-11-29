@@ -6,6 +6,8 @@ from neat.experiments.template.default_kwargs import DEFAULT_KWARGS
 
 from neat.visualize import draw_net
 from tqdm import tqdm
+import cProfile
+
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +26,9 @@ logger = logging.getLogger(__name__)
 
 for i in tqdm(range(1)):
     neat = pop.Population(c.MNISTConfig(**DEFAULT_KWARGS))
-    solution, generation = neat.run()
+    # Line profile neat.run()
+    cProfile.run('neat.run()')
+    # solution, generation = neat.run()
 
 #     if solution is not None:
 #         #avg_num_generations = ((avg_num_generations * num_of_solutions) + generation) / (num_of_solutions + 1)
