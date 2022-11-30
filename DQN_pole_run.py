@@ -8,6 +8,10 @@ import neat.experiments.DQN_pole_balancing.config as c
 from neat.visualize import draw_net
 from neat.phenotype.feed_forward import FeedForwardNet
 
+import wandb
+run = wandb.init(project="Dueling DQN")
+artifact = run.use_artifact('evolvingnn/Dueling DQN/ddqn:v17', type='model')
+artifact_dir = artifact.download()
 
 logger = logging.getLogger(__name__)
 

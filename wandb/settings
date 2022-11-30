@@ -1,0 +1,5 @@
+[default]
+entity = evolvingnn
+project = Dueling DQN
+base_url = https://api.wandb.ai
+

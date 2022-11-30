@@ -53,7 +53,7 @@ class PoleBalanceConfig:
 
         while not done:
             observation = np.array([observation])
-            #run obs through pretrained layer
+            #run obs through pretrained layer, Gabe
             
             input = torch.Tensor(observation).to(self.DEVICE)
 
