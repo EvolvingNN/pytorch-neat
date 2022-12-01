@@ -7,11 +7,16 @@ import neat.population as pop
 import neat.experiments.DQN_pole_balancing.config as c
 from neat.visualize import draw_net
 from neat.phenotype.feed_forward import FeedForwardNet
-
+from duelingDQN.model import QNetwork
 import wandb
+
 run = wandb.init(project="Dueling DQN")
-artifact = run.use_artifact('evolvingnn/Dueling DQN/ddqn:v17', type='model')
+artifact = run.use_artifact('evolvingnn/Dueling DQN/ddqn:v39', type='model')
 artifact_dir = artifact.download()
+
+model = QNetwork()
+model.load_state_dict(torch.load(f'{artifact_dir}/ddqn-policy.pth'))
+
 
 logger = logging.getLogger(__name__)
 
