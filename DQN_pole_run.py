@@ -38,7 +38,9 @@ if solution is not None:
 
     while not done:
         env.render()
-        input = torch.Tensor([observation]).to(c.PoleBalanceConfig.DEVICE)
+        observation = model.half_forward(torch.tensor(observation, dtype=torch.float32)).detach()
+        # print(observation.shape)
+        input = observation.to(c.PoleBalanceConfig.DEVICE)
 
         pred = round(float(phenotype(input)))
         observation, reward, done, info = env.step(pred)
