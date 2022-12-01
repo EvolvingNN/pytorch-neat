@@ -17,7 +17,7 @@ class PoleBalanceConfig:
     DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     VERBOSE = True
 
-    NUM_INPUTS = 64
+    NUM_INPUTS = 16
     NUM_OUTPUTS = 1
     USE_BIAS = True
 
@@ -42,7 +42,7 @@ class PoleBalanceConfig:
 
     def __init__(self) -> None:
         self.run = wandb.init(project="Dueling DQN")
-        self.artifact = self.run.use_artifact('evolvingnn/Dueling DQN/ddqn:v39', type='model')
+        self.artifact = self.run.use_artifact('evolvingnn/Dueling DQN/ddqn:latest', type='model')
         self.artifact_dir = self.artifact.download()
 
         self.model = QNetwork()

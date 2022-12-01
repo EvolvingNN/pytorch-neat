@@ -9,9 +9,10 @@ from neat.visualize import draw_net
 from neat.phenotype.feed_forward import FeedForwardNet
 from duelingDQN.model import QNetwork
 import wandb
+import numpy as np
 
 run = wandb.init(project="Dueling DQN")
-artifact = run.use_artifact('evolvingnn/Dueling DQN/ddqn:v39', type='model')
+artifact = run.use_artifact('evolvingnn/Dueling DQN/ddqn:latest', type='model')
 artifact_dir = artifact.download()
 
 model = QNetwork()
@@ -38,6 +39,7 @@ if solution is not None:
 
     while not done:
         env.render()
+        observation = np.array([observation])
         observation = model.half_forward(torch.tensor(observation, dtype=torch.float32)).detach()
         # print(observation.shape)
         input = observation.to(c.PoleBalanceConfig.DEVICE)
