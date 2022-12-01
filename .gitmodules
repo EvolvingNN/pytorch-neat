@@ -1,0 +1,3 @@
+[submodule "duelingDQN"]
+	path = duelingDQN
+	url = https://github.com/EvolvingNN/dueling-DQN-pytorch
