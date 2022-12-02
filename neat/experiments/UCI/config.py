@@ -2,8 +2,7 @@ import torch
 import torch.nn as nn
 from torch import autograd
 from neat.phenotype.feed_forward import FeedForwardNet
-# Import the MNIST dataset from torchvision
-from torchvision import datasets
+#from torchvision import datasets
 from tqdm import tqdm
 
 from neat.utils import create_prediction_map, random_ensemble_generator_for_static_genome
@@ -11,7 +10,7 @@ from neat.utils import create_prediction_map, random_ensemble_generator_for_stat
 import numpy as np
 
 
-class MNISTConfig:
+class UCIConfig:
     
 
     def __init__(self, **kwargs):
@@ -28,68 +27,14 @@ class MNISTConfig:
         self.genome_coefficients = iter(genome_coefficients)
         self.ensemble_coefficients = iter(ensemble_coefficients)
 
-        mnist_data = datasets.MNIST(root="./data", train=True, download=True)
-        data = mnist_data.data
-        data = data.view(data.size(0), -1).float()
-        targets = mnist_data.targets
-
-        # data = data.view(data.size(0), -1).float()
-        # data = data / 255
-        # 
-
-        # self.test = mnist_data.test_data
-        # self.test = self.test.view(self.test.size(0), -1).float()
-        # self.test = self.test / 255
-        # self.test_labels = mnist_data.test_labels
-
-        # train = train[:10]
-        # train_labels = train_labels[:10]
-        # test = test[:10]
-        # test_labels = test_labels[:10]
-
-        # Split all training examples into a python list
-        # self.data = list(data)
-        # self.data = [i.reshape(1, 784) for i in self.data]
-        # print(len(self.data))
-        # print(self.data[0].shape)
-
-        # self.data = self.data[:10]
-        # self.targets = self.targets[:10]
-
-        print(data.shape)
-        
-        if(self.USE_CONV):  # type: ignore
-            conv_data = []
-            conv = nn.Conv2d(in_channels = 1, out_channels = 1, kernel_size = 5, stride = 2)
-            for x in data:
-                x = x.float().reshape(1,28,28)
-                conv_data.append(conv(x).flatten())
-            print(conv_data[0].shape)
-            size = conv_data[0].flatten().shape[0]
-            self.data = [i.reshape(1, size) for i in conv_data]
-            self.NUM_INPUTS = conv_data[0].flatten().shape[0]
-        
-        print(self.data[0])
-        # Print the shape of the train dataset
-        #print("Data shape:", self.data)
-        # Print the shape of the test dataset
-        #print("Test shape:", self.test.shape)
-    
-        # Print the targets
-        targets = torch.from_numpy(np.eye(10)[targets])
-        targets = list(targets)
-        self.targets = [i.reshape(1, 10) for i in targets]
-        print("Targets:", len(self.targets))
-        print("Target shape:", self.targets[0].shape)
-
     def __call__(self):
         return self
 
 
     def eval_genomes(self, genomes):
 
-        dataset = self.data #TODO get [tensors] self.DATASET
-        y = [np.squeeze(np.array(y_)) for y_ in self.targets] #TDOD get [actuals]
+        dataset = self.DATA #type: ignore
+        y = [np.squeeze(np.array(y_)) for y_ in self.TARGET] #type: ignore
         self.y = y
 
         #GET RID OF THIS | REPLACE WITH ALG SELECTED BY KWARG

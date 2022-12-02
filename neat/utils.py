@@ -61,6 +61,8 @@ def create_prediction_map(genomes, dataset, config):
         phenotype = FeedForwardNet(genome, config)
         phenotype.to(config.DEVICE)
         for input in dataset:
+            input = torch.tensor(input)
+            print("PRED", input)
             input.to(config.DEVICE)
             prediction = phenotype(input).to('cpu')
             results.append(prediction.detach().numpy())
