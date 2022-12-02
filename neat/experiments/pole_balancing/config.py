@@ -39,6 +39,30 @@ class PoleBalanceConfig:
         max_episode_steps=100000
     )
 
+    def __init__(self, wandb_run):
+        self.wandb_run = wandb_run
+        # Log the config
+        wandb_run.config.update({
+            "DEVICE": self.DEVICE,
+            "VERBOSE": self.VERBOSE,
+            "NUM_INPUTS": self.NUM_INPUTS,
+            "NUM_OUTPUTS": self.NUM_OUTPUTS,
+            "USE_BIAS": self.USE_BIAS,
+            "ACTIVATION": self.ACTIVATION,
+            "SCALE_ACTIVATION": self.SCALE_ACTIVATION,
+            "FITNESS_THRESHOLD": self.FITNESS_THRESHOLD,
+            "POPULATION_SIZE": self.POPULATION_SIZE,
+            "NUMBER_OF_GENERATIONS": self.NUMBER_OF_GENERATIONS,
+            "SPECIATION_THRESHOLD": self.SPECIATION_THRESHOLD,
+            "CONNECTION_MUTATION_RATE": self.CONNECTION_MUTATION_RATE,
+            "CONNECTION_PERTURBATION_RATE": self.CONNECTION_PERTURBATION_RATE,
+            "ADD_NODE_MUTATION_RATE": self.ADD_NODE_MUTATION_RATE,
+            "ADD_CONNECTION_MUTATION_RATE": self.ADD_CONNECTION_MUTATION_RATE,
+            "CROSSOVER_REENABLE_CONNECTION_GENE_RATE": self.CROSSOVER_REENABLE_CONNECTION_GENE_RATE,
+            "PERCENTAGE_TO_SAVE": self.PERCENTAGE_TO_SAVE
+        })
+
+
     def fitness_fn(self, genome):
         # OpenAI Gym
         env = gym.make('LongCartPole-v0')

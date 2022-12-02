@@ -12,15 +12,15 @@ from neat.mutation import mutate
 
 logger = logging.getLogger(__name__)
 
-
 class Population:
     __global_innovation_number = 0
     current_gen_innovation = []  # Can be reset after each generation according to paper
 
-    def __init__(self, config):
-        self.Config = config()
+    def __init__(self, config, wandb_run):
+        self.Config = config(wandb_run)
         self.population = self.set_initial_population()
         self.species = []
+        self.wandb_run = wandb_run
 
         for genome in self.population:
             self.speciate(genome, 0)
@@ -110,10 +110,14 @@ class Population:
             if best_genome.fitness >= self.Config.FITNESS_THRESHOLD:
                 return best_genome, generation
 
+            self.wandb_run.log({"Generation": generation, "Best Fitness": best_genome.fitness, "Best Genome Length": len(best_genome.connection_genes)})
+            # self.wandb_run.log({"Best Genome Fitness": best_genome.fitness})
             # Generation Stats
             if self.Config.VERBOSE:
                 logger.info(f'Finished Generation {generation}')
+
                 logger.info(f'Best Genome Fitness: {best_genome.fitness}')
+                
                 logger.info(
                     f'Best Genome Length {len(best_genome.connection_genes)}\n')
 
