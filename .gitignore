@@ -108,3 +108,8 @@ venv.bak/
 data/MNIST/raw/
 images/pole-balancing-solution
 images/pole-balancing-solution.png
+
+wandb/
+images/
+*.pth
+
