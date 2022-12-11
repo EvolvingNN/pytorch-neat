@@ -33,69 +33,69 @@ class UCIConfig:
 
     def eval_genomes(self, genomes):
 
-        X = torch.tensor(self.DATA) #type: ignore
-        y = nn.functional.one_hot(torch.tensor(np.array(self.TARGET))) #type: ignore
-
         def create_activation_map(genomes, X):
             genomes_to_results = {}
-            for genome in genomes:
+            for i,genome in enumerate(genomes):
                 results = []
                 phenotype = FeedForwardNet(genome, self)
                 phenotype.to(self.DEVICE)
-                for input in X:
-                    input = torch.tensor(input)
+                queue = tqdm(X)
+                for input in queue:
+                    queue.set_description(f"Evaluating Genome {i}")
+                    #Adds batch dimension
+                    input = torch.unsqueeze(input, 0)
                     input.to(self.DEVICE)
                     prediction = phenotype(input).to('cpu')
                     results.append(prediction)
-                genomes_to_results[genome] = results
+                genomes_to_results[genome] = torch.squeeze(torch.stack(results))
+                queue.reset()
             return genomes_to_results
 
-        activations_map = create_activation_map(genomes, X)
+        activations_map = create_activation_map(genomes, self.DATA) #type: ignore
+
+        #print(activations_map.values())
         
-        print(list(activations_map.values())[0:4])
         genome_fitness_coefficient = next(self.genome_coefficients)
         ensemble_fitness_coefficient = next(self.ensemble_coefficients)
 
-        print(f"fitness = {genome_fitness_coefficient} * genome_fitness + {ensemble_fitness_coefficient} * constituent_ensemble_fitness")
+        #print(f"fitness = {genome_fitness_coefficient} * genome_fitness + {ensemble_fitness_coefficient} * constituent_ensemble_fitness")
 
-        #for genome in tqdm(genomes):
+        queue = tqdm(genomes)
+        for i,genome in enumerate(queue):
+            queue.set_description(f"Computing Genome {i} Fitness")
+            softmax = nn.Softmax(dim=1)
+            genome_prediction = softmax(activations_map[genome])
+            CE_loss = nn.CrossEntropyLoss()
+            genome_loss = CE_loss(genome_prediction, self.TARGET.to(torch.float32)).item()
+            genome_fitness = np.exp(-1 * genome_loss)
+            #print(f"genome_loss: {genome_loss} | genome_fitness: {genome_fitness}")
 
-        #     genome_prediction = np.array([softmax(z) for z in np.squeeze(activations_map[genome])])
-        #     genome_loss = cross_entropy(self.y, genome_prediction)
-        #     genome_fitness = np.exp(-1 * genome_loss)
+            constituent_ensemble_losses = []
+            #Iterate through a sample of all possible combinations of candidate genomes to ensemble for a given size k
+            sample_ensembles = random_ensemble_generator_for_static_genome(genome, genomes, k = self.GENERATIONAL_ENSEMBLE_SIZE, limit = self.CANDIDATE_LIMIT)  # type: ignore
 
-        #     print(f"genome_loss: {genome_loss} | genome_fitness: {genome_fitness}")
+            for sample_ensemble in sample_ensembles:
 
-        #     constituent_ensemble_losses = []
-        #     #Iterate through a sample of all possible combinations of candidate genomes to ensemble for a given size k
-        #     sample_ensembles = random_ensemble_generator_for_static_genome(genome, genomes, k = self.GENERATIONAL_ENSEMBLE_SIZE, limit = self.CANDIDATE_LIMIT)  # type: ignore
+                ensemble_activations = [activations_map[genome]]
 
-        #     for sample_ensemble in tqdm(sample_ensembles):
-
-        #         ensemble_activations = [np.squeeze(activations_map[genome])]
-
-        #         #Append candidate genome activations to list
-        #         for candidate in sample_ensemble:
-        #             ensemble_activations.append(np.squeeze(activations_map[candidate]))
+                #Append candidate genome activations to list
+                for candidate in sample_ensemble:
+                    ensemble_activations.append(activations_map[candidate])
                 
-            
-        #         average_ensemble_activations = np.mean(ensemble_activations, axis = 0)
-              
-        #         ensemble_predictions = np.array([softmax(z) for z in average_ensemble_activations]) #TODO Replace with function specified by config kwarg
+                #TODO: implement Hard voting
+                soft_activations = torch.sum(torch.stack(ensemble_activations, dim = 0), dim = 0)
+                
+                constituent_ensemble_loss = CE_loss(softmax(soft_activations), self.TARGET.to(torch.float32)).item()
 
-        #         constituent_ensemble_loss = cross_entropy(self.y,ensemble_predictions)
+                constituent_ensemble_losses.append(constituent_ensemble_loss)
+            #set the genome fitness as the average loss of the candidate ensembles TODO use kwarg switching for fitness_fn
+            
+            ensemble_fitness = np.exp(-1 * np.mean(constituent_ensemble_losses))
 
-        #         constituent_ensemble_losses.append(constituent_ensemble_loss)
-        #     #set the genome fitness as the average loss of the candidate ensembles TODO use kwarg switching for fitness_fn
+            #print(f"ensemble_loss: {np.mean(constituent_ensemble_losses)} | ensemble_fitness: {ensemble_fitness}")
             
-        #     ensemble_fitness = np.exp(-1 * np.mean(constituent_ensemble_losses))
-
-        #     print(f"ensemble_loss: {np.mean(constituent_ensemble_losses)} | ensemble_fitness: {ensemble_fitness}")
-            
-        #     genome.fitness = genome_fitness_coefficient * genome_fitness + ensemble_fitness_coefficient * ensemble_fitness
-            
-        #     print(f"{id(genome)} : {genome.fitness}")
+            genome.fitness = genome_fitness_coefficient * genome_fitness + ensemble_fitness_coefficient * ensemble_fitness
         
-        # population_fitness = np.mean([genome.fitness for genome in genomes])
-        # print("population_fitness: ", population_fitness)
-        #return population_fitness
+        population_fitness = np.mean([genome.fitness for genome in genomes])
+        #print("population_fitness: ", population_fitness)
+        return population_fitness

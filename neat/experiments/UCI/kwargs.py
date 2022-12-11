@@ -12,7 +12,7 @@ KWARGS = {
         'USE_CONV' : None,
 
         'GENERATIONAL_ENSEMBLE_SIZE' : 5,
-        'CANDIDATE_LIMIT' : 25,
+        'CANDIDATE_LIMIT' : 5,
 
         'ACTIVATION' : 'sigmoid',
         'SCALE_ACTIVATION' : 4.9,
@@ -22,7 +22,7 @@ KWARGS = {
         'INITIAL_FITNESS_COEFFICIENT' : 0.1,
         'FINAL_FITNESS_COEFFICIENT' : 0.9,
 
-        'POPULATION_SIZE' : 10,
+        'POPULATION_SIZE' : 15,
         'NUMBER_OF_GENERATIONS' : 100,
         'SPECIATION_THRESHOLD' : 3.0,
 
