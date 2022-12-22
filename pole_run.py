@@ -24,17 +24,16 @@ def objective(trial):
 
     config.FITNESS_THRESHOLD = 100000.0
 
-    config.POPULATION_SIZE = trial.suggest_int('POPULATION_SIZE', 5, 200)
-    config.NUMBER_OF_GENERATIONS = trial.suggest_int('NUMBER_OF_GENERATIONS', 10, 100)
-    config.SPECIATION_THRESHOLD = trial.suggest_float('SPECIATION_THRESHOLD', 1.0, 5.0)
+    config.POPULATION_SIZE = trial.suggest_int('POP_SIZE', 5, 200)
+    config.NUMBER_OF_GENERATIONS = 100
+    config.SPECIATION_THRESHOLD = trial.suggest_float('SPEC_THRESH', 1.0, 5.0)
 
-    config.CONNECTION_MUTATION_RATE = trial.suggest_float('CONNECTION_MUTATION_RATE', 0.1, 0.9)
-    config.CONNECTION_PERTURBATION_RATE = 0.90
-    config.ADD_NODE_MUTATION_RATE = 0.03
-    config.ADD_CONNECTION_MUTATION_RATE = 0.5
+    config.CONNECTION_MUTATION_RATE = trial.suggest_float('CONN_MUT_RATE', 0.1, 0.9)
+    config.CONNECTION_PERTURBATION_RATE = trial.suggest_float('CONN_PERT_RATE', 0.1, 0.9)
+    config.ADD_NODE_MUTATION_RATE = trial.suggest_float('ADD_NODE_RATE', 0.1, 0.9)
+    config.ADD_CONNECTION_MUTATION_RATE = trial.suggest_float('ADD_CONN_RATE', 0.1, 0.9)
 
-    config.CROSSOVER_REENABLE_CONNECTION_GENE_RATE = 0.25
-
+    config.CROSSOVER_REENABLE_CONNECTION_GENE_RATE = trial.suggest_float('CROSSOVER', 0.1, 0.9)
     # Top percentage of species to be saved before mating
     config.PERCENTAGE_TO_SAVE = 0.80
 
