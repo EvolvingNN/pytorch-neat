@@ -3,6 +3,9 @@ import logging
 import gym
 import torch
 
+import numpy as np
+import pandas as pd
+
 import neat.population as pop
 import neat.experiments.pole_balancing.config as c
 from neat.visualize import draw_net
@@ -37,35 +40,21 @@ def objective(trial):
     # Top percentage of species to be saved before mating
     config.PERCENTAGE_TO_SAVE = 0.80
 
-    neat = pop.Population(config)
-    start = time.time()
-    solution, generation = neat.run()
-    end = time.time()
+    ttc = []
+    for _ in range(5):
+        neat = pop.Population(config)
+        start = time.time()
+        solution, generation = neat.run()
+        end = time.time()
 
-    # if solution is not None:
-    #     logger.info('Found a Solution')
-    #     draw_net(solution, view=True, filename='./images/pole-balancing-solution', show_disabled=True)
+        ttc.append(end-start)
 
-    #     # OpenAI Gym
-    #     env = gym.make('LongCartPole-v0')
-    #     done = False
-    #     observation = env.reset()
+    return np.mean(ttc)
 
-    #     fitness = 0
-    #     phenotype = FeedForwardNet(solution, c.PoleBalanceConfig)
 
-    #     while not done:
-    #         env.render()
-    #         input = torch.Tensor([observation]).to(c.PoleBalanceConfig.DEVICE)
-
-    #         pred = round(float(phenotype(input)))
-    #         observation, reward, done, info = env.step(pred)
-
-    #         fitness += reward
-    #     env.close()
-    return (end - start)
-
-study = optuna.create_study(direction = "minimize")
+study_name = "pole_run_baseline_study"
+storage_name = "sqlite:///{}.db".format(study_name)
+study = optuna.create_study(direction = "minimize", study_name=study_name, storage=storage_name, load_if_exists=True)
 study.optimize(objective, n_trials=3)
 
 trial = study.best_trial
@@ -73,6 +62,9 @@ trial = study.best_trial
 print('Accuracy: {}'.format(trial.value))
 print("Best hyperparameters: {}".format(trial.params))
 
-optuna.visualization.plot_optimization_history(study)
-optuna.visualization.plot_slice(study) 
-optuna.visualization.plot_contour(study, params=['SCALE_ACTIVATION', 'POPULATION_SIZE', 'SPECIATION_THRESHOLD', 'CONNECTION_MUTATION_RATE'])
+df = study.trials_dataframe(attrs=("number", "value", "params", "state"))
+df.to_pickle(f"./{study_name}.pkl")
+
+# optuna.visualization.plot_optimization_history(study)
+# optuna.visualization.plot_slice(study) 
+# optuna.visualization.plot_contour(study, params=['SCALE_ACTIVATION', 'POPULATION_SIZE', 'SPECIATION_THRESHOLD', 'CONNECTION_MUTATION_RATE'])
