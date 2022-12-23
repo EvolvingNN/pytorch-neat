@@ -23,7 +23,7 @@ logger.info(config.DEVICE)
 
 def objective(trial):
 
-    config.SCALE_ACTIVATION = trial.suggest_float('SCALE_ACTIVATION', 1 , 10, log = True)
+    config.SCALE_ACTIVATION = trial.suggest_float('SCALE_ACTIVATION', 1 , 10)
 
     config.FITNESS_THRESHOLD = 100000.0
 
