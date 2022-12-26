@@ -31,7 +31,7 @@ class PoleBalanceConfig:
 
     # Top percentage of species to be saved before mating
     PERCENTAGE_TO_SAVE = 0.80
-    
+
     # Allow episode lengths of > than 200
     gym.envs.register(
         id='LongCartPole-v0',
