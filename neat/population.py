@@ -37,7 +37,7 @@ class Population:
                     genome.fitness = max(0, self.Config.fitness_fn(genome))
             elif hasattr(self.Config, 'alt_fitness_fn'):
                 for genome in self.population:
-                    genome.fitness = self.Config.alt_fitness_fn(genome, generation)
+                    genome.fitness = self.Config.alt_fitness_fn(genome)
             else:
                 raise RuntimeError(
                     'Config does not have fitness_fn or eval_genomes!',
