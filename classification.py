@@ -72,22 +72,12 @@ sweep_configuration = {
      }
 }
 
-sweep_id = wandb.sweep(sweep=sweep_configuration, project="Classification", entity="evolvingnn")
+# sweep_id = wandb.sweep(sweep=sweep_configuration, project="Classification", entity="evolvingnn")
 
 def train():
-    wandb.init(config=KWARGS)
+    wandb.init(config=KWARGS, group="greedy 100 runs", project="Classification", entity="evolvingnn")
     print(f"Type of wandb.config {type(wandb.config)}")
-    # print("Hello!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     kwargs = KWARGS
-    # If the args are in wandb.config over write the kargs
-
-    # Check if wandb.config has any keys
-    # if len(wandb.config.keys()) > 0:
-    #     # First check if there is a
-    #     for key in wandb.config:
-    #         kwargs[key] = wandb.config[key]
-    # else:
-    #     print("No keys")
 
     
     kwargs = {
@@ -141,6 +131,8 @@ def train():
     
 
 if __name__ == '__main__':
-    # train()
-    wandb.agent("13wk40yj", function=train)
+    for _ in range(10):
+        train()
+        
+    # wandb.agent("13wk40yj", function=train)
 
