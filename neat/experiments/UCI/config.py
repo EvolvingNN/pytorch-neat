@@ -4,12 +4,14 @@ from torch import autograd
 from neat.phenotype.feed_forward import FeedForwardNet
 #from torchvision import datasets
 from tqdm import tqdm
+import pickle
 
 from neat.utils import create_prediction_map, random_ensemble_generator_for_static_genome, speciate
 import neat.analysis.wrapper as wrapper
 
 import numpy as np
 
+# import wandb
 
 class UCIConfig:
     
@@ -46,6 +48,7 @@ class UCIConfig:
             self.genome_coefficients = iter(genome_coefficients)
             self.ensemble_coefficients = iter(ensemble_coefficients)
 
+
     def __call__(self):
         return self
 
@@ -78,6 +81,9 @@ class UCIConfig:
 
         # Calculate the fitness of the ensemble using the negative exponential of the loss
         ensemble_fitness = np.exp(-1 * constituent_ensemble_loss)
+
+        self.wandb.log({"constituent_ensemble_loss": constituent_ensemble_loss})
+        self.wandb.log({"constituent_ensemble_fitness": ensemble_fitness})
 
         return ensemble_fitness
 
@@ -137,8 +143,30 @@ class UCIConfig:
         # Create a dataframe of the results of the trial analysis
         df_results = wrapper.run_trial_analysis(self.create_activation_map(genomes, self.TEST_DATA), self.constituent_ensemble_evaluation)
         df_results.to_csv('./df_results.csv')
+
+        # Save the csv to wandb
+        self.wandb.save('./df_results.csv')
+
+        # Pickle and save the gnomes
+        with open('genomes.pkl', 'wb') as f:
+            pickle.dump(genomes, f)
+            
+        self.wandb.save('genomes.pkl')
+
+
+        # Take the mean for each column
+        # df_results = 
+        # Convert it to a dictinary
+        # df_results = df_results
+        # Log the results with wandb
+        self.wandb.log(df_results.max(axis=0).to_dict())
         
         # Calculate the average fitness of the population
         population_fitness = np.mean([genome.fitness for genome in genomes])
 
+        #print("population_fitness: ", population_fitness)
+        
+        # Log population fitness with wandb 
+        self.wandb.log({"population_fitness": population_fitness})
+        
         return population_fitness

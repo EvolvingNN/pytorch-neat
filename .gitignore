@@ -110,3 +110,5 @@ data/MNIST/raw/
 *.csv
 
 wandb/
+*.pkl
+
