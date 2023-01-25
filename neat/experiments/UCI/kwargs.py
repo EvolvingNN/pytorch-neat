@@ -11,20 +11,22 @@ KWARGS = {
 
         'USE_CONV' : None,
 
-        'GENERATIONAL_ENSEMBLE_SIZE' : 5,
-        'CANDIDATE_LIMIT' : 5,
+        'GENERATIONAL_ENSEMBLE_SIZE' : 3,
+        'CANDIDATE_LIMIT' : 10,
 
         'ACTIVATION' : 'sigmoid',
         'SCALE_ACTIVATION' : 4.9,
 
         'FITNESS_THRESHOLD' : float("inf"),
-
+                           
         'USE_FITNESS_COEFFICIENT' : False,
         'INITIAL_FITNESS_COEFFICIENT' : 0.1,
         'FINAL_FITNESS_COEFFICIENT' : 0.9,
 
-        'POPULATION_SIZE' : 15,
-        'NUMBER_OF_GENERATIONS' : 100,
+        'USE_GENOME_FITNESS' : False,
+
+        'POPULATION_SIZE' : 150,
+        'NUMBER_OF_GENERATIONS' : 150,
         'SPECIATION_THRESHOLD' : 3.0,
 
         'CONNECTION_MUTATION_RATE' : 0.80,
@@ -34,6 +36,6 @@ KWARGS = {
 
         'CROSSOVER_REENABLE_CONNECTION_GENE_RATE' : 0.25,
 
-        'PERCENTAGE_TO_SAVE' : 0.80
+        'PERCENTAGE_TO_SAVE' : 0.10
 
 }     

@@ -35,20 +35,20 @@ class UCIConfig:
             ensemble_coefficients = np.arange(self.INITIAL_FITNESS_COEFFICIENT, self.FINAL_FITNESS_COEFFICIENT, increment)  # type: ignore
             genome_coefficients = ensemble_coefficients[::-1]
             
-            # Assign the coefficient arrays as iterable attributes of the object
-            self.genome_coefficients = iter(genome_coefficients)
-            self.ensemble_coefficients = iter(ensemble_coefficients)
-            
         else:
-            # Create arrays of ones and zeroes for the genome and ensemble coefficients
-            genome_coefficients = np.ones(self.NUMBER_OF_GENERATIONS) #type: ignore
-            ensemble_coefficients = np.zeros(self.NUMBER_OF_GENERATIONS) #type: ignore
-            
+            # NO WARM UP - GENOME FITNESS
+            if self.USE_GENOME_FITNESS: #type: ignore
+                # Create arrays of ones and zeroes for the genome and ensemble coefficients
+                genome_coefficients = np.ones(self.NUMBER_OF_GENERATIONS) #type: ignore
+                ensemble_coefficients = np.zeros(self.NUMBER_OF_GENERATIONS) #type: ignore
+            else:
+            # NO WARM UP
             # Assign the coefficient arrays as iterable attributes of the object
-            self.genome_coefficients = iter(genome_coefficients)
-            self.ensemble_coefficients = iter(ensemble_coefficients)
-
-
+                genome_coefficients = np.zeros(self.NUMBER_OF_GENERATIONS) #type: ignore
+                ensemble_coefficients = np.ones(self.NUMBER_OF_GENERATIONS) #type: ignore
+                    # Assign the coefficient arrays as iterable attributes of the object
+        self.genome_coefficients = iter(genome_coefficients)
+        self.ensemble_coefficients = iter(ensemble_coefficients)
     def __call__(self):
         return self
 
@@ -78,12 +78,16 @@ class UCIConfig:
         
         # Calculate the cross-entropy loss for the ensemble
         constituent_ensemble_loss = CE_loss(softmax(soft_activations), self.TEST_TARGET.to(torch.float32)).item()
+        predicted_classes = torch.argmax(softmax(soft_activations), dim=1)
+        actual_classes = torch.argmax(self.TEST_TARGET, dim = 1)
+        correct_predictions = predicted_classes == actual_classes
 
         # Calculate the fitness of the ensemble using the negative exponential of the loss
         ensemble_fitness = np.exp(-1 * constituent_ensemble_loss)
-
+        ensemble_fitness = correct_predictions.float().mean()
         self.wandb.log({"constituent_ensemble_loss": constituent_ensemble_loss})
         self.wandb.log({"constituent_ensemble_fitness": ensemble_fitness})
+        
 
         return ensemble_fitness
 
@@ -111,6 +115,7 @@ class UCIConfig:
             genome_fitness = np.exp(-1 * genome_loss)
             # List to store the loss of the ensembles
             constituent_ensemble_losses = []
+            constituent_ensemble_accuracies = []
 
             # Generate a sample of all possible combinations of candidate genomes to ensemble for a given size k
             sample_ensembles = random_ensemble_generator_for_static_genome(genome, genomes, k = self.GENERATIONAL_ENSEMBLE_SIZE, limit = self.CANDIDATE_LIMIT)  # type: ignore
@@ -127,6 +132,11 @@ class UCIConfig:
                     
                 # Sum the activations of all ensemble members
                 soft_activations = torch.sum(torch.stack(ensemble_activations, dim = 0), dim = 0)
+
+                predicted_classes = torch.argmax(softmax(soft_activations), dim=1)
+                actual_classes = torch.argmax(self.TARGET, dim = 1)
+                correct_predictions = predicted_classes == actual_classes
+                constituent_ensemble_accuracies.append(correct_predictions.float().mean())   
                     
                 # Calculate the cross-entropy loss for the ensemble
                 constituent_ensemble_loss = CE_loss(softmax(soft_activations), self.TARGET.to(torch.float32)).item()
@@ -136,6 +146,8 @@ class UCIConfig:
 
             # Calculate the ensemble fitness as the average loss of the candidate ensembles
             ensemble_fitness = np.exp(-1 * np.mean(constituent_ensemble_losses))
+            ensemble_fitness = np.mean(constituent_ensemble_accuracies)
+            print(ensemble_fitness)
             
             # Set the genome fitness as a combination of the genome fitness coefficient, genome fitness and ensemble fitness coefficient, ensemble fitness
             genome.fitness = genome_fitness_coefficient * genome_fitness + ensemble_fitness_coefficient * ensemble_fitness
