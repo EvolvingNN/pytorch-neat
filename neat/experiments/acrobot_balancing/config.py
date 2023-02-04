@@ -9,44 +9,25 @@ from neat.utils import random_ensemble_generator_for_static_genome
 
 
 class AcrobotBalanceConfig:
-    DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    VERBOSE = True
 
-    NUM_INPUTS = 6
-    NUM_OUTPUTS = 3 #corresponding to action space 0: apply -1 torque, 1: apply 0 torque, 2: apply 1 torque
-    USE_BIAS = False
+    def __init__(self, **kwargs):
+        
+        self.DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-    ACTIVATION = 'sigmoid'
-    SCALE_ACTIVATION = 4.9
+        for k, v in kwargs.items():
+            setattr(self, k, v)
 
-    FITNESS_THRESHOLD = float("inf")
-    MAX_EPISODE_STEPS = 500
-
-    GENERATIONAL_ENSEMBLE_SIZE = 2
-    CANDIDATE_LIMIT = 6
-
-    POPULATION_SIZE = 5
-    NUMBER_OF_GENERATIONS = 100
-    SPECIATION_THRESHOLD = 3.0
-
-    CONNECTION_MUTATION_RATE = 0.80
-    CONNECTION_PERTURBATION_RATE = 0.90
-    ADD_NODE_MUTATION_RATE = 0.03
-    ADD_CONNECTION_MUTATION_RATE = 0.5
-
-    CROSSOVER_REENABLE_CONNECTION_GENE_RATE = 0.25
-
-    # Top percentage of species to be saved before mating
-    PERCENTAGE_TO_SAVE = 0.80
-
-    TOP_HEIGHT = -np.inf
-
-    #Allow episode lengths of > than 200
-    gym.envs.register(
+        gym.envs.register(
         id='Acrobot-v1',
         entry_point='gym.envs.classic_control:AcrobotEnv',
-        max_episode_steps=MAX_EPISODE_STEPS
+        max_episode_steps=self.MAX_EPISODE_STEPS
     )
+    
+    def __call__(self):
+        return self
+
+    #Allow episode lengths of > than 200
+
 
     def vote(self, voting_ensemble, input):
         softmax = nn.Softmax(dim=1)
@@ -82,6 +63,7 @@ class AcrobotBalanceConfig:
                 constituent_ensemble_reward.append(fitness/self.MAX_EPISODE_STEPS)
             
             ACER = np.mean(np.exp(constituent_ensemble_reward))
+            self.wandb.log({"ACER": ACER})
             genome.fitness = ACER
         
         population_fitness = np.mean([genome.fitness for genome in population])
