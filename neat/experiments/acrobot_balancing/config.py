@@ -29,9 +29,9 @@ class AcrobotBalanceConfig:
     #Allow episode lengths of > than 200
 
 
-    def vote(self, voting_ensemble, input):
+    def vote(self, voting_ensemble, obs):
         softmax = nn.Softmax(dim=1)
-        ensemble_activations = [phenotype(input) for phenotype in voting_ensemble]
+        ensemble_activations = [phenotype(obs) for phenotype in voting_ensemble]
         soft_activations = torch.sum(torch.stack(ensemble_activations, dim = 0), dim = 0)
         vote = np.argmax(softmax(soft_activations).detach().numpy()[0])
         return vote
@@ -54,8 +54,8 @@ class AcrobotBalanceConfig:
                 fitness = 0
                 while not done:
                     observation = np.array([observation])
-                    input = torch.Tensor(observation).to(self.DEVICE)
-                    pred = self.vote(voting_ensemble, input)
+                    obs = torch.Tensor(observation).to(self.DEVICE)
+                    pred = self.vote(voting_ensemble, obs)
                     observation, reward, done, info = env.step(pred)
                     height = -observation[0] - (observation[0]*observation[2] - observation[1]*observation[3])
                     fitness += height
