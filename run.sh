@@ -4,4 +4,4 @@
 #SBATCH --gres=gpu:0
 #SBATCH --mem 10G
 
-python mnist.py
+python acrobot_run.py
