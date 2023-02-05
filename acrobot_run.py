@@ -84,7 +84,7 @@ def train():
 
         while not done:
             env.render()
-            obs = torch.Tensor([observation]).to(c.AcrobotBalanceConfig.DEVICE)
+            obs = torch.Tensor([observation]).cpu()
 
             pred = round(float(phenotype(obs)))
             observation, reward, done, info = env.step(pred)

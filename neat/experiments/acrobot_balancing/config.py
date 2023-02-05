@@ -55,7 +55,7 @@ class AcrobotBalanceConfig:
                 fitness = 0
                 while not done:
                     observation = np.array([observation])
-                    obs = torch.Tensor(observation).to(self.DEVICE)
+                    obs = torch.Tensor(observation).cpu()
                     pred = self.vote(voting_ensemble, obs)
                     observation, reward, done, info = env.step(pred)
                     height = -observation[0] - (observation[0]*observation[2] - observation[1]*observation[3])
