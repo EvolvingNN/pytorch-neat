@@ -96,4 +96,4 @@ if __name__ == '__main__':
     # for _ in range(10):
         # train()
         
-    wandb.agent('rp3ex6f4', function=train)
+    wandb.agent(sweep_id, function=train)
