@@ -12,7 +12,8 @@ class AcrobotBalanceConfig:
 
     def __init__(self, **kwargs):
         
-        self.DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        #self.DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        self.DEVICE = torch.device("cpu")
 
         for k, v in kwargs.items():
             setattr(self, k, v)
