@@ -8,6 +8,7 @@ from neat.experiments.acrobot_balancing.kwargs import KWARGS
 
 import neat.population as pop
 import neat.experiments.acrobot_balancing.config as c
+import neat.experiments.acrobot_balancing.config_test as c_test
 from neat.visualize import draw_net
 from neat.phenotype.feed_forward import FeedForwardNet
 
@@ -20,7 +21,7 @@ sweep_configuration = {
 		},
     'parameters': {
         'USE_BIAS': {'values': [False, True]},
-        'POPULATION_SIZE': {'max': 100, 'min': 3},
+        'POPULATION_SIZE': {'max': 10, 'min': 3},
         'CANDIDATE_LIMIT': {'values': [2, 3, 5, 7, 13, 25]},
         'SCALE_ACTIVATION': {'max': 7, 'min': 2},
         'SPECIATION_THRESHOLD': {'max' : 5, 'min' : 1},
@@ -35,6 +36,11 @@ sweep_configuration = {
 
 sweep_id = wandb.sweep(sweep=sweep_configuration, project="acrobot", entity="evolvingnn")
 print(sweep_id)
+
+def test():
+    KWARGS['POPULATION_SIZE'] = 2
+    neat = pop.Population(c_test.AcrobotBalanceConfig(**KWARGS))
+    solution, generation = neat.run()
 
 def train():
 
@@ -96,4 +102,5 @@ if __name__ == '__main__':
     # for _ in range(10):
         # train()
         
-    wandb.agent('4xm1seek', function=train)
+    wandb.agent('kovzj2ei', function=train)
+    #test()
