@@ -83,6 +83,7 @@ class AcrobotBalanceConfig:
                 done = False
                 observation = env.reset()
                 fitness = 0
+                step = 0
                 while not done:
                     observation = np.array([observation])
                     obs = torch.Tensor(observation).cpu()
@@ -91,8 +92,10 @@ class AcrobotBalanceConfig:
                     height = -observation[0] - (observation[0]*observation[2] - observation[1]*observation[3])
                     if height > genome.max_height:
                         genome.max_height = height
+                    fitness += height
+                    step += 1
                 
-                constituent_ensemble_reward.append(fitness/self.MAX_EPISODE_STEPS)
+                constituent_ensemble_reward.append(fitness * (self.MAX_EPISODE_STEPS/step))
             
             ACER = np.mean(np.exp(constituent_ensemble_reward))
             self.wandb.log({"ACER": ACER,
