@@ -13,15 +13,15 @@ from neat.visualize import draw_net
 from neat.phenotype.feed_forward import FeedForwardNet
 
 sweep_configuration = {
-    'method': 'random',
-    'name': 'sweep',
+    'method': 'bayes',
+    'name': 'Control',
     'metric': {
         'goal': 'maximize', 
-        'name': 'ACER'
+        'name': 'Fitness'
 		},
     'parameters': {
         'USE_BIAS': {'values': [False, True]},
-        'POPULATION_SIZE': {'max': 10, 'min': 3},
+        'POPULATION_SIZE': {'max': 20, 'min': 3},
         'CANDIDATE_LIMIT': {'values': [2, 3, 5, 7, 13, 25]},
         'SCALE_ACTIVATION': {'max': 7, 'min': 2},
         'SPECIATION_THRESHOLD': {'max' : 5, 'min' : 1},
@@ -34,8 +34,8 @@ sweep_configuration = {
      }
 }
 
-# sweep_id = wandb.sweep(sweep=sweep_configuration, project="acrobot", entity="evolvingnn")
-# print(sweep_id)
+sweep_id = wandb.sweep(sweep=sweep_configuration, project="acrobot", entity="evolvingnn")
+print(sweep_id)
 
 def test():
     KWARGS['POPULATION_SIZE'] = 5
@@ -44,7 +44,7 @@ def test():
 
 def train():
 
-    wandb.init(config = KWARGS)
+    wandb.init(config = KWARGS, group = 'Acrobot Control')
 
     kwargs = {
         'VERBOSE': wandb.config.VERBOSE,
@@ -102,6 +102,6 @@ def train():
 if __name__ == '__main__':
     # for _ in range(10):
         # train()
-        
-    wandb.agent('kovzj2ei', function=train)
+    #train()
+    wandb.agent('2umr8r06', function=train)
     #test()

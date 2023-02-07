@@ -128,7 +128,7 @@ class AcrobotBalanceConfig:
                     fitness += height
                     step += 1
                 self.wandb.log({"Max Height" : max_height,
-                                "Total Reward (Height)" : fitness,
+                                "Fitness" : fitness,
                                 "Average Reward" : fitness/step,
                                 "Step Completed" : step
                                 })
