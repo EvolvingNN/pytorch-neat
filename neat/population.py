@@ -26,18 +26,15 @@ class Population:
             self.speciate(genome, 0)
 
     def run(self):
-        for generation in range(1, self.Config.NUMBER_OF_GENERATIONS):
+        for generation in range(1, self.Config.NUMBER_OF_GENERATIONS + 1):
             # Get Fitness of Every Genome
             if hasattr(self.Config, 'eval_genomes'):
-                self.Config.eval_genomes(self.population)
+                self.Config.eval_genomes(self.population, generation = generation)
                 for genome in self.population:
-                    genome.fitness = max(0, genome.fitness)
+                    genome.fitness = max(-1000, genome.fitness)
             elif hasattr(self.Config, 'fitness_fn'):
                 for genome in self.population:
                     genome.fitness = max(0, self.Config.fitness_fn(genome))
-            elif hasattr(self.Config, 'alt_fitness_fn'):
-                for genome in self.population:
-                    genome.fitness = self.Config.alt_fitness_fn(genome)
             else:
                 raise RuntimeError(
                     'Config does not have fitness_fn or eval_genomes!',

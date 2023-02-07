@@ -34,11 +34,11 @@ sweep_configuration = {
      }
 }
 
-sweep_id = wandb.sweep(sweep=sweep_configuration, project="acrobot", entity="evolvingnn")
-print(sweep_id)
+# sweep_id = wandb.sweep(sweep=sweep_configuration, project="acrobot", entity="evolvingnn")
+# print(sweep_id)
 
 def test():
-    KWARGS['POPULATION_SIZE'] = 2
+    KWARGS['POPULATION_SIZE'] = 5
     neat = pop.Population(c_test.AcrobotBalanceConfig(**KWARGS))
     solution, generation = neat.run()
 
@@ -58,6 +58,7 @@ def train():
         'MAX_EPISODE_STEPS': wandb.config.MAX_EPISODE_STEPS,
         'FITNESS_THRESHOLD': wandb.config.FITNESS_THRESHOLD,
         'TOP_HEIGHT' : wandb.config.TOP_HEIGHT,
+        'USE_CONTROL' : wandb.config.USE_CONTROL,
         'POPULATION_SIZE': wandb.config.POPULATION_SIZE,
         'NUMBER_OF_GENERATIONS': wandb.config.NUMBER_OF_GENERATIONS,
         'SPECIATION_THRESHOLD': wandb.config.SPECIATION_THRESHOLD,

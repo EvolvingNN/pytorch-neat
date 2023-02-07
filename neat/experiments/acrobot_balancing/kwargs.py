@@ -16,6 +16,8 @@ KWARGS = {
         'FITNESS_THRESHOLD' : float("inf"),
         'TOP_HEIGHT' : -float("inf"),
 
+        'USE_CONTROL' : True,
+
         'POPULATION_SIZE' : 15,
         'NUMBER_OF_GENERATIONS' : 150,
         'SPECIATION_THRESHOLD' : 3.0,

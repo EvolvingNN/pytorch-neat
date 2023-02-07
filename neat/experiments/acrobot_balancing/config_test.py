@@ -68,37 +68,77 @@ class AcrobotBalanceConfig:
 
 
 
-    def eval_genomes(self, population):
+    def eval_genomes(self, population, **kwargs):
 
         for genome in population:
 
-            sample_ensembles = random_ensemble_generator_for_static_genome(genome, population, k = self.GENERATIONAL_ENSEMBLE_SIZE, limit = self.CANDIDATE_LIMIT)  # type: ignore
+            if not self.USE_CONTROL:
 
-            constituent_ensemble_reward = []
+                sample_ensembles = random_ensemble_generator_for_static_genome(genome, population, k = self.GENERATIONAL_ENSEMBLE_SIZE, limit = self.CANDIDATE_LIMIT)  # type: ignore
 
-            for sample_ensemble in sample_ensembles:
+                constituent_ensemble_reward = []
 
-                voting_ensemble = [FeedForwardNet(genome, self) for genome in sample_ensemble]
+                for sample_ensemble in sample_ensembles:
+
+                    voting_ensemble = [FeedForwardNet(genome, self) for genome in sample_ensemble]
+
+                    env = gym.make('Acrobot-v1')
+                    done = False
+                    observation = env.reset()
+                    fitness = 0
+                    while not done:
+                        observation = np.array([observation])
+                        obs = torch.Tensor(observation).cpu()
+                        pred = self.vote(voting_ensemble, obs)
+                        observation, reward, done, info = env.step(pred)
+                        height = -observation[0] - (observation[0]*observation[2] - observation[1]*observation[3])
+                        fitness += reward
+                    
+                    if fitness > -200:
+                        done = False
+                        observation = env.reset()
+                        env.render()
+                        while not done:
+                            observation = np.array([observation])
+                            obs = torch.Tensor(observation).cpu()
+                            pred = self.vote(voting_ensemble, obs)
+                            observation, reward, done, info = env.step(pred)
+                    
+                    constituent_ensemble_reward.append(fitness/self.MAX_EPISODE_STEPS)
+                ACER = np.mean(np.exp(constituent_ensemble_reward))
+                genome.fitness = ACER
+
+            else:
+                phenotype = FeedForwardNet(genome, self)
+                max_height = -1
 
                 env = gym.make('Acrobot-v1')
+                env.seed(0) #use same env
                 done = False
                 observation = env.reset()
                 fitness = 0
+                step = 0
                 while not done:
-                    observation = np.array([observation])
-                    obs = torch.Tensor(observation).cpu()
-                    pred = self.vote(voting_ensemble, obs)
+                    obs = torch.Tensor([observation]).cpu()
+                    pred = np.argmax(phenotype(obs).detach().numpy()[0])
+                    print(pred)
                     observation, reward, done, info = env.step(pred)
                     height = -observation[0] - (observation[0]*observation[2] - observation[1]*observation[3])
-                    fitness += reward
+                    if height > max_height:
+                        max_height = height
+                    fitness += height
+                    step += 1
+                self.wandb.log({"Max Height" : max_height,
+                                "Total Reward (Height)" : fitness,
+                                "Average Reward" : fitness/step,
+                                "Step Completed" : step
+                                })
+                genome.fitness = fitness
                 
-                constituent_ensemble_reward.append(fitness/self.MAX_EPISODE_STEPS)
-            
-            ACER = np.mean(np.exp(constituent_ensemble_reward))
-            genome.fitness = ACER
+        if kwargs['generation'] == self.NUMBER_OF_GENERATIONS:
         
-        df_results = wrapper.run_trial_analysis(population, self.constituent_ensemble_evaluation)
-        print(df_results.max(axis=0).to_dict())
+            df_results = wrapper.run_trial_analysis(population, self.constituent_ensemble_evaluation)
+            print(df_results.max(axis=0).to_dict())
 
         population_fitness = np.mean([genome.fitness for genome in population])
         return population_fitness

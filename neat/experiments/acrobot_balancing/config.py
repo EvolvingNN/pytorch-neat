@@ -40,7 +40,7 @@ class AcrobotBalanceConfig:
         return vote
 
     def constituent_ensemble_evaluation(self, genomes):
-
+        
         env = gym.make('Acrobot-v1')
         done = False
         observation = env.reset()
@@ -48,6 +48,7 @@ class AcrobotBalanceConfig:
         softmax = nn.Softmax(dim=1)
         voting_ensemble = [FeedForwardNet(genome, self) for genome in genomes]
         max_height = -1
+        total_reward = 0
 
         while not done:
             observation = np.array([observation])
@@ -59,56 +60,88 @@ class AcrobotBalanceConfig:
             height = -observation[0] - (observation[0]*observation[2] - observation[1]*observation[3])
             if height > max_height:
                 max_height = height
+            total_reward += height
         
-        return max_height
+        return max_height, total_reward
 
 
 
 
-    def eval_genomes(self, population):
+    def eval_genomes(self, population, **kwargs):
 
         for genome in population:
 
-            sample_ensembles = random_ensemble_generator_for_static_genome(genome, population, k = self.GENERATIONAL_ENSEMBLE_SIZE, limit = self.CANDIDATE_LIMIT)  # type: ignore
+            if not self.USE_CONTROL:
 
-            constituent_ensemble_reward = []
+                sample_ensembles = random_ensemble_generator_for_static_genome(genome, population, k = self.GENERATIONAL_ENSEMBLE_SIZE, limit = self.CANDIDATE_LIMIT)  # type: ignore
 
-            genome.max_height = -1
+                constituent_ensemble_reward = []
 
-            for sample_ensemble in sample_ensembles:
+                genome.max_height = -1
 
-                voting_ensemble = [FeedForwardNet(genome, self) for genome in sample_ensemble]
+                for sample_ensemble in sample_ensembles:
+
+                    voting_ensemble = [FeedForwardNet(genome, self) for genome in sample_ensemble]
+
+                    env = gym.make('Acrobot-v1')
+                    env.seed(0) #use same env
+                    done = False
+                    observation = env.reset()
+                    fitness = 0
+                    step = 0
+                    while not done:
+                        observation = np.array([observation])
+                        obs = torch.Tensor(observation).cpu()
+                        pred = self.vote(voting_ensemble, obs)
+                        observation, reward, done, info = env.step(pred)
+                        height = -observation[0] - (observation[0]*observation[2] - observation[1]*observation[3])
+                        if height > genome.max_height:
+                            genome.max_height = height
+                        fitness += height
+                        step += 1
+                    
+                    constituent_ensemble_reward.append(fitness * (self.MAX_EPISODE_STEPS/step))
+                
+                ACER = np.mean(np.exp(constituent_ensemble_reward))
+                self.wandb.log({"ACER": ACER,
+                                "GENOME MAX HEIGHT": genome.max_height })
+                genome.fitness = ACER
+
+            else:
+
+                phenotype = FeedForwardNet(genome, self)
+                max_height = -1
 
                 env = gym.make('Acrobot-v1')
+                env.seed(0) #use same env
                 done = False
                 observation = env.reset()
                 fitness = 0
                 step = 0
                 while not done:
-                    observation = np.array([observation])
-                    obs = torch.Tensor(observation).cpu()
-                    pred = self.vote(voting_ensemble, obs)
+                    obs = torch.Tensor([observation]).cpu()
+                    pred = np.argmax(phenotype(obs).detach().numpy()[0])
                     observation, reward, done, info = env.step(pred)
                     height = -observation[0] - (observation[0]*observation[2] - observation[1]*observation[3])
-                    if height > genome.max_height:
-                        genome.max_height = height
+                    if height > max_height:
+                        max_height = height
                     fitness += height
                     step += 1
-                
-                constituent_ensemble_reward.append(fitness * (self.MAX_EPISODE_STEPS/step))
-            
-            ACER = np.mean(np.exp(constituent_ensemble_reward))
-            self.wandb.log({"ACER": ACER,
-                             "GENOME MAX HEIGHT": genome.max_height })
-            genome.fitness = ACER
-        
+                self.wandb.log({"Max Height" : max_height,
+                                "Total Reward (Height)" : fitness,
+                                "Average Reward" : fitness/step,
+                                "Step Completed" : step
+                                })
+                genome.fitness = fitness
+                print(genome.fitness)
 
-        df_results = wrapper.run_trial_analysis(population, self.constituent_ensemble_evaluation)
-        df_results.to_csv('./df_results.csv')
+        if kwargs['generation'] == self.NUMBER_OF_GENERATIONS:
+            df_results = wrapper.run_trial_analysis(population, self.constituent_ensemble_evaluation)
+            df_results.to_csv('./df_results.csv')
 
-        self.wandb.save('./df_results.csv')
+            self.wandb.save('./df_results.csv')
 
-        self.wandb.log(df_results.max(axis=0).to_dict())
+            self.wandb.log(df_results.max(axis=0).to_dict())
 
         population_fitness = np.mean([genome.fitness for genome in population])
         return population_fitness
