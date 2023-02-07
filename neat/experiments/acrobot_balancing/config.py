@@ -133,7 +133,6 @@ class AcrobotBalanceConfig:
                                 "Step Completed" : step
                                 })
                 genome.fitness = fitness
-                print(genome.fitness)
 
         if kwargs['generation'] == self.NUMBER_OF_GENERATIONS:
             df_results = wrapper.run_trial_analysis(population, self.constituent_ensemble_evaluation)
