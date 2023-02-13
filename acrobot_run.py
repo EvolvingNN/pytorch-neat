@@ -67,7 +67,7 @@ def control():
     KWARGS['USE_ACER'] = False
     KWARGS['USE_ACER_WITH_WARMUP'] = False
     
-    wandb.init(config = KWARGS, group = 'Acrobot Control 4')
+    wandb.init(config = KWARGS, group = 'Acrobot Control 5')
 
     kwargs = {
         'VERBOSE': wandb.config.VERBOSE,
