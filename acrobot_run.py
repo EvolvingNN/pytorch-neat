@@ -51,7 +51,7 @@ def test():
     KWARGS['ADD_NODE_MUTATION_RATE'] = 0
     KWARGS['ADD_CONNECTION_MUTATION_RATE'] = 0
     KWARGS['CROSSOVER_REENABLE_CONNECTION_GENE_RATE'] = 0
-    
+
     config = c_test.AcrobotBalanceConfig(**KWARGS)
     neat = pop.Population(config)
     for solution, generation in neat.run():
@@ -113,8 +113,7 @@ def train():
     #logger.info(c.AcrobotBalanceConfig.DEVICE)
     neat = pop.Population(c.AcrobotBalanceConfig(**kwargs))
     for solution, generation in neat.run():
-        for i, genome in enumerate(solution):
-            draw_net(genome, view=True, filename=f'./images/acrobot-ensemble-solution-{i}', show_disabled=True)
+        continue
         
 
 
