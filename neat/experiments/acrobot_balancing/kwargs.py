@@ -17,6 +17,8 @@ KWARGS = {
         'TOP_HEIGHT' : -float("inf"),
 
         'USE_CONTROL' : True,
+        'USE_ACER' : True,
+        'USE_ACER_WITH_WARMUP' : True,
 
         'POPULATION_SIZE' : 15,
         'NUMBER_OF_GENERATIONS' : 150,

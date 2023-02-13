@@ -3,6 +3,7 @@ import wandb
 
 import gym
 import torch
+import numpy as np
 
 from neat.experiments.acrobot_balancing.kwargs import KWARGS
 
@@ -17,7 +18,7 @@ sweep_configuration = {
     'name': 'Control',
     'metric': {
         'goal': 'maximize', 
-        'name': 'Fitness'
+        'name': 'Best Fitness'
 		},
     'parameters': {
         'USE_BIAS': {'values': [False, True]},
@@ -34,13 +35,47 @@ sweep_configuration = {
      }
 }
 
-sweep_id = wandb.sweep(sweep=sweep_configuration, project="acrobot", entity="evolvingnn")
-print(sweep_id)
+# sweep_id = wandb.sweep(sweep=sweep_configuration, project="acrobot", entity="evolvingnn")
+# print(sweep_id)
 
 def test():
     KWARGS['POPULATION_SIZE'] = 5
-    neat = pop.Population(c_test.AcrobotBalanceConfig(**KWARGS))
-    solution, generation = neat.run()
+    KWARGS['NUMBER_OF_GENERATIONS'] = 5
+    KWARGS['MAX_EPISODE_STEPS'] = 100
+    KWARGS['USE_CONTROL'] = True
+    KWARGS['USE_ACER'] = True
+    KWARGS['USE_ACER_WITH_WARMUP'] = True
+    KWARGS['PERCENTAGE_TO_SAVE'] = 0.8
+    KWARGS['CONNECTION_MUTATION_RATE'] = 0
+    KWARGS['CONNECTION_PERTURBATION_RATE'] = 0
+    KWARGS['ADD_NODE_MUTATION_RATE'] = 0
+    KWARGS['ADD_CONNECTION_MUTATION_RATE'] = 0
+    KWARGS['CROSSOVER_REENABLE_CONNECTION_GENE_RATE'] = 0
+    
+    config = c_test.AcrobotBalanceConfig(**KWARGS)
+    neat = pop.Population(config)
+    for solution, generation in neat.run():
+        ### TODO Make sure single genome return is compatbile with frozen set iteration (maybe return as a frozen set with one element)
+        # for i, genome in enumerate(solution):
+        #     draw_net(genome, view=True, filename=f'./images/acrobot-ensemble-solution-{i}', show_disabled=True)
+
+        # OpenAI Gym
+        env = gym.make('Acrobot-v1')
+        done = False
+        observation = env.reset(seed = 0)
+
+        voting_ensemble = [FeedForwardNet(genome, config) for genome in solution]
+        #phenotype = FeedForwardNet(solution, config)
+
+        while not done:
+            env.render()
+            observation = np.array([observation])
+            obs = torch.Tensor(observation).cpu()
+            pred = config.vote(voting_ensemble, obs)
+            observation, reward, done, info = env.step(pred)
+
+        env.close()
+
 
 def train():
 
@@ -59,6 +94,8 @@ def train():
         'FITNESS_THRESHOLD': wandb.config.FITNESS_THRESHOLD,
         'TOP_HEIGHT' : wandb.config.TOP_HEIGHT,
         'USE_CONTROL' : wandb.config.USE_CONTROL,
+        'USE_ACER' : wandb.config.USE_ACER,
+        'USE_ACER_WITH_WARMUP' : wandb.config.USE_ACER_WITH_WARMUP,
         'POPULATION_SIZE': wandb.config.POPULATION_SIZE,
         'NUMBER_OF_GENERATIONS': wandb.config.NUMBER_OF_GENERATIONS,
         'SPECIATION_THRESHOLD': wandb.config.SPECIATION_THRESHOLD,
@@ -75,33 +112,16 @@ def train():
 
     #logger.info(c.AcrobotBalanceConfig.DEVICE)
     neat = pop.Population(c.AcrobotBalanceConfig(**kwargs))
-    solution, generation = neat.run()
+    for solution, generation in neat.run():
+        for i, genome in enumerate(solution):
+            draw_net(genome, view=True, filename=f'./images/acrobot-ensemble-solution-{i}', show_disabled=True)
+        
 
-    if solution is not None:
-        logger.info('Found a Solution')
-        draw_net(solution, view=True, filename='./images/acrobot-balancing-solution', show_disabled=True)
 
-        # OpenAI Gym
-        env = gym.make('Acrobot-v1')
-        done = False
-        observation = env.reset()
-
-        fitness = 0
-        phenotype = FeedForwardNet(solution, c.AcrobotBalanceConfig)
-
-        while not done:
-            env.render()
-            obs = torch.Tensor([observation]).cpu()
-
-            pred = round(float(phenotype(obs)))
-            observation, reward, done, info = env.step(pred)
-
-            fitness += reward
-        env.close()
 
 if __name__ == '__main__':
     # for _ in range(10):
         # train()
     #train()
-    wandb.agent('2umr8r06', function=train)
-    #test()
+    #wandb.agent('2umr8r06', function=train)
+    test()

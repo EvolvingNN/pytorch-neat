@@ -29,9 +29,10 @@ class Population:
         for generation in range(1, self.Config.NUMBER_OF_GENERATIONS + 1):
             # Get Fitness of Every Genome
             if hasattr(self.Config, 'eval_genomes'):
-                self.Config.eval_genomes(self.population, generation = generation)
-                for genome in self.population:
-                    genome.fitness = max(-1000, genome.fitness)
+                best_genome, best_ensemble = self.Config.eval_genomes(self.population, generation = generation)
+                solution = [best_genome] if not bool(best_ensemble) or best_genome.fitness > best_ensemble.fitness else best_ensemble.ensemble
+                logger.info(f"solution : {('Individual' if isinstance(solution, list) else 'Ensemble')}")
+                yield solution, generation
             elif hasattr(self.Config, 'fitness_fn'):
                 for genome in self.population:
                     genome.fitness = max(0, self.Config.fitness_fn(genome))
@@ -39,7 +40,7 @@ class Population:
                 raise RuntimeError(
                     'Config does not have fitness_fn or eval_genomes!',
                 )
-
+            
             best_genome = utils.get_best_genome(self.population)
 
             # Reproduce
