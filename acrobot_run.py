@@ -122,5 +122,5 @@ if __name__ == '__main__':
     # for _ in range(10):
         # train()
     #train()
-    wandb.agent('3rmoyr0x', function=train)
+    wandb.agent('ess9zgoz', function=train)
     #test()
