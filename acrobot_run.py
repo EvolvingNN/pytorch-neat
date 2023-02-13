@@ -35,8 +35,8 @@ sweep_configuration = {
      }
 }
 
-# sweep_id = wandb.sweep(sweep=sweep_configuration, project="acrobot", entity="evolvingnn")
-# print(sweep_id)
+sweep_id = wandb.sweep(sweep=sweep_configuration, project="acrobot", entity="evolvingnn")
+print(sweep_id)
 
 def test():
     KWARGS['POPULATION_SIZE'] = 5
@@ -122,5 +122,5 @@ if __name__ == '__main__':
     # for _ in range(10):
         # train()
     #train()
-    #wandb.agent('2umr8r06', function=train)
-    test()
+    wandb.agent('3rmoyr0x', function=train)
+    #test()
