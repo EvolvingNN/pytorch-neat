@@ -41,7 +41,7 @@ y_train = torch.squeeze(one_hot(torch.tensor(y_train.to_numpy().reshape(-1,1))))
 y_test = torch.squeeze(one_hot(torch.tensor(y_test.to_numpy().reshape(-1,1)))) # type: ignore
 
 sweep_configuration = {
-    'method': 'random',
+    'method': 'bayes',
     'name': 'sweep',
     'metric': {
         'goal': 'maximize', 
@@ -53,13 +53,16 @@ sweep_configuration = {
         'CANDIDATE_LIMIT': {'values': [2, 7, 25]},
         'SCALE_ACTIVATION': {'max': 7, 'min': 2},
         'USE_FITNESS_COEFFICIENT': {'values': [False, True]},
-        'SPECIATION_THRESHOLD': {'values': [2.0, 3.0, 4.0, 5.0]},
+        'SPECIATION_THRESHOLD': {'values': [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0]},
         'CONNECTION_MUTATION_RATE': {'max': 1.0, 'min': 0.5},
         'CONNECTION_PERTURBATION_RATE': {'max': 1.0, 'min': 0.5},
         'ADD_NODE_MUTATION_RATE': {'max': 0.1, 'min': 0.001},
         'ADD_CONNECTION_MUTATION_RATE': {'max': 0.7, 'min': 0.1},
         'CROSSOVER_REENABLE_CONNECTION_GENE_RATE': {'max': 0.7, 'min': 0.1},
-        'PERCENTAGE_TO_SAVE': {'max': 1.0, 'min': 0.5}
+        'PERCENTAGE_TO_SAVE': {'max': 1.0, 'min': 0.5},
+        'CANDIDATE_LIMIT' : {'values': [2, 3, 5, 9]},
+        'POPULATION_SIZE' : {'values': [50, 100, 150]},
+        'PERCENTAGE_TO_SAVE' : {'values': [0.1, 0.2, 0.3]}
      }
 }
 
@@ -68,6 +71,9 @@ print(sweep_id)
 
 def train():
     wandb.init(config=KWARGS)
+
+    # Add note to run
+    wandb.run.notes = "Classification bayes run"
     
     kwargs = {
         'VERBOSE': wandb.config.VERBOSE,
@@ -92,12 +98,12 @@ def train():
         'ADD_CONNECTION_MUTATION_RATE': wandb.config.ADD_CONNECTION_MUTATION_RATE,
         'CROSSOVER_REENABLE_CONNECTION_GENE_RATE': wandb.config.CROSSOVER_REENABLE_CONNECTION_GENE_RATE,
         'PERCENTAGE_TO_SAVE': wandb.config.PERCENTAGE_TO_SAVE,
+        'CANDIDATE_LIMIT' : wandb.config.CANDIDATE_LIMIT,
+        'POPULATION_SIZE' : wandb.config.POPULATION_SIZE,
+        'PERCENTAGE_TO_SAVE' : wandb.config.PERCENTAGE_TO_SAVE,
         'DATA': X_train,
         'TARGET': y_train,
     }     
-
-    kwargs['DATA'] = X_train
-    kwargs['TARGET'] = y_train
 
     kwargs['NUM_INPUTS'] = kwargs['DATA'].shape[1]
     kwargs['NUM_OUTPUTS'] = kwargs['TARGET'].shape[1]
@@ -105,7 +111,13 @@ def train():
     kwargs['TEST_DATA'] = X_test
     kwargs['TEST_TARGET'] = y_test
     
+    # Add wandb to the kwargs so whee can use them later
     kwargs['wandb'] = wandb
+
+
+    # Check if candidate limit is greater than generational ensemble size
+    if kwargs["CANDIDATE_LIMIT"] > kwargs["GENERATIONAL_ENSEMBLE_SIZE"]:
+        return None
 
     # Print the kwargs
     for key in kwargs:
@@ -125,7 +137,7 @@ def train():
 
 if __name__ == '__main__':
     # for _ in range(10):
-        # train()
+    # train()
         
-    wandb.agent("luvq6kds", function=train)
+    wandb.agent("m7u5bqli", function=train)
 
