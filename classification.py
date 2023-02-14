@@ -73,7 +73,7 @@ def train():
     wandb.init(config=KWARGS)
 
     # Add note to run
-    wandb.run.notes = "Classification bayes run"
+    wandb.run.notes = "Classification bayes run fixed"
     
     kwargs = {
         'VERBOSE': wandb.config.VERBOSE,
@@ -101,6 +101,7 @@ def train():
         'CANDIDATE_LIMIT' : wandb.config.CANDIDATE_LIMIT,
         'POPULATION_SIZE' : wandb.config.POPULATION_SIZE,
         'PERCENTAGE_TO_SAVE' : wandb.config.PERCENTAGE_TO_SAVE,
+        'USE_GENOME_FITNESS' : wandb.config.USE_GENOME_FITNESS,
         'DATA': X_train,
         'TARGET': y_train,
     }     
@@ -139,5 +140,5 @@ if __name__ == '__main__':
     # for _ in range(10):
     # train()
         
-    wandb.agent("fgvmz0lb", function=train)
+    wandb.agent("4mayxzmw", function=train)
 
