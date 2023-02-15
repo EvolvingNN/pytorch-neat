@@ -42,7 +42,7 @@ y_test = torch.squeeze(one_hot(torch.tensor(y_test.to_numpy().reshape(-1,1)))) #
 
 sweep_configuration = {
     'method': 'bayes',
-    'name': 'Classification bayes',
+    'name': 'Classification ACEA',
     'metric': {
         'goal': 'maximize', 
         'name': 'diversity'
@@ -66,14 +66,14 @@ sweep_configuration = {
      }
 }
 
-# sweep_id = wandb.sweep(sweep=sweep_configuration, project="Classification", entity="evolvingnn")
-# print(sweep_id)
+sweep_id = wandb.sweep(sweep=sweep_configuration, project="Classification", entity="evolvingnn")
+print(sweep_id)
 
 def train():
     wandb.init(config=KWARGS)
 
     # Add note to run
-    wandb.run.notes = "Classification bayes run fixed"
+    wandb.run.notes = "ACEA"
     
     kwargs = {
         'VERBOSE': wandb.config.VERBOSE,
@@ -140,5 +140,5 @@ if __name__ == '__main__':
     # for _ in range(10):
     # train()
         
-    wandb.agent("4mayxzmw", function=train)
+    wandb.agent("kzbe80i9", function=train)
 
