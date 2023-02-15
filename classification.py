@@ -66,14 +66,14 @@ sweep_configuration = {
      }
 }
 
-sweep_id = wandb.sweep(sweep=sweep_configuration, project="Classification", entity="evolvingnn")
-print(sweep_id)
+# sweep_id = wandb.sweep(sweep=sweep_configuration, project="Classification", entity="evolvingnn")
+# print(sweep_id)
 
 def train():
     wandb.init(config=KWARGS)
 
     # Add note to run
-    wandb.run.notes = "ACEA"
+    # wandb.run.notes = "ACEA"
     
     kwargs = {
         'VERBOSE': wandb.config.VERBOSE,
@@ -140,5 +140,5 @@ if __name__ == '__main__':
     # for _ in range(10):
     # train()
         
-    wandb.agent("kzbe80i9", function=train)
+    wandb.agent("7d0s74rh", function=train)
 
