@@ -60,9 +60,9 @@ sweep_configuration = {
         'ADD_CONNECTION_MUTATION_RATE': {'max': 0.7, 'min': 0.1},
         'CROSSOVER_REENABLE_CONNECTION_GENE_RATE': {'max': 0.7, 'min': 0.1},
         'PERCENTAGE_TO_SAVE': {'max': 1.0, 'min': 0.5},
-        'CANDIDATE_LIMIT' : {'values': [2, 3, 5, 9]},
+        # 'CANDIDATE_LIMIT' : {'values': [2, 3, 5, 9]},
         'POPULATION_SIZE' : {'values': [50, 100, 150]},
-        'PERCENTAGE_TO_SAVE' : {'values': [0.1, 0.2, 0.3]}
+        # 'PERCENTAGE_TO_SAVE' : {'values': [0.1, 0.2, 0.3]}
      }
 }
 
