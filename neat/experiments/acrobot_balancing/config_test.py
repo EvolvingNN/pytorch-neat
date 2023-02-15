@@ -83,7 +83,7 @@ class AcrobotBalanceConfig:
         id='Acrobot-v1',
         entry_point='gym.envs.classic_control:AcrobotEnv',
         max_episode_steps=self.MAX_EPISODE_STEPS
-    )
+        )
     
     def __call__(self):
         return self
@@ -101,7 +101,7 @@ class AcrobotBalanceConfig:
 
 
     def constituent_ensemble_evaluation(self, genomes):
-        
+
         env = gym.make('Acrobot-v1')
         done = False
         observation = env.reset(seed = 0)

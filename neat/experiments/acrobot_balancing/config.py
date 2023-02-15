@@ -101,12 +101,12 @@ class AcrobotBalanceConfig:
         
         env = gym.make('Acrobot-v1')
         done = False
-        observation = env.reset()
+        observation = env.reset(seed = 0)
 
         softmax = nn.Softmax(dim=1)
         voting_ensemble = [FeedForwardNet(genome, self) for genome in genomes]
-        max_height = -1
-        total_reward = 0
+        total_height = 0
+        step = 0
 
         while not done:
             observation = np.array([observation])
@@ -116,11 +116,10 @@ class AcrobotBalanceConfig:
             pred = np.argmax(softmax(soft_activations).detach().numpy()[0])
             observation, reward, done, info = env.step(pred)
             height = -observation[0] - (observation[0]*observation[2] - observation[1]*observation[3])
-            if height > max_height:
-                max_height = height
-            total_reward += height
+            total_height += height
+            step += 1
         
-        return max_height, total_reward
+        return total_height - step
 
 
 

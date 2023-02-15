@@ -48,8 +48,9 @@ def control():
             },
         'parameters': {
             'USE_BIAS': {'values': [False, True]},
-            'POPULATION_SIZE': {'max': 20, 'min': 3},
-            'CANDIDATE_LIMIT': {'values': [2, 3, 5, 7, 13, 25]},
+            'POPULATION_SIZE': {'max': 50, 'min': 3},
+            'GENERATIONAL_ENSEMBLE_SIZE': {'max': 21, 'min': 2},
+            'CANDIDATE_LIMIT': {'max': 100, 'min': 1},
             'SCALE_ACTIVATION': {'max': 7, 'min': 2},
             'SPECIATION_THRESHOLD': {'max' : 5, 'min' : 1},
             'CONNECTION_MUTATION_RATE': {'max': 1.0, 'min': 0.1},
@@ -61,13 +62,14 @@ def control():
         }
     }
 
-    #sweep_id = wandb.sweep(sweep=sweep_configuration, project="acrobot", entity="evolvingnn")
+    # sweep_id = wandb.sweep(sweep=sweep_configuration, project="acrobot", entity="evolvingnn")
+    # print(sweep_id)
 
     KWARGS['USE_CONTROL'] = True
     KWARGS['USE_ACER'] = False
     KWARGS['USE_ACER_WITH_WARMUP'] = False
     
-    wandb.init(config = KWARGS, group = 'Acrobot Control 5')
+    wandb.init(config = KWARGS, group = 'Acrobot Control')
 
     kwargs = {
         'VERBOSE': wandb.config.VERBOSE,
@@ -184,5 +186,6 @@ if __name__ == '__main__':
     # for _ in range(10):
         # train()
     #train()
-    wandb.agent('ch3atpcv', function=control)
+    #control()
+    wandb.agent('flox7sdl', function=control, count = 10)
     #test()
