@@ -13,27 +13,27 @@ import neat.experiments.acrobot_balancing.config_test as c_test
 from neat.visualize import draw_net
 from neat.phenotype.feed_forward import FeedForwardNet
 
-sweep_configuration = {
-    'method': 'bayes',
-    'name': 'Control',
-    'metric': {
-        'goal': 'maximize', 
-        'name': 'Best Fitness'
-		},
-    'parameters': {
-        'USE_BIAS': {'values': [False, True]},
-        'POPULATION_SIZE': {'max': 20, 'min': 3},
-        'CANDIDATE_LIMIT': {'values': [2, 3, 5, 7, 13, 25]},
-        'SCALE_ACTIVATION': {'max': 7, 'min': 2},
-        'SPECIATION_THRESHOLD': {'max' : 5, 'min' : 1},
-        'CONNECTION_MUTATION_RATE': {'max': 1.0, 'min': 0.1},
-        'CONNECTION_PERTURBATION_RATE': {'max': 1.0, 'min': 0.1},
-        'ADD_NODE_MUTATION_RATE': {'max': 1.0, 'min': 0.1},
-        'ADD_CONNECTION_MUTATION_RATE': {'max': 1.0, 'min': 0.1},
-        'CROSSOVER_REENABLE_CONNECTION_GENE_RATE': {'max': 1.0, 'min': 0.1},
-        'PERCENTAGE_TO_SAVE': {'max': 1.0, 'min': 0.1}
-     }
-}
+# sweep_configuration = {
+#     'method': 'bayes',
+#     'name': 'Control',
+#     'metric': {
+#         'goal': 'maximize', 
+#         'name': 'Best Fitness'
+# 		},
+#     'parameters': {
+#         'USE_BIAS': {'values': [False, True]},
+#         'POPULATION_SIZE': {'max': 20, 'min': 3},
+#         'CANDIDATE_LIMIT': {'values': [2, 3, 5, 7, 13, 25]},
+#         'SCALE_ACTIVATION': {'max': 7, 'min': 2},
+#         'SPECIATION_THRESHOLD': {'max' : 5, 'min' : 1},
+#         'CONNECTION_MUTATION_RATE': {'max': 1.0, 'min': 0.1},
+#         'CONNECTION_PERTURBATION_RATE': {'max': 1.0, 'min': 0.1},
+#         'ADD_NODE_MUTATION_RATE': {'max': 1.0, 'min': 0.1},
+#         'ADD_CONNECTION_MUTATION_RATE': {'max': 1.0, 'min': 0.1},
+#         'CROSSOVER_REENABLE_CONNECTION_GENE_RATE': {'max': 1.0, 'min': 0.1},
+#         'PERCENTAGE_TO_SAVE': {'max': 1.0, 'min': 0.1}
+#      }
+# }
 
 # sweep_id = wandb.sweep(sweep=sweep_configuration, project="acrobot", entity="evolvingnn")
 # print(sweep_id)
@@ -168,7 +168,7 @@ def ACER():
 
 def ACER_with_warmup():
     sweep_configuration = {
-        'method': 'bayes',
+        'method': 'random',
         'name': 'Acrobot ACER with Warmup',
         'metric': {
             'goal': 'minimize', 
@@ -195,9 +195,11 @@ def ACER_with_warmup():
 
     KWARGS['USE_CONTROL'] = True
     KWARGS['USE_ACER'] = True
-    KWARGS['USE_ACER_WITH_WARMUP'] = False
+    KWARGS['USE_ACER_WITH_WARMUP'] = True
+
+    KWARGS['NUMBER_OF_GENERATIONS'] = 30
     
-    wandb.init(config = KWARGS, group = 'Acrobot ACER with Warmup')
+    wandb.init(config = KWARGS, group = '30 Generations')
 
     kwargs = {
         'VERBOSE': wandb.config.VERBOSE,
@@ -317,5 +319,5 @@ if __name__ == '__main__':
     #control()
     #ACER()
     #ACER_with_warmup()
-    wandb.agent('7zssrdjl', function=ACER_with_warmup, count = 10)
+    wandb.agent('ra2nl7hw', function=ACER_with_warmup, count = 50)
     #test()
