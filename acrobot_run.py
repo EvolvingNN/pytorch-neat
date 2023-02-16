@@ -126,8 +126,8 @@ def ACER():
         }
     }
 
-    sweep_id = wandb.sweep(sweep=sweep_configuration, project="acrobot", entity="evolvingnn")
-    print(sweep_id)
+    # sweep_id = wandb.sweep(sweep=sweep_configuration, project="acrobot", entity="evolvingnn")
+    # print(sweep_id)
 
     KWARGS['USE_CONTROL'] = True
     KWARGS['USE_ACER'] = True
