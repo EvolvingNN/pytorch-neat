@@ -107,8 +107,8 @@ def ACER():
         'method': 'bayes',
         'name': 'Acrobot ACER',
         'metric': {
-            'goal': 'maximize', 
-            'name': 'Best Fitness'
+            'goal': 'minimize', 
+            'name': 'Best Step Completed'
             },
         'parameters': {
             'USE_BIAS': {'values': [False, True]},
@@ -252,5 +252,5 @@ if __name__ == '__main__':
     #train()
     #control()
     #ACER()
-    wandb.agent('bdl1nc4s', function=ACER, count = 10)
+    wandb.agent('vytuf94z', function=ACER, count = 10)
     #test()
