@@ -13,7 +13,7 @@ import numpy as np
 
 # import wandb
 
-class UCIConfig:
+class UCIConfig_test:
     
 
     def __init__(self, **kwargs):
@@ -81,12 +81,11 @@ class UCIConfig:
         predicted_classes = torch.argmax(softmax(soft_activations), dim=1)
         actual_classes = torch.argmax(self.TEST_TARGET, dim = 1)
         correct_predictions = predicted_classes == actual_classes
+        
 
         # Calculate the fitness of the ensemble using the negative exponential of the loss
         ensemble_fitness = np.exp(-1 * constituent_ensemble_loss)
         ensemble_accuracy = np.mean(correct_predictions.numpy())
-        self.wandb.log({"test_constituent_ensemble_loss": constituent_ensemble_loss})
-        self.wandb.log({"test_constituent_ensemble_accuracy": ensemble_accuracy})
         
 
         return ensemble_accuracy
@@ -111,15 +110,13 @@ class UCIConfig:
             CE_loss = nn.CrossEntropyLoss()
             # Calculate the loss for the genome
             genome_loss = CE_loss(genome_prediction, self.TARGET.to(torch.float32)).item()
-            self.wandb.log({"genome_loss": genome_loss})
 
 
-            predicted_classes = torch.argmax(genome_prediction, dim = 1)
+            predicted_classes = torch.argmax(genome_prediction, dim=1)
             actual_classes = torch.argmax(self.TARGET, dim = 1)
             correct_predictions = predicted_classes == actual_classes
             genome_accuracy = np.mean(correct_predictions.numpy())
 
-            self.wandb.log({"genome_accruacy": genome_accuracy})
             # Calculate the fitness of the genome using the negative exponential of the loss
             if self.GENOME_FITNESS_METRIC == "CE LOSS":
                 genome_fitness = np.exp(-1 * genome_loss)
@@ -163,8 +160,7 @@ class UCIConfig:
             # Calculate the ensemble fitness as the average loss of the candidate ensembles
             mean_constituent_ensemble_loss = np.mean(constituent_ensemble_losses)
             mean_constituent_ensemble_accuracy = np.mean(constituent_ensemble_accuracies)
-            self.wandb.log({"mean_constituent_ensemble_loss": mean_constituent_ensemble_loss})
-            self.wandb.log({"mean_constituent_ensemble_accuracy": mean_constituent_ensemble_accuracy})
+
             if self.ENSEMBLE_FITNESS_METRIC == "CE LOSS":
                 ensemble_fitness = np.exp(-1 * np.mean(constituent_ensemble_losses))
             elif self.ENSEMBLE_FITNESS_METRIC == "ACCURACY":
@@ -177,16 +173,6 @@ class UCIConfig:
 
         # Create a dataframe of the results of the trial analysis
         df_results = wrapper.run_trial_analysis(self.create_activation_map(genomes, self.TEST_DATA), self.constituent_ensemble_evaluation)
-        df_results.to_csv('./df_results.csv')
-
-        # Save the csv to wandb
-        self.wandb.save('./df_results.csv')
-
-        # Pickle and save the gnomes
-        with open('genomes.pkl', 'wb') as f:
-            pickle.dump(genomes, f)
-            
-        self.wandb.save('genomes.pkl')
 
 
         # Take the mean for each column
@@ -194,7 +180,6 @@ class UCIConfig:
         # Convert it to a dictinary
         # df_results = df_results
         # Log the results with wandb
-        self.wandb.log(df_results.max(axis=0).to_dict())
         
         # Calculate the average fitness of the population
         population_fitness = np.mean([genome.fitness for genome in genomes])
@@ -202,6 +187,5 @@ class UCIConfig:
         #print("population_fitness: ", population_fitness)
         
         # Log population fitness with wandb 
-        self.wandb.log({"population_fitness": population_fitness})
         
         return population_fitness

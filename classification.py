@@ -4,6 +4,7 @@ import wandb
 
 import neat.population as pop
 import neat.experiments.UCI.config as c
+import neat.experiments.UCI.config_test as c_test
 from neat.experiments.UCI.kwargs import KWARGS
 
 from neat.visualize import draw_net
@@ -119,8 +120,8 @@ def control():
     kwargs['USE_GENOME_FITNESS'] = True
 
     # Print the kwargs
-    for key in kwargs:
-        print(f"{key}: {kwargs[key]}")
+    # for key in kwargs:
+    #     print(f"{key}: {kwargs[key]}")
 
     neat = pop.Population(c.UCIConfig(**kwargs))
     solution, generation = neat.run()
@@ -188,12 +189,28 @@ def train():
     del neat, kwargs
 
     return solution, generation
-    
+
+def test():
+    kwargs = KWARGS
+
+    kwargs['DATA'] = X_train
+    kwargs['TARGET'] = y_train
+
+    kwargs['NUM_INPUTS'] = kwargs['DATA'].shape[1]
+    kwargs['NUM_OUTPUTS'] = kwargs['TARGET'].shape[1]
+
+    kwargs['TEST_DATA'] = X_test
+    kwargs['TEST_TARGET'] = y_test   
+
+    neat = pop.Population(c_test.UCIConfig_test(**kwargs))
+    solution, generation = neat.run()     
 
 if __name__ == '__main__':
+
+    #test()
 
     #control()
     #init_sweep()
         
-    wandb.agent("ce8iifhf", function=control, project="Classification-2", count = 30)
+    wandb.agent("5ktibp6w", function=control, project="Classification-2", count = 30)
 
