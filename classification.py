@@ -45,7 +45,7 @@ y_test = torch.squeeze(one_hot(torch.tensor(y_test.to_numpy().reshape(-1,1)))) #
 def init_sweep():
     sweep_configuration = {
         'method': 'random',
-        'name': 'sweep',
+        'name': 'UCI Classification',
         'metric': {
             'goal': 'maximize', 
             'name': 'diversity'
@@ -75,7 +75,7 @@ def init_sweep():
 
 def control():
 
-    wandb.init(config=KWARGS, group="control", job_type = 'random trial 1')
+    wandb.init(config=KWARGS, project="Classification-2", group="control", job_type = 'random trial 1')
     
     kwargs = {
         'VERBOSE': wandb.config.VERBOSE,
