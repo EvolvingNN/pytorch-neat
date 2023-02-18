@@ -195,5 +195,5 @@ if __name__ == '__main__':
     #control()
     #init_sweep()
         
-    wandb.agent("f3gq9wak", function=control)
+    wandb.agent("hq22h6cl", function=control)
 
