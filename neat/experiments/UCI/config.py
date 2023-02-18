@@ -84,7 +84,7 @@ class UCIConfig:
 
         # Calculate the fitness of the ensemble using the negative exponential of the loss
         ensemble_fitness = np.exp(-1 * constituent_ensemble_loss)
-        ensemble_fitness = correct_predictions.float().mean()
+        ensemble_fitness = correct_predictions.float().mean().numpy()[0]
         self.wandb.log({"constituent_ensemble_loss": constituent_ensemble_loss})
         self.wandb.log({"constituent_ensemble_fitness": ensemble_fitness})
         
