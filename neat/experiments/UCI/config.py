@@ -84,12 +84,12 @@ class UCIConfig:
 
         # Calculate the fitness of the ensemble using the negative exponential of the loss
         ensemble_fitness = np.exp(-1 * constituent_ensemble_loss)
-        ensemble_fitness = correct_predictions.float().mean().numpy()[0]
-        self.wandb.log({"constituent_ensemble_loss": constituent_ensemble_loss})
-        self.wandb.log({"constituent_ensemble_fitness": ensemble_fitness})
+        ensemble_accuracy = correct_predictions.float().mean().numpy()[0]
+        self.wandb.log({"test_constituent_ensemble_loss": constituent_ensemble_loss})
+        self.wandb.log({"test_constituent_ensemble_accuracy": ensemble_accuracy})
         
 
-        return ensemble_fitness
+        return ensemble_accuracy
 
     def eval_genomes(self, genomes):
 
@@ -111,8 +111,24 @@ class UCIConfig:
             CE_loss = nn.CrossEntropyLoss()
             # Calculate the loss for the genome
             genome_loss = CE_loss(genome_prediction, self.TARGET.to(torch.float32)).item()
+            self.wandb.log({"genome_loss": genome_loss})
+
+
+            predicted_classes = torch.argmax(genome_prediction)
+            actual_classes = torch.argmax(self.TARGET, dim = 1)
+            correct_predictions = predicted_classes == actual_classes
+            genome_accuracy = np.mean(correct_predictions)
+
+            self.wandb.log({"genome_accruacy": genome_accuracy})
             # Calculate the fitness of the genome using the negative exponential of the loss
-            genome_fitness = np.exp(-1 * genome_loss)
+            if self.GENOME_FITNESS_METRIC == "CE LOSS":
+                genome_fitness = np.exp(-1 * genome_loss)
+                
+            elif self.GENOME_FITNESS_METRIC == "ACCURACY":
+                genome_fitness = genome_accuracy
+            else:
+                genome_fitness = 0
+
             # List to store the loss of the ensembles
             constituent_ensemble_losses = []
             constituent_ensemble_accuracies = []
@@ -145,9 +161,16 @@ class UCIConfig:
                 constituent_ensemble_losses.append(constituent_ensemble_loss)
 
             # Calculate the ensemble fitness as the average loss of the candidate ensembles
-            ensemble_fitness = np.exp(-1 * np.mean(constituent_ensemble_losses))
-            ensemble_fitness = np.mean(constituent_ensemble_accuracies)
-            print(ensemble_fitness)
+            mean_constituent_ensemble_loss = np.mean(constituent_ensemble_losses)
+            mean_constituent_ensemble_accuracy = np.mean(constituent_ensemble_accuracies)
+            self.wandb.log({"mean_constituent_ensemble_loss": mean_constituent_ensemble_loss})
+            self.wandb.log({"mean_constituent_ensemble_accuracy": mean_constituent_ensemble_accuracy})
+            if self.ENSEMBLE_FITNESS_METRIC == "CE LOSS":
+                ensemble_fitness = np.exp(-1 * np.mean(constituent_ensemble_losses))
+            elif self.ENSEMBLE_FITNESS_METRIC == "ACCURACY":
+                ensemble_fitness = np.mean(constituent_ensemble_accuracies)
+            else:
+                ensemble_fitness = 0
             
             # Set the genome fitness as a combination of the genome fitness coefficient, genome fitness and ensemble fitness coefficient, ensemble fitness
             genome.fitness = genome_fitness_coefficient * genome_fitness + ensemble_fitness_coefficient * ensemble_fitness

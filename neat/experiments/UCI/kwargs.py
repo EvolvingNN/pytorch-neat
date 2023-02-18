@@ -9,8 +9,6 @@ KWARGS = {
         'NUM_OUTPUTS' : 10,
         'USE_BIAS' : False, 
 
-        'USE_CONV' : None,
-
         'GENERATIONAL_ENSEMBLE_SIZE' : 3,
         'CANDIDATE_LIMIT' : 10,
 
@@ -24,9 +22,11 @@ KWARGS = {
         'FINAL_FITNESS_COEFFICIENT' : 0.9,
 
         'USE_GENOME_FITNESS' : False,
+        'GENOME_FITNESS_METRIC' : 'ACCURACY', #CE LOSS
+        'ENSEMBLE_FITNESS_METRIC' : 'ACCURACY', #CE LOSS
 
-        'POPULATION_SIZE' : 150,
-        'NUMBER_OF_GENERATIONS' : 150,
+        'POPULATION_SIZE' : 50,
+        'NUMBER_OF_GENERATIONS' : 100,
         'SPECIATION_THRESHOLD' : 3.0,
 
         'CONNECTION_MUTATION_RATE' : 0.80,
