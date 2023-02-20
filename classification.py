@@ -76,7 +76,7 @@ def init_sweep():
 
 def control():
 
-    wandb.init(config=KWARGS, project="Classification-2", group="control", job_type = 'random trial 1')
+    wandb.init(config=KWARGS, project="Classification-2", group="control", job_type = 'random trial 2')
     
     kwargs = {
         'VERBOSE': wandb.config.VERBOSE,
