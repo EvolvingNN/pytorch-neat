@@ -18,6 +18,8 @@ from sklearn.preprocessing import StandardScaler
 import torch
 from torch.nn.functional import one_hot
 
+import math
+
 
 
 logger = logging.getLogger(__name__)
@@ -42,7 +44,7 @@ y_test = torch.squeeze(one_hot(torch.tensor(y_test.to_numpy().reshape(-1,1)))) #
 
 sweep_configuration = {
     'method': 'bayes',
-    'name': 'Classification ACEA',
+    'name': 'Classification ACEA with Fixed check',
     'metric': {
         'goal': 'maximize', 
         'name': 'diversity'
@@ -70,10 +72,10 @@ sweep_configuration = {
 # print(sweep_id)
 
 def train():
-    wandb.init(config=KWARGS)
+    wandb.init(config=KWARGS, notes="Classification ACEA with Fixed check")
 
     # Add note to run
-    # wandb.run.notes = "ACEA"
+    # wandb.run.notes = "A"
     
     kwargs = {
         'VERBOSE': wandb.config.VERBOSE,
@@ -117,8 +119,13 @@ def train():
 
 
     # Check if candidate limit is greater than generational ensemble size
-    if kwargs["CANDIDATE_LIMIT"] > kwargs["GENERATIONAL_ENSEMBLE_SIZE"]:
+    if kwargs["CANDIDATE_LIMIT"] > math.comb(kwargs["POPULATION_SIZE"] - 1, kwargs["GENERATIONAL_ENSEMBLE_SIZE"]):
+        # Log with wandb that this is a failed 
+        wandb.log({'Valid Config': False})
         return None
+    else:
+        # Log with wandb that this is a valid config
+        wandb.log({'Valid Config': True})
 
     # Print the kwargs
     for key in kwargs:
@@ -140,5 +147,5 @@ if __name__ == '__main__':
     # for _ in range(10):
     # train()
         
-    wandb.agent("7d0s74rh", function=train)
+    wandb.agent("bjrpmkjs", function=train)
 
