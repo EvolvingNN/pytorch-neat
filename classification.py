@@ -68,12 +68,11 @@ sweep_configuration = {
      }
 }
 
-# sweep_id = wandb.sweep(sweep=sweep_configuration, project="Classification", entity="evolvingnn")
-# print(sweep_id)
+sweep_id = wandb.sweep(sweep=sweep_configuration, project="Classification", entity="evolvingnn")
+print(sweep_id)
 
 def train():
-    wandb.init(config=KWARGS, notes="Classification ACEA with Fixed check")
-
+    wandb.init(config=KWARGS, notes="Classification ACEA with Fixed check", group="Classification ACEA with Fixed check")
     # Add note to run
     # wandb.run.notes = "A"
     
@@ -147,5 +146,5 @@ if __name__ == '__main__':
     # for _ in range(10):
     # train()
         
-    wandb.agent("bjrpmkjs", function=train)
+    wandb.agent("m7j0dt2r", function=train)
 
