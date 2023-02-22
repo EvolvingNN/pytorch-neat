@@ -12,6 +12,7 @@ from tqdm import tqdm
 
 import uci_dataset as uci
 import numpy as np
+import pandas as pd
 
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
@@ -76,7 +77,20 @@ def init_sweep():
 
 def control():
 
-    wandb.init(config=KWARGS, project="Classification-2", group="control", job_type = 'random trial 2')
+    wandb.init(config=KWARGS, project="Classification-2", group="control", job_type = 'random trial')
+
+    wandb.define_metric("generation")
+    wandb.define_metric("train/step")
+
+    wandb.define_metric("diversity", step_metric="generation")
+    wandb.define_metric("diversity_threshold_2.0", step_metric="generation")
+    wandb.define_metric("greedy1", step_metric="generation")
+    wandb.define_metric("greedy2", step_metric="generation")
+    wandb.define_metric("random", step_metric="generation")
+
+    wandb.define_metric("train/*", step_metric="train/step")
+
+
     
     kwargs = {
         'VERBOSE': wandb.config.VERBOSE,
@@ -119,6 +133,8 @@ def control():
     kwargs['USE_FITNESS_COEFFICIENT'] = False
     kwargs['USE_GENOME_FITNESS'] = True
 
+    kwargs['df_genome']= pd.DataFrame(columns = ['generation', 'genome_loss', 'genome_accuracy', 'constituent_ensemble_losses', 'mean_constituent_ensemble_loss', 'constituent_ensemble_accuracies', 'mean_constituent_ensemble_accuracy'])
+    kwargs['df_results'] = pd.DataFrame(columns = ['generation', 'ensemble_size', 'diversity', 'diversity_threshold_2.0', 'greedy1', 'greedy2', 'random'])
     # Print the kwargs
     # for key in kwargs:
     #     print(f"{key}: {kwargs[key]}")
@@ -126,8 +142,6 @@ def control():
     neat = pop.Population(c.UCIConfig(**kwargs))
     solution, generation = neat.run()
 
-    # Log generation
-    wandb.log({'generation': generation})
 
     # Clean up memory
     del neat, kwargs
@@ -212,5 +226,5 @@ if __name__ == '__main__':
     #control()
     #init_sweep()
         
-    wandb.agent("46lsvrvs", function=control, project="Classification-2", count = 30)
+    wandb.agent("sry2hrae", function=control, project="Classification-2", count = 20)
 

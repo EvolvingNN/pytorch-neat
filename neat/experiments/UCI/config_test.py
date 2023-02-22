@@ -90,7 +90,7 @@ class UCIConfig_test:
 
         return ensemble_accuracy
 
-    def eval_genomes(self, genomes):
+    def eval_genomes(self, genomes, generation):
 
         # Create an activation map for all the genomes using the provided data
         activations_map = self.create_activation_map(genomes, self.DATA) #type: ignore

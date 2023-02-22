@@ -26,10 +26,10 @@ class Population:
             self.speciate(genome, 0)
 
     def run(self):
-        for generation in range(1, self.Config.NUMBER_OF_GENERATIONS):
+        for generation in range(1, self.Config.NUMBER_OF_GENERATIONS+1):
             # Get Fitness of Every Genome
             if hasattr(self.Config, 'eval_genomes'):
-                self.Config.eval_genomes(self.population)
+                self.Config.eval_genomes(self.population, generation)
                 for genome in self.population:
                     genome.fitness = max(0, genome.fitness)
             elif hasattr(self.Config, 'fitness_fn'):

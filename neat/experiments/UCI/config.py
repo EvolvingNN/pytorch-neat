@@ -10,6 +10,7 @@ from neat.utils import create_prediction_map, random_ensemble_generator_for_stat
 import neat.analysis.wrapper as wrapper
 
 import numpy as np
+import pandas as pd
 
 # import wandb
 
@@ -85,13 +86,13 @@ class UCIConfig:
         # Calculate the fitness of the ensemble using the negative exponential of the loss
         ensemble_fitness = np.exp(-1 * constituent_ensemble_loss)
         ensemble_accuracy = np.mean(correct_predictions.numpy())
-        self.wandb.log({"test_constituent_ensemble_loss": constituent_ensemble_loss})
-        self.wandb.log({"test_constituent_ensemble_accuracy": ensemble_accuracy})
+        self.wandb.log({"test/test_constituent_ensemble_loss": constituent_ensemble_loss})
+        self.wandb.log({"test/test_constituent_ensemble_accuracy": ensemble_accuracy})
         
 
         return ensemble_accuracy
 
-    def eval_genomes(self, genomes):
+    def eval_genomes(self, genomes, generation):
 
         # Create an activation map for all the genomes using the provided data
         activations_map = self.create_activation_map(genomes, self.DATA) #type: ignore
@@ -101,7 +102,9 @@ class UCIConfig:
         ensemble_fitness_coefficient = next(self.ensemble_coefficients)
 
         # Evaluate the fitness of each genome
-        for genome in tqdm(genomes):
+        for i, genome in enumerate(genomes):
+
+            genome.generation = generation
             
             # Define the softmax function
             softmax = nn.Softmax(dim=1)
@@ -111,15 +114,17 @@ class UCIConfig:
             CE_loss = nn.CrossEntropyLoss()
             # Calculate the loss for the genome
             genome_loss = CE_loss(genome_prediction, self.TARGET.to(torch.float32)).item()
-            self.wandb.log({"genome_loss": genome_loss})
+            genome.genome_loss = genome_loss
+            self.wandb.log({"train/genome_loss": genome_loss}, commit = False)
 
 
             predicted_classes = torch.argmax(genome_prediction, dim = 1)
             actual_classes = torch.argmax(self.TARGET, dim = 1)
             correct_predictions = predicted_classes == actual_classes
             genome_accuracy = np.mean(correct_predictions.numpy())
+            genome.genome_accuracy = genome_accuracy
 
-            self.wandb.log({"genome_accruacy": genome_accuracy})
+            self.wandb.log({"train/genome_accruacy": genome_accuracy}, commit = False)
             # Calculate the fitness of the genome using the negative exponential of the loss
             if self.GENOME_FITNESS_METRIC == "CE LOSS":
                 genome_fitness = np.exp(-1 * genome_loss)
@@ -161,10 +166,17 @@ class UCIConfig:
                 constituent_ensemble_losses.append(constituent_ensemble_loss)
 
             # Calculate the ensemble fitness as the average loss of the candidate ensembles
+            genome.constituent_ensemble_losses = constituent_ensemble_losses
+
             mean_constituent_ensemble_loss = np.mean(constituent_ensemble_losses)
+            genome.mean_constituent_ensemble_loss = mean_constituent_ensemble_loss
+
+            genome.constituent_ensemble_accuracies = [c.item() for c in constituent_ensemble_accuracies]
             mean_constituent_ensemble_accuracy = np.mean(constituent_ensemble_accuracies)
-            self.wandb.log({"mean_constituent_ensemble_loss": mean_constituent_ensemble_loss})
-            self.wandb.log({"mean_constituent_ensemble_accuracy": mean_constituent_ensemble_accuracy})
+            genome.mean_constituent_ensemble_accuracy = mean_constituent_ensemble_accuracy
+
+            self.wandb.log({"train/mean_constituent_ensemble_loss": mean_constituent_ensemble_loss}, commit = False)
+            self.wandb.log({"train/mean_constituent_ensemble_accuracy": mean_constituent_ensemble_accuracy}, commit = False)
             if self.ENSEMBLE_FITNESS_METRIC == "CE LOSS":
                 ensemble_fitness = np.exp(-1 * np.mean(constituent_ensemble_losses))
             elif self.ENSEMBLE_FITNESS_METRIC == "ACCURACY":
@@ -174,11 +186,23 @@ class UCIConfig:
             
             # Set the genome fitness as a combination of the genome fitness coefficient, genome fitness and ensemble fitness coefficient, ensemble fitness
             genome.fitness = genome_fitness_coefficient * genome_fitness + ensemble_fitness_coefficient * ensemble_fitness
+            self.wandb.log({"train/genome_fitness": genome.fitness}, commit = False)
+            self.wandb.log({"train/step": i + len(genomes) * (generation - 1)})
 
         # Create a dataframe of the results of the trial analysis
         df_results = wrapper.run_trial_analysis(self.create_activation_map(genomes, self.TEST_DATA), self.constituent_ensemble_evaluation)
-        df_results.to_csv('./df_results.csv')
+        
+        df_results = df_results.reset_index().rename(columns = {"index" : "ensemble_size"})
+        df_results['ensemble_size'] += 1
+        df_results['generation'] = generation
 
+        self.df_results = pd.concat([df_results, self.df_results], ignore_index=True)
+        
+        self.wandb.log({"df_results" : self.wandb.Table(dataframe = self.df_results)})
+
+
+        df_results.to_csv('./df_results.csv')
+    
         # Save the csv to wandb
         self.wandb.save('./df_results.csv')
 
@@ -186,22 +210,23 @@ class UCIConfig:
         with open('genomes.pkl', 'wb') as f:
             pickle.dump(genomes, f)
             
-        self.wandb.save('genomes.pkl')
+        self.wandb.save('genomes.pkl')  
 
-
-        # Take the mean for each column
-        # df_results = 
-        # Convert it to a dictinary
-        # df_results = df_results
-        # Log the results with wandb
+        
+        self.wandb.log({'generation' : generation})
         self.wandb.log(df_results.max(axis=0).to_dict())
         
         # Calculate the average fitness of the population
         population_fitness = np.mean([genome.fitness for genome in genomes])
 
-        #print("population_fitness: ", population_fitness)
-        
-        # Log population fitness with wandb 
-        self.wandb.log({"population_fitness": population_fitness})
+        columns = ['generation', 'genome_loss', 'genome_accuracy', 'constituent_ensemble_losses', 'mean_constituent_ensemble_loss', 'constituent_ensemble_accuracies', 'mean_constituent_ensemble_accuracy']
+        df_genome = pd.DataFrame(columns = columns)
+        for column in columns:
+            col = [genome.__dict__[column] for genome in genomes]
+            df_genome[column] = col
+
+        self.df_genome = pd.concat([self.df_genome, df_genome], ignore_index=True)
+
+        self.wandb.log({"df_genome" : self.wandb.Table(dataframe = self.df_genome)})
         
         return population_fitness
