@@ -149,6 +149,7 @@ def control():
     return solution, generation
 
 def ACE():
+
     wandb.init(config=KWARGS, project="Classification-2", group="ACE", job_type = 'random trial')
 
     wandb.define_metric("generation")
@@ -219,6 +220,79 @@ def ACE():
     del neat, kwargs
 
     return solution, generation    
+
+def ACE_warmup():
+
+    wandb.init(config=KWARGS, project="Classification-2", group="ACE-with-warmup", job_type = 'random trial')
+
+    wandb.define_metric("generation")
+    wandb.define_metric("train/step")
+
+    wandb.define_metric("diversity", step_metric="generation")
+    wandb.define_metric("diversity_threshold_2.0", step_metric="generation")
+    wandb.define_metric("greedy1", step_metric="generation")
+    wandb.define_metric("greedy2", step_metric="generation")
+    wandb.define_metric("random", step_metric="generation")
+
+    wandb.define_metric("train/*", step_metric="train/step")
+
+
+    
+    kwargs = {
+        'VERBOSE': wandb.config.VERBOSE,
+        'NUM_INPUTS': wandb.config.NUM_INPUTS,
+        'NUM_OUTPUTS': wandb.config.NUM_OUTPUTS,
+        'USE_BIAS': wandb.config.USE_BIAS,
+        'GENERATIONAL_ENSEMBLE_SIZE': wandb.config.GENERATIONAL_ENSEMBLE_SIZE,
+        'CANDIDATE_LIMIT': wandb.config.CANDIDATE_LIMIT,
+        'ACTIVATION': wandb.config.ACTIVATION,
+        'SCALE_ACTIVATION': wandb.config.SCALE_ACTIVATION,
+        'FITNESS_THRESHOLD': wandb.config.FITNESS_THRESHOLD,
+        'USE_FITNESS_COEFFICIENT': wandb.config.USE_FITNESS_COEFFICIENT,
+        'INITIAL_FITNESS_COEFFICIENT': wandb.config.INITIAL_FITNESS_COEFFICIENT,
+        'FINAL_FITNESS_COEFFICIENT': wandb.config.FINAL_FITNESS_COEFFICIENT,
+        'USE_GENOME_FITNESS': wandb.config.USE_GENOME_FITNESS,
+        'GENOME_FITNESS_METRIC': wandb.config.GENOME_FITNESS_METRIC,
+        'ENSEMBLE_FITNESS_METRIC': wandb.config.ENSEMBLE_FITNESS_METRIC,
+        'POPULATION_SIZE': wandb.config.POPULATION_SIZE,
+        'NUMBER_OF_GENERATIONS': wandb.config.NUMBER_OF_GENERATIONS,
+        'SPECIATION_THRESHOLD': wandb.config.SPECIATION_THRESHOLD,
+        'CONNECTION_MUTATION_RATE': wandb.config.CONNECTION_MUTATION_RATE,
+        'CONNECTION_PERTURBATION_RATE': wandb.config.CONNECTION_PERTURBATION_RATE,
+        'ADD_NODE_MUTATION_RATE': wandb.config.ADD_NODE_MUTATION_RATE,
+        'ADD_CONNECTION_MUTATION_RATE': wandb.config.ADD_CONNECTION_MUTATION_RATE,
+        'CROSSOVER_REENABLE_CONNECTION_GENE_RATE': wandb.config.CROSSOVER_REENABLE_CONNECTION_GENE_RATE,
+        'PERCENTAGE_TO_SAVE': wandb.config.PERCENTAGE_TO_SAVE,
+    }     
+
+    kwargs['DATA'] = X_train
+    kwargs['TARGET'] = y_train
+
+    kwargs['NUM_INPUTS'] = kwargs['DATA'].shape[1]
+    kwargs['NUM_OUTPUTS'] = kwargs['TARGET'].shape[1]
+
+    kwargs['TEST_DATA'] = X_test
+    kwargs['TEST_TARGET'] = y_test
+    
+    kwargs['wandb'] = wandb
+
+    kwargs['USE_FITNESS_COEFFICIENT'] = True
+    kwargs['USE_GENOME_FITNESS'] = True
+
+    kwargs['df_genome']= pd.DataFrame(columns = ['generation', 'genome_loss', 'genome_accuracy', 'constituent_ensemble_losses', 'mean_constituent_ensemble_loss', 'constituent_ensemble_accuracies', 'mean_constituent_ensemble_accuracy'])
+    kwargs['df_results'] = pd.DataFrame(columns = ['generation', 'ensemble_size', 'diversity', 'diversity_threshold_2.0', 'greedy1', 'greedy2', 'random'])
+    # Print the kwargs
+    # for key in kwargs:
+    #     print(f"{key}: {kwargs[key]}")
+
+    neat = pop.Population(c.UCIConfig(**kwargs))
+    solution, generation = neat.run()
+
+
+    # Clean up memory
+    del neat, kwargs
+
+    return solution, generation   
 
 def train():
     wandb.init(config=KWARGS)
@@ -298,5 +372,5 @@ if __name__ == '__main__':
     #control()
     #init_sweep()
         
-    wandb.agent("sry2hrae", function=ACE, project="Classification-2", count = 20)
+    wandb.agent("sry2hrae", function=ACE_warmup, project="Classification-2", count = 20)
 
