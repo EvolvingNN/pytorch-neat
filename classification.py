@@ -120,11 +120,11 @@ def train():
     # Check if candidate limit is greater than generational ensemble size
     if kwargs["CANDIDATE_LIMIT"] > math.comb(kwargs["POPULATION_SIZE"] - 1, kwargs["GENERATIONAL_ENSEMBLE_SIZE"]):
         # Log with wandb that this is a failed 
-        wandb.log({'Valid Config': False})
+        wandb.log({'Valid Config': "False"})
         return None
     else:
         # Log with wandb that this is a valid config
-        wandb.log({'Valid Config': True})
+        wandb.log({'Valid Config': "True"})
 
     # Print the kwargs
     for key in kwargs:
