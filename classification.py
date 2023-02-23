@@ -46,8 +46,8 @@ y_test = torch.squeeze(one_hot(torch.tensor(y_test.to_numpy().reshape(-1,1)))) #
 
 def init_sweep():
     sweep_configuration = {
-        'method': 'random',
-        'name': 'UCI Classification',
+        'method': 'bayes',
+        'name': 'UCI Classification Bayes',
         'metric': {
             'goal': 'maximize', 
             'name': 'diversity'
@@ -57,13 +57,12 @@ def init_sweep():
             'GENERATIONAL_ENSEMBLE_SIZE': {'max': 21, 'min':2},
             'CANDIDATE_LIMIT': {'max': 50, 'min': 1},
             'SCALE_ACTIVATION': {'max': 7.0, 'min': 1.0},
-            'USE_FITNESS_COEFFICIENT': {'values': [False, True]},
             'GENOME_FITNESS_METRIC': {'values' : ['CE LOSS', 'ACCURACY']},
             'ENSEMBLE_FITNESS_METRIC': {'values' : ['CE LOSS', 'ACCURACY']},
             'SPECIATION_THRESHOLD': {'max': 7.0, 'min' : 1.0},
-            'CONNECTION_MUTATION_RATE': {'max': 1.0, 'min': 0.5},
-            'CONNECTION_PERTURBATION_RATE': {'max': 1.0, 'min': 0.5},
-            'ADD_NODE_MUTATION_RATE': {'max': 0.1, 'min': 0.001},
+            'CONNECTION_MUTATION_RATE': {'max': 1.0, 'min': 0.1},
+            'CONNECTION_PERTURBATION_RATE': {'max': 1.0, 'min': 0.1},
+            'ADD_NODE_MUTATION_RATE': {'max': 1.0, 'min': 0.1},
             'ADD_CONNECTION_MUTATION_RATE': {'max': 1.0, 'min': 0.1},
             'CROSSOVER_REENABLE_CONNECTION_GENE_RATE': {'max': 1.0, 'min': 0.1},
             'PERCENTAGE_TO_SAVE': {'max': 1.0, 'min': 0.5}
@@ -372,5 +371,5 @@ if __name__ == '__main__':
     #control()
     #init_sweep()
         
-    wandb.agent("sry2hrae", function=ACE_warmup, project="Classification-2", count = 20)
+    wandb.agent("y4lxtwid", function=ACE, project="Classification-2", count = 20)
 
