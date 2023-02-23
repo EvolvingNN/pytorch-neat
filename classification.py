@@ -149,7 +149,7 @@ def control():
 
 def ACE():
 
-    wandb.init(config=KWARGS, project="Classification-2", group="ACE", job_type = 'random trial')
+    wandb.init(config=KWARGS, project="Classification-2", group="ACE", job_type = 'bayes trial')
 
     wandb.define_metric("generation")
     wandb.define_metric("train/step")
