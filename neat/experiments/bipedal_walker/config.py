@@ -8,12 +8,12 @@ from neat.phenotype.feed_forward import FeedForwardNet
 from neat.utils import random_ensemble_generator_for_static_genome
 
 
-class AcrobotBalanceConfig:
+class BipedalWalkerConfig:
     DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     VERBOSE = True
 
-    NUM_INPUTS = 6
-    NUM_OUTPUTS = 3 #corresponding to action space 0: apply -1 torque, 1: apply 0 torque, 2: apply 1 torque
+    NUM_INPUTS = 24
+    NUM_OUTPUTS = 4 #corresponding to action space 0: apply -1 torque, 1: apply 0 torque, 2: apply 1 torque
     USE_BIAS = False
 
     ACTIVATION = 'sigmoid'
@@ -43,8 +43,8 @@ class AcrobotBalanceConfig:
 
     #Allow episode lengths of > than 200
     gym.envs.register(
-        id='Acrobot-v1',
-        entry_point='gym.envs.classic_control:AcrobotEnv',
+        id='BipedalWalker-v3',
+        entry_point='gym.envs.box2d:BipedalWalker',
         max_episode_steps=MAX_EPISODE_STEPS
     )
 
@@ -67,7 +67,7 @@ class AcrobotBalanceConfig:
 
                 voting_ensemble = [FeedForwardNet(genome, self) for genome in sample_ensemble]
 
-                env = gym.make('Acrobot-v1')
+                env = gym.make('BipedalWalker-v3')
                 done = False
                 observation = env.reset()
                 fitness = 0
