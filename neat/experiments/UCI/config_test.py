@@ -11,6 +11,8 @@ import neat.analysis.wrapper as wrapper
 
 import numpy as np
 
+import multiprocessing
+
 # import wandb
 
 class UCIConfig_test:
