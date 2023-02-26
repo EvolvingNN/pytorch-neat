@@ -49,11 +49,22 @@ class BipedalWalkerConfig:
     )
 
     def vote(self, voting_ensemble, input):
-        softmax = nn.Softmax(dim=1)
         ensemble_activations = [phenotype(input) for phenotype in voting_ensemble]
-        soft_activations = torch.sum(torch.stack(ensemble_activations, dim = 0), dim = 0)
-        vote = np.argmax(softmax(soft_activations).detach().numpy()[0])
-        return vote
+        # outputs x ensembles
+        # 4 x n
+        # 
+        
+        # Convert the list of tensors to a np array
+        ensemble_activations = np.array([ensemble_activation.detach().numpy().squeeze() for ensemble_activation in ensemble_activations])
+        # print("=== activations before mean ===")
+        # print(ensemble_activations)
+
+        # Take the mean of the ensemble activations on the y axis
+        ensemble_activations = np.mean(ensemble_activations, axis=0)
+        # print("=== After mean ===")
+        # print(ensemble_activations)
+
+        return ensemble_activations
 
     def eval_genomes(self, population):
 
@@ -75,7 +86,7 @@ class BipedalWalkerConfig:
                     observation = np.array([observation])
                     input = torch.Tensor(observation).to(self.DEVICE)
                     pred = self.vote(voting_ensemble, input)
-                    print(pred)
+                    # print(pred)
                     observation, reward, done, info = env.step(pred)
                     height = -observation[0] - (observation[0]*observation[2] - observation[1]*observation[3])
                     fitness += height
