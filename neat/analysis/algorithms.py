@@ -104,23 +104,21 @@ def __accuracies_for_genomes_in_order(genomes_in_order, eval_func):
     and the predictions for an ensemble of size k would be genomes_in_order[0:k]
     """
     return [
-        eval_func(genomes_in_order[0:k])
-        for k in range(1, len(genomes_in_order) + 1)
+        eval_func(genomes_in_order[0:k]) for k in range(1, len(genomes_in_order) + 1)
     ]
 
 
 ALGORITHMS = {
-    # We do not want to use the default random algo,
-    # since it gives very sporadic/inconsistent results:
-    # "random": random_selection_accuracies,
-    # 100 trials per ensemble size produces better results:
+    # Random algorithm runs 100 trials per ensemble size to produce better results
     "random": lambda p, e: random_selection_accuracies(p, e, ensembles_per_k=100),
+    # Greedy algorithms do not have any additional settings
     "greedy1": greedy_1_selection_accuracies,
     "greedy2": greedy_2_selection_accuracies,
-    "diversity": diversity_rr_selection_accuracies,
-    # The following is an example of how to add other custom-param algos, in case we
-    # want to try different parameters in the future (like lower speciation threshold).
-    "diversity_threshold_2.0": lambda p, e: diversity_rr_selection_accuracies(
-        p, e, speciation_threshold=2.0
-    ),
+    # Diversity algorithm requires varying speciation threshold
+    **{
+        f"diversity_{t}_threshold": lambda p, e: diversity_rr_selection_accuracies(
+            p, e, speciation_threshold=t
+        )
+        for t in np.arange(0.1, 5.0001, 0.1)
+    },
 }
