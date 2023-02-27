@@ -25,7 +25,7 @@ class BipedalWalkerConfig:
     GENERATIONAL_ENSEMBLE_SIZE = 2
     CANDIDATE_LIMIT = 6
 
-    POPULATION_SIZE = 5
+    POPULATION_SIZE = 40
     NUMBER_OF_GENERATIONS = 100
     SPECIATION_THRESHOLD = 3.0
 
@@ -60,8 +60,19 @@ class BipedalWalkerConfig:
         # print(ensemble_activations)
 
         # Take the mean of the ensemble activations on the y axis
-        ensemble_activations = np.mean(ensemble_activations, axis=0)
+        ensemble_activations = 1 - (2 * np.mean(ensemble_activations, axis=0))
         # print("=== After mean ===")
+
+        # Check if any of means are under -1 or over 1
+        # If so print error
+        # if np.any(ensemble_activations < -1) or np.any(ensemble_activations > 1):
+        #     print("=== ERROR ===")
+        #     print(ensemble_activations)
+        # # Check it any are negative
+        # # If so print warning
+        # if np.any(ensemble_activations < 0):
+        #     print("=== Negative ===")
+        #     print(ensemble_activations)
         # print(ensemble_activations)
 
         return ensemble_activations
@@ -82,16 +93,19 @@ class BipedalWalkerConfig:
                 done = False
                 observation = env.reset()
                 fitness = 0
+                # reward = 0
                 while not done:
                     observation = np.array([observation])
                     input = torch.Tensor(observation).to(self.DEVICE)
                     pred = self.vote(voting_ensemble, input)
                     # print(pred)
                     observation, reward, done, info = env.step(pred)
-                    height = -observation[0] - (observation[0]*observation[2] - observation[1]*observation[3])
-                    fitness += height
-                
-                constituent_ensemble_reward.append(fitness/self.MAX_EPISODE_STEPS)
+                    # height = -observation[0] - (observation[0]*observation[2] - observation[1]*observation[3])
+                    # fitness += height
+                    # print(reward, end=" ")
+                    fitness += reward
+                # print(fitness, end=" ")
+                constituent_ensemble_reward.append(fitness)
             
             ACER = np.mean(np.exp(constituent_ensemble_reward))
             genome.fitness = ACER
