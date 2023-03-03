@@ -206,7 +206,7 @@ def ACE():
     kwargs['USE_GENOME_FITNESS'] = False
 
     kwargs['df_genome']= pd.DataFrame(columns = ['generation', 'genome_loss', 'genome_accuracy', 'constituent_ensemble_losses', 'mean_constituent_ensemble_loss', 'constituent_ensemble_accuracies', 'mean_constituent_ensemble_accuracy'])
-    kwargs['df_results'] = pd.DataFrame(columns = ['generation', 'ensemble_size', 'diversity', 'diversity_threshold_2.0', 'greedy1', 'greedy2', 'random'])
+    kwargs['df_results'] = pd.DataFrame(columns = ['generation', 'ensemble_size', 'diversity', *[f"diversity_{t}_threshold" for t in np.arange(0.1, 5.0001, 0.1)], 'greedy1', 'greedy2', 'random'])
     # Print the kwargs
     # for key in kwargs:
     #     print(f"{key}: {kwargs[key]}")
@@ -366,10 +366,10 @@ def test():
 
 if __name__ == '__main__':
 
-    #test()
+    test()
 
     #control()
     #init_sweep()
         
-    wandb.agent("y4lxtwid", function=ACE, project="Classification-2", count = 20)
+    #wandb.agent("y4lxtwid", function=ACE, project="Classification-2", count = 20)
 

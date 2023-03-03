@@ -175,7 +175,7 @@ class UCIConfig_test:
 
         # Create a dataframe of the results of the trial analysis
         df_results = wrapper.run_trial_analysis(self.create_activation_map(genomes, self.TEST_DATA), self.constituent_ensemble_evaluation)
-
+        df_results.to_csv('df_results.csv')
 
         # Take the mean for each column
         # df_results = 
