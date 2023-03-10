@@ -369,5 +369,5 @@ if __name__ == '__main__':
     #control()
     #init_sweep()
         
-    wandb.agent("3n24pyea", function=ACE, project="Classification-2", count = 10)
+    wandb.agent("3n24pyea", function=ACE_warmup, project="Classification-2", count = 10)
 
