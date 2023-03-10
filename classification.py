@@ -49,7 +49,7 @@ def init_sweep():
         'name': 'UCI Classification | Test Data Algo Evaluation',
         'metric': {
             'goal': 'maximize', 
-            'name': 'mean_constituent_ensemble_accuracy'
+            'name': 'test/mean_constituent_ensemble_accuracy'
             },
         'parameters': {
             'USE_BIAS': {'values': [False, True]},
@@ -369,5 +369,5 @@ if __name__ == '__main__':
     #control()
     #init_sweep()
         
-    wandb.agent("3n24pyea", function=control, project="Classification-2", count = 10)
+    wandb.agent("3n24pyea", function=ACE, project="Classification-2", count = 10)
 
