@@ -197,6 +197,7 @@ def ACE():
     kwargs['TEST_TARGET'] = y_test
     
     kwargs['wandb'] = wandb
+    kwargs['run_id'] = run.id
 
     kwargs['USE_FITNESS_COEFFICIENT'] = False
     kwargs['USE_GENOME_FITNESS'] = False
@@ -223,8 +224,6 @@ def ACE_warmup():
     wandb.define_metric("generation")
     wandb.define_metric("train/step")
 
-    wandb.define_metric("diversity", step_metric="generation")
-    wandb.define_metric("diversity_threshold_2.0", step_metric="generation")
     wandb.define_metric("greedy1", step_metric="generation")
     wandb.define_metric("greedy2", step_metric="generation")
     wandb.define_metric("random", step_metric="generation")
@@ -270,6 +269,7 @@ def ACE_warmup():
     kwargs['TEST_TARGET'] = y_test
     
     kwargs['wandb'] = wandb
+    kwargs['run_id'] = run.id
 
     kwargs['USE_FITNESS_COEFFICIENT'] = True
     kwargs['USE_GENOME_FITNESS'] = True
