@@ -75,7 +75,7 @@ def init_sweep():
 
 def control():
 
-    run = wandb.init(config=KWARGS, project="Classification-2", group="control", job_type = 'fixed seed')
+    run = wandb.init(config=KWARGS, project="Classification-2", group="control", job_type = 'fixed seed 888')
 
     wandb.define_metric("generation")
     wandb.define_metric("train/step")
@@ -369,5 +369,5 @@ if __name__ == '__main__':
     #control()
     #init_sweep()
         
-    wandb.agent("s0nxnnvu", function=ACE, project="Classification-2", count = 10)
+    wandb.agent("3n24pyea", function=control, project="Classification-2", count = 10)
 
