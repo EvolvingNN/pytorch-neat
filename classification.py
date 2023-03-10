@@ -31,7 +31,7 @@ df = uci.load_heart_disease().dropna()
 features = df.iloc[:,:-1]
 target = df.iloc[:,-1]
 
-X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=0.2)
+X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=0.2, random_state=888)
 
 scaler = StandardScaler()
 scaler.fit(X_train)
@@ -43,14 +43,13 @@ y_train = torch.squeeze(one_hot(torch.tensor(y_train.to_numpy().reshape(-1,1))))
 y_test = torch.squeeze(one_hot(torch.tensor(y_test.to_numpy().reshape(-1,1)))) # type: ignore
 
 
-
 def init_sweep():
     sweep_configuration = {
-        'method': 'bayes',
-        'name': 'UCI Classification Bayes',
+        'method': 'random',
+        'name': 'UCI Classification | Test Data Algo Evaluation',
         'metric': {
             'goal': 'maximize', 
-            'name': 'diversity'
+            'name': 'mean_constituent_ensemble_accuracy'
             },
         'parameters': {
             'USE_BIAS': {'values': [False, True]},
@@ -59,13 +58,13 @@ def init_sweep():
             'SCALE_ACTIVATION': {'max': 7.0, 'min': 1.0},
             'GENOME_FITNESS_METRIC': {'values' : ['CE LOSS', 'ACCURACY']},
             'ENSEMBLE_FITNESS_METRIC': {'values' : ['CE LOSS', 'ACCURACY']},
-            'SPECIATION_THRESHOLD': {'max': 7.0, 'min' : 1.0},
+            'SPECIATION_THRESHOLD': {'max': 3.0, 'min' : 0.1},
             'CONNECTION_MUTATION_RATE': {'max': 1.0, 'min': 0.1},
             'CONNECTION_PERTURBATION_RATE': {'max': 1.0, 'min': 0.1},
             'ADD_NODE_MUTATION_RATE': {'max': 1.0, 'min': 0.1},
             'ADD_CONNECTION_MUTATION_RATE': {'max': 1.0, 'min': 0.1},
             'CROSSOVER_REENABLE_CONNECTION_GENE_RATE': {'max': 1.0, 'min': 0.1},
-            'PERCENTAGE_TO_SAVE': {'max': 1.0, 'min': 0.5}
+            'PERCENTAGE_TO_SAVE': {'max': 0.25, 'min': 0.05}
         }
     }
 
@@ -76,13 +75,11 @@ def init_sweep():
 
 def control():
 
-    wandb.init(config=KWARGS, project="Classification-2", group="control", job_type = 'random trial')
+    run = wandb.init(config=KWARGS, project="Classification-2", group="control", job_type = 'fixed seed')
 
     wandb.define_metric("generation")
     wandb.define_metric("train/step")
 
-    wandb.define_metric("diversity", step_metric="generation")
-    wandb.define_metric("diversity_threshold_2.0", step_metric="generation")
     wandb.define_metric("greedy1", step_metric="generation")
     wandb.define_metric("greedy2", step_metric="generation")
     wandb.define_metric("random", step_metric="generation")
@@ -128,12 +125,13 @@ def control():
     kwargs['TEST_TARGET'] = y_test
     
     kwargs['wandb'] = wandb
+    kwargs['run_id'] = run.id
 
     kwargs['USE_FITNESS_COEFFICIENT'] = False
     kwargs['USE_GENOME_FITNESS'] = True
 
     kwargs['df_genome']= pd.DataFrame(columns = ['generation', 'genome_loss', 'genome_accuracy', 'constituent_ensemble_losses', 'mean_constituent_ensemble_loss', 'constituent_ensemble_accuracies', 'mean_constituent_ensemble_accuracy'])
-    kwargs['df_results'] = pd.DataFrame(columns = ['generation', 'ensemble_size', 'diversity', 'diversity_threshold_2.0', 'greedy1', 'greedy2', 'random'])
+    kwargs['df_results'] = pd.DataFrame(columns = ['generation', 'ensemble_size', *[f"diversity_{t}_threshold" for t in np.arange(0.1, 5.0001, 0.1)], 'greedy1', 'greedy2', 'random'])
     # Print the kwargs
     # for key in kwargs:
     #     print(f"{key}: {kwargs[key]}")
@@ -279,7 +277,7 @@ def ACE_warmup():
     kwargs['USE_GENOME_FITNESS'] = True
 
     kwargs['df_genome']= pd.DataFrame(columns = ['generation', 'genome_loss', 'genome_accuracy', 'constituent_ensemble_losses', 'mean_constituent_ensemble_loss', 'constituent_ensemble_accuracies', 'mean_constituent_ensemble_accuracy'])
-    kwargs['df_results'] = pd.DataFrame(columns = ['generation', 'ensemble_size', 'diversity', 'diversity_threshold_2.0', 'greedy1', 'greedy2', 'random'])
+    kwargs['df_results'] = pd.DataFrame(columns = ['generation', 'ensemble_size', 'diversity', *[f"diversity_{t}_threshold" for t in np.arange(0.1, 5.0001, 0.1)], 'greedy1', 'greedy2', 'random'])
     # Print the kwargs
     # for key in kwargs:
     #     print(f"{key}: {kwargs[key]}")
@@ -352,6 +350,8 @@ def train():
 def test():
     kwargs = KWARGS
 
+    kwargs['POPULATION_SIZE'] = 5
+
     kwargs['DATA'] = X_train
     kwargs['TARGET'] = y_train
 
@@ -366,10 +366,10 @@ def test():
 
 if __name__ == '__main__':
 
-    test()
+    #test()
 
     #control()
     #init_sweep()
         
-    #wandb.agent("y4lxtwid", function=ACE, project="Classification-2", count = 20)
+    wandb.agent("s0nxnnvu", function=control, project="Classification-2", count = 10)
 

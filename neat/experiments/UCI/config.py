@@ -68,7 +68,7 @@ class UCIConfig:
             genomes_to_results[genome] = torch.squeeze(torch.stack(results))
         return genomes_to_results
     
-    def constituent_ensemble_evaluation(self, ensemble_activations):
+    def constituent_ensemble_evaluation(self, ensemble_activations, use_test_target = False):
             
         # Define the softmax function and cross-entropy loss function
         softmax = nn.Softmax(dim=1)
@@ -78,24 +78,40 @@ class UCIConfig:
         soft_activations = torch.sum(torch.stack(ensemble_activations, dim = 0), dim = 0)
         
         # Calculate the cross-entropy loss for the ensemble
-        constituent_ensemble_loss = CE_loss(softmax(soft_activations), self.TEST_TARGET.to(torch.float32)).item()
-        predicted_classes = torch.argmax(softmax(soft_activations), dim=1)
-        actual_classes = torch.argmax(self.TEST_TARGET, dim = 1)
-        correct_predictions = predicted_classes == actual_classes
+        if use_test_target:
+            constituent_ensemble_loss = CE_loss(softmax(soft_activations), self.TEST_TARGET.to(torch.float32)).item()
+            predicted_classes = torch.argmax(softmax(soft_activations), dim=1)
+            actual_classes = torch.argmax(self.TEST_TARGET, dim = 1)
+            correct_predictions = predicted_classes == actual_classes
+
+            ensemble_fitness = np.exp(-1 * constituent_ensemble_loss)
+            ensemble_accuracy = np.mean(correct_predictions.numpy())
+
+            self.wandb.log({"test/test_constituent_ensemble_loss": constituent_ensemble_loss})
+            self.wandb.log({"test/test_constituent_ensemble_accuracy": ensemble_accuracy})
+
+        else: #use TARGET
+            constituent_ensemble_loss = CE_loss(softmax(soft_activations), self.TARGET.to(torch.float32)).item()
+            predicted_classes = torch.argmax(softmax(soft_activations), dim=1)
+            actual_classes = torch.argmax(self.TARGET, dim = 1)
+            correct_predictions = predicted_classes == actual_classes
+
+            ensemble_fitness = np.exp(-1 * constituent_ensemble_loss)
+            ensemble_accuracy = np.mean(correct_predictions.numpy())
+            
+            self.wandb.log({"train/train_constituent_ensemble_loss": constituent_ensemble_loss})
+            self.wandb.log({"train/train_constituent_ensemble_accuracy": ensemble_accuracy})
 
         # Calculate the fitness of the ensemble using the negative exponential of the loss
-        ensemble_fitness = np.exp(-1 * constituent_ensemble_loss)
-        ensemble_accuracy = np.mean(correct_predictions.numpy())
-        self.wandb.log({"test/test_constituent_ensemble_loss": constituent_ensemble_loss})
-        self.wandb.log({"test/test_constituent_ensemble_accuracy": ensemble_accuracy})
-        
 
         return ensemble_accuracy
+
 
     def eval_genomes(self, genomes, generation):
 
         # Create an activation map for all the genomes using the provided data
-        activations_map = self.create_activation_map(genomes, self.DATA) #type: ignore
+        train_activations_map = self.create_activation_map(genomes, self.DATA) #type: ignore
+        test_activations_map = self.create_activation_map(genomes, self.TEST_DATA) #type: ignore
 
         # Get the next coefficient for the genome and ensemble fitness
         genome_fitness_coefficient = next(self.genome_coefficients)
@@ -109,7 +125,7 @@ class UCIConfig:
             # Define the softmax function
             softmax = nn.Softmax(dim=1)
             # Get the prediction for the genome
-            genome_prediction = softmax(activations_map[genome])
+            genome_prediction = softmax(train_activations_map[genome])
             # Define the cross-entropy loss function
             CE_loss = nn.CrossEntropyLoss()
             # Calculate the loss for the genome
@@ -145,11 +161,11 @@ class UCIConfig:
             for sample_ensemble in sample_ensembles:
 
                 # Create a list to store the activations of the ensemble members
-                ensemble_activations = [activations_map[genome]]
+                ensemble_activations = [train_activations_map[genome]]
 
                 # Append the activations of the candidate genomes to the list
                 for candidate in sample_ensemble:
-                    ensemble_activations.append(activations_map[candidate])
+                    ensemble_activations.append(train_activations_map[candidate])
                     
                 # Sum the activations of all ensemble members
                 soft_activations = torch.sum(torch.stack(ensemble_activations, dim = 0), dim = 0)
@@ -190,11 +206,12 @@ class UCIConfig:
             self.wandb.log({"train/step": i + len(genomes) * (generation - 1)})
 
         # Create a dataframe of the results of the trial analysis
-        df_results = wrapper.run_trial_analysis(self.create_activation_map(genomes, self.TEST_DATA), self.constituent_ensemble_evaluation)
+        df_results = wrapper.run_trial_analysis_UCI(train_activations_map, test_activations_map, self.constituent_ensemble_evaluation)
         
         df_results = df_results.reset_index().rename(columns = {"index" : "ensemble_size"})
         df_results['ensemble_size'] += 1
         df_results['generation'] = generation
+        df_results['run_id'] = self.run_id
 
         self.df_results = pd.concat([df_results, self.df_results], ignore_index=True)
         

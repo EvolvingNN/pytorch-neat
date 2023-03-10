@@ -1,6 +1,7 @@
 import pandas as pd
 
 from neat.analysis.algorithms import ALGORITHMS
+from neat.analysis.UCI_algorithms import UCI_ALGORITHMS
 
 
 def run_trial_analysis(genomes, ensemble_evaluator):
@@ -31,5 +32,22 @@ def run_trial_analysis(genomes, ensemble_evaluator):
     if is_in_compat_mode:
         for genome in genomes:
             delattr(genome, "predictions")
+
+    return pd.DataFrame(algorithm_results)
+
+
+def run_trial_analysis_UCI(train_activation_map, test_activation_map, ensemble_evaluator):
+
+    #algos take activations and make selections
+    #pass in both sets of activations, and switch the attribute in the eval function after ensemble selection to use TEST
+    #should be done in one call to algos
+
+    genomes = list(test_activation_map.keys())
+    assert(set(train_activation_map.keys()) == set(test_activation_map.keys()))
+
+
+    algorithm_results = {
+        name: algo(genomes, train_activation_map, test_activation_map, ensemble_evaluator) for name, algo in UCI_ALGORITHMS.items()
+    }
 
     return pd.DataFrame(algorithm_results)

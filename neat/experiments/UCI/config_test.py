@@ -69,7 +69,7 @@ class UCIConfig_test:
             genomes_to_results[genome] = torch.squeeze(torch.stack(results))
         return genomes_to_results
     
-    def constituent_ensemble_evaluation(self, ensemble_activations):
+    def constituent_ensemble_evaluation(self, ensemble_activations, use_test_target = False):
             
         # Define the softmax function and cross-entropy loss function
         softmax = nn.Softmax(dim=1)
@@ -79,10 +79,16 @@ class UCIConfig_test:
         soft_activations = torch.sum(torch.stack(ensemble_activations, dim = 0), dim = 0)
         
         # Calculate the cross-entropy loss for the ensemble
-        constituent_ensemble_loss = CE_loss(softmax(soft_activations), self.TEST_TARGET.to(torch.float32)).item()
-        predicted_classes = torch.argmax(softmax(soft_activations), dim=1)
-        actual_classes = torch.argmax(self.TEST_TARGET, dim = 1)
-        correct_predictions = predicted_classes == actual_classes
+        if use_test_target:
+            constituent_ensemble_loss = CE_loss(softmax(soft_activations), self.TEST_TARGET.to(torch.float32)).item()
+            predicted_classes = torch.argmax(softmax(soft_activations), dim=1)
+            actual_classes = torch.argmax(self.TEST_TARGET, dim = 1)
+            correct_predictions = predicted_classes == actual_classes
+        else: #use TARGET
+            constituent_ensemble_loss = CE_loss(softmax(soft_activations), self.TARGET.to(torch.float32)).item()
+            predicted_classes = torch.argmax(softmax(soft_activations), dim=1)
+            actual_classes = torch.argmax(self.TARGET, dim = 1)
+            correct_predictions = predicted_classes == actual_classes
         
 
         # Calculate the fitness of the ensemble using the negative exponential of the loss
@@ -95,7 +101,8 @@ class UCIConfig_test:
     def eval_genomes(self, genomes, generation):
 
         # Create an activation map for all the genomes using the provided data
-        activations_map = self.create_activation_map(genomes, self.DATA) #type: ignore
+        train_activations_map = self.create_activation_map(genomes, self.DATA) #type: ignore
+        test_activations_map = self.create_activation_map(genomes, self.TEST_DATA) #type: ignore
 
         # Get the next coefficient for the genome and ensemble fitness
         genome_fitness_coefficient = next(self.genome_coefficients)
@@ -107,7 +114,7 @@ class UCIConfig_test:
             # Define the softmax function
             softmax = nn.Softmax(dim=1)
             # Get the prediction for the genome
-            genome_prediction = softmax(activations_map[genome])
+            genome_prediction = softmax(train_activations_map[genome])
             # Define the cross-entropy loss function
             CE_loss = nn.CrossEntropyLoss()
             # Calculate the loss for the genome
@@ -139,11 +146,7 @@ class UCIConfig_test:
             for sample_ensemble in sample_ensembles:
 
                 # Create a list to store the activations of the ensemble members
-                ensemble_activations = [activations_map[genome]]
-
-                # Append the activations of the candidate genomes to the list
-                for candidate in sample_ensemble:
-                    ensemble_activations.append(activations_map[candidate])
+                ensemble_activations = [train_activations_map[candidate] for candidate in sample_ensemble]
                     
                 # Sum the activations of all ensemble members
                 soft_activations = torch.sum(torch.stack(ensemble_activations, dim = 0), dim = 0)
@@ -174,7 +177,8 @@ class UCIConfig_test:
             genome.fitness = genome_fitness_coefficient * genome_fitness + ensemble_fitness_coefficient * ensemble_fitness
 
         # Create a dataframe of the results of the trial analysis
-        df_results = wrapper.run_trial_analysis(self.create_activation_map(genomes, self.TEST_DATA), self.constituent_ensemble_evaluation)
+        #df_results = wrapper.run_trial_analysis(train_activations_map, self.constituent_ensemble_evaluation)
+        df_results = wrapper.run_trial_analysis_UCI(train_activations_map, test_activations_map, self.constituent_ensemble_evaluation)
         df_results.to_csv('df_results.csv')
 
         # Take the mean for each column
