@@ -147,13 +147,11 @@ def control():
 
 def ACE():
 
-    wandb.init(config=KWARGS, project="Classification-2", group="ACE", job_type = 'bayes trial 2')
+    wandb.init(config=KWARGS, project="Classification-2", group="ACE", job_type = 'fixed seed 888')
 
     wandb.define_metric("generation")
     wandb.define_metric("train/step")
 
-    wandb.define_metric("diversity", step_metric="generation")
-    wandb.define_metric("diversity_threshold_2.0", step_metric="generation")
     wandb.define_metric("greedy1", step_metric="generation")
     wandb.define_metric("greedy2", step_metric="generation")
     wandb.define_metric("random", step_metric="generation")
@@ -371,5 +369,5 @@ if __name__ == '__main__':
     #control()
     #init_sweep()
         
-    wandb.agent("s0nxnnvu", function=control, project="Classification-2", count = 10)
+    wandb.agent("s0nxnnvu", function=ACE, project="Classification-2", count = 10)
 
