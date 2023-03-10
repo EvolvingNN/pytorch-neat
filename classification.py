@@ -147,7 +147,7 @@ def control():
 
 def ACE():
 
-    wandb.init(config=KWARGS, project="Classification-2", group="ACE", job_type = 'fixed seed 888')
+    run = wandb.init(config=KWARGS, project="Classification-2", group="ACE", job_type = 'fixed seed 888')
 
     wandb.define_metric("generation")
     wandb.define_metric("train/step")
@@ -219,7 +219,7 @@ def ACE():
 
 def ACE_warmup():
 
-    wandb.init(config=KWARGS, project="Classification-2", group="ACE-with-warmup", job_type = 'random trial')
+    run = wandb.init(config=KWARGS, project="Classification-2", group="ACE-with-warmup", job_type = 'random trial')
 
     wandb.define_metric("generation")
     wandb.define_metric("train/step")
