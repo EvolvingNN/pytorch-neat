@@ -120,6 +120,6 @@ ALGORITHMS = {
         f"diversity_{t}_threshold": lambda p, e: diversity_rr_selection_accuracies(
             p, e, speciation_threshold=t
         )
-        for t in np.arange(0.1, 5.0001, 0.1)
+        for t in np.arange(0.1, 5.1, 0.1)
     },
 }

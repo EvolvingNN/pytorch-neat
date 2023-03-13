@@ -132,7 +132,6 @@ class Population:
         :return: None
         """
         for species in self.species:
-            print(species, Species.species_distance(genome, species.model_genome))
             if Species.species_distance(genome, species.model_genome) <= self.Config.SPECIATION_THRESHOLD:
                 genome.species = species.id
                 species.members.append(genome)

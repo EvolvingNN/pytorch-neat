@@ -87,7 +87,6 @@ def diversity_rr_selection_accuracies(genomes, train_activations_map, test_activ
 
     # Step 1: Divide genomes based on speciation threshold
     species = speciate(genomes, speciation_threshold)
-    print(speciation_threshold)
 
     # Step 2: Sort genomes in each species in descending order by their fitness
     for s in species:
@@ -133,6 +132,6 @@ UCI_ALGORITHMS = {
         f"diversity_{t}_threshold": (lambda t: lambda p, _, m, e: diversity_rr_selection_accuracies(
             p, _, m, e, speciation_threshold=t
         ))(t)
-        for t in np.arange(0.1, 5.0001, 0.1)
+        for t in np.arange(0.1, 5.1, 0.1)
     },
 }
