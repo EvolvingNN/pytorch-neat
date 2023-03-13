@@ -117,8 +117,10 @@ class Population:
             if self.Config.VERBOSE:
                 logger.info(f'Finished Generation {generation}')
                 logger.info(f'Best Genome Fitness: {best_genome.fitness}')
-                logger.info(
-                    f'Best Genome Length {len(best_genome.connection_genes)}\n')
+                logger.info(f'Best Genome Length {len(best_genome.connection_genes)}')
+                logger.info(f'Population Size: {len(self.population)}')
+                logger.info(f'Number of Species: {len(self.species)}\n')
+
 
         return None, None
 
@@ -130,6 +132,7 @@ class Population:
         :return: None
         """
         for species in self.species:
+            print(species, Species.species_distance(genome, species.model_genome))
             if Species.species_distance(genome, species.model_genome) <= self.Config.SPECIATION_THRESHOLD:
                 genome.species = species.id
                 species.members.append(genome)

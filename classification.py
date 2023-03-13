@@ -364,10 +364,10 @@ def test():
 
 if __name__ == '__main__':
 
-    #test()
+    test()
 
     #control()
     #init_sweep()
         
-    wandb.agent("3n24pyea", function=ACE_warmup, project="Classification-2", count = 10)
+    #wandb.agent("3n24pyea", function=ACE_warmup, project="Classification-2", count = 10)
 
