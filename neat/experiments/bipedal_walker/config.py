@@ -9,44 +9,59 @@ from neat.utils import random_ensemble_generator_for_static_genome
 
 
 class BipedalWalkerConfig:
-    DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    VERBOSE = True
 
-    NUM_INPUTS = 24
-    NUM_OUTPUTS = 4 #corresponding to action space 0: apply -1 torque, 1: apply 0 torque, 2: apply 1 torque
-    USE_BIAS = False
 
-    ACTIVATION = 'sigmoid'
-    SCALE_ACTIVATION = 4.9
+    def __init__(self, **kwargs):
 
-    FITNESS_THRESHOLD = float("inf")
-    MAX_EPISODE_STEPS = 500
+        # Set the device to use CUDA if available, otherwise use CPU
+        self.DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-    GENERATIONAL_ENSEMBLE_SIZE = 2
-    CANDIDATE_LIMIT = 6
+        # Assign keyword arguments as attributes of the object
+        for k, v in kwargs.items():
+            setattr(self, k, v)
 
-    POPULATION_SIZE = 40
-    NUMBER_OF_GENERATIONS = 100
-    SPECIATION_THRESHOLD = 3.0
+        gym.envs.register(
+            id='BipedalWalker-v3',
+            entry_point='gym.envs.box2d:BipedalWalker',
+            max_episode_steps=self.MAX_EPISODE_STEPS
+        )
 
-    CONNECTION_MUTATION_RATE = 0.80
-    CONNECTION_PERTURBATION_RATE = 0.90
-    ADD_NODE_MUTATION_RATE = 0.03
-    ADD_CONNECTION_MUTATION_RATE = 0.5
+    def __call__(self):
+        return self
+    # DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    # VERBOSE = True
 
-    CROSSOVER_REENABLE_CONNECTION_GENE_RATE = 0.25
+    # NUM_INPUTS = 24
+    # NUM_OUTPUTS = 4 #corresponding to action space 0: apply -1 torque, 1: apply 0 torque, 2: apply 1 torque
+    # USE_BIAS = False
 
-    # Top percentage of species to be saved before mating
-    PERCENTAGE_TO_SAVE = 0.80
+    # ACTIVATION = 'sigmoid'
+    # SCALE_ACTIVATION = 4.9
 
-    TOP_HEIGHT = -np.inf
+    # FITNESS_THRESHOLD = float("inf")
+    # MAX_EPISODE_STEPS = 500
+
+    # GENERATIONAL_ENSEMBLE_SIZE = 2
+    # CANDIDATE_LIMIT = 6
+
+    # POPULATION_SIZE = 40
+    # NUMBER_OF_GENERATIONS = 100
+    # SPECIATION_THRESHOLD = 3.0
+
+    # CONNECTION_MUTATION_RATE = 0.80
+    # CONNECTION_PERTURBATION_RATE = 0.90
+    # ADD_NODE_MUTATION_RATE = 0.03
+    # ADD_CONNECTION_MUTATION_RATE = 0.5
+
+    # CROSSOVER_REENABLE_CONNECTION_GENE_RATE = 0.25
+
+    # # Top percentage of species to be saved before mating
+    # PERCENTAGE_TO_SAVE = 0.80
+
+    # TOP_HEIGHT = -np.inf
 
     #Allow episode lengths of > than 200
-    gym.envs.register(
-        id='BipedalWalker-v3',
-        entry_point='gym.envs.box2d:BipedalWalker',
-        max_episode_steps=MAX_EPISODE_STEPS
-    )
+
 
     def vote(self, voting_ensemble, input):
         ensemble_activations = [phenotype(input) for phenotype in voting_ensemble]
