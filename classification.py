@@ -231,8 +231,8 @@ def ACE():
 
 def ACE_warmup():
 
-    KWARGS['NUM_INPUTS'] = kwargs['DATA'].shape[1]
-    KWARGS['NUM_OUTPUTS'] = kwargs['TARGET'].shape[1]
+    KWARGS['NUM_INPUTS'] = X_train.shape[1]
+    KWARGS['NUM_OUTPUTS'] = y_train.shape[1]
 
     KWARGS['USE_FITNESS_COEFFICIENT'] = True
     KWARGS['USE_GENOME_FITNESS'] = True
