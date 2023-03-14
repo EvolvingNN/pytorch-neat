@@ -76,6 +76,12 @@ def init_sweep():
 
 def control():
 
+    KWARGS['NUM_INPUTS'] = X_train.shape[1]
+    KWARGS['NUM_OUTPUTS'] = y_train.shape[1]
+
+    KWARGS['USE_FITNESS_COEFFICIENT'] = False
+    KWARGS['USE_GENOME_FITNESS'] = True
+
     run = wandb.init(config=KWARGS, project="Classification-4")
 
     wandb.define_metric("generation")
@@ -118,17 +124,11 @@ def control():
     kwargs['DATA'] = X_train
     kwargs['TARGET'] = y_train
 
-    kwargs['NUM_INPUTS'] = kwargs['DATA'].shape[1]
-    kwargs['NUM_OUTPUTS'] = kwargs['TARGET'].shape[1]
-
     kwargs['TEST_DATA'] = X_test
     kwargs['TEST_TARGET'] = y_test
     
     kwargs['wandb'] = wandb
     kwargs['run_id'] = run.id
-
-    kwargs['USE_FITNESS_COEFFICIENT'] = False
-    kwargs['USE_GENOME_FITNESS'] = True
 
     kwargs['df_results'] = pd.DataFrame(columns = ['generation', 'ensemble_size', *[f"diversity_{t}_threshold" for t in np.arange(1, 6, 1)], 'greedy1', 'greedy2', 'random'])
 
@@ -142,7 +142,13 @@ def control():
 
 def ACE():
 
-    run = wandb.init(config=KWARGS, project="Classification-2", group="ACE", job_type = 'fixed seed 888')
+    KWARGS['NUM_INPUTS'] = X_train.shape[1]
+    KWARGS['NUM_OUTPUTS'] = y_train.shape[1]
+
+    KWARGS['USE_FITNESS_COEFFICIENT'] = False
+    KWARGS['USE_GENOME_FITNESS'] = False
+
+    run = wandb.init(config=KWARGS, project="Classification-4", tags = ["ACE", "fixed seed 888"])
 
     wandb.define_metric("generation")
 
@@ -186,17 +192,11 @@ def ACE():
     kwargs['DATA'] = X_train
     kwargs['TARGET'] = y_train
 
-    kwargs['NUM_INPUTS'] = kwargs['DATA'].shape[1]
-    kwargs['NUM_OUTPUTS'] = kwargs['TARGET'].shape[1]
-
     kwargs['TEST_DATA'] = X_test
     kwargs['TEST_TARGET'] = y_test
     
     kwargs['wandb'] = wandb
     kwargs['run_id'] = run.id
-
-    kwargs['USE_FITNESS_COEFFICIENT'] = False
-    kwargs['USE_GENOME_FITNESS'] = False
 
     kwargs['df_results'] = pd.DataFrame(columns = ['generation', 'ensemble_size', *[f"diversity_{t}_threshold" for t in np.arange(1, 6, 1)], 'greedy1', 'greedy2', 'random'])
     # Print the kwargs
@@ -220,16 +220,17 @@ def ACE_warmup():
     KWARGS['USE_FITNESS_COEFFICIENT'] = True
     KWARGS['USE_GENOME_FITNESS'] = True
 
-    run = wandb.init(config=KWARGS, project="Classification-3", tags = ["ACE-with-warmup", "fixed seed 888"])
+    run = wandb.init(config=KWARGS, project="Classification-4", tags = ["ACE-with-warmup", "fixed seed 888"])
 
     wandb.define_metric("generation")
-    wandb.define_metric("train/step")
 
     wandb.define_metric("greedy1", step_metric="generation")
     wandb.define_metric("greedy2", step_metric="generation")
     wandb.define_metric("random", step_metric="generation")
 
-    wandb.define_metric("train/*", step_metric="train/step")
+    diversity_threshold_labels = [f"diversity_{t}_threshold" for t in np.arange(1, 6, 1)]
+    for l in diversity_threshold_labels:
+        wandb.define_metric(l, step_metric = "generation")
 
 
     
@@ -269,7 +270,6 @@ def ACE_warmup():
     kwargs['wandb'] = wandb
     kwargs['run_id'] = run.id
 
-    kwargs['df_genome']= pd.DataFrame(columns = ['generation', 'genome_loss', 'genome_accuracy', 'constituent_ensemble_losses', 'mean_constituent_ensemble_loss', 'constituent_ensemble_accuracies', 'mean_constituent_ensemble_accuracy'])
     kwargs['df_results'] = pd.DataFrame(columns = ['generation', 'ensemble_size', *[f"diversity_{t}_threshold" for t in np.arange(0.1, 5.1, 0.1)], 'greedy1', 'greedy2', 'random'])
     # Print the kwargs
     # for key in kwargs:
@@ -363,7 +363,8 @@ if __name__ == '__main__':
 
     #test()
 
-    control()
+    #control()
+    ACE()
     #init_sweep()
     
     #ACE_warmup()
