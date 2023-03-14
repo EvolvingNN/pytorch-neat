@@ -145,13 +145,14 @@ def ACE():
     run = wandb.init(config=KWARGS, project="Classification-2", group="ACE", job_type = 'fixed seed 888')
 
     wandb.define_metric("generation")
-    wandb.define_metric("train/step")
 
     wandb.define_metric("greedy1", step_metric="generation")
     wandb.define_metric("greedy2", step_metric="generation")
     wandb.define_metric("random", step_metric="generation")
 
-    wandb.define_metric("train/*", step_metric="train/step")
+    diversity_threshold_labels = [f"diversity_{t}_threshold" for t in np.arange(1, 6, 1)]
+    for l in diversity_threshold_labels:
+        wandb.define_metric(l, step_metric = "generation")
 
 
     
@@ -197,8 +198,7 @@ def ACE():
     kwargs['USE_FITNESS_COEFFICIENT'] = False
     kwargs['USE_GENOME_FITNESS'] = False
 
-    kwargs['df_genome']= pd.DataFrame(columns = ['generation', 'genome_loss', 'genome_accuracy', 'constituent_ensemble_losses', 'mean_constituent_ensemble_loss', 'constituent_ensemble_accuracies', 'mean_constituent_ensemble_accuracy'])
-    kwargs['df_results'] = pd.DataFrame(columns = ['generation', 'ensemble_size', *[f"diversity_{t}_threshold" for t in np.arange(0.1, 5.0001, 0.1)], 'greedy1', 'greedy2', 'random'])
+    kwargs['df_results'] = pd.DataFrame(columns = ['generation', 'ensemble_size', *[f"diversity_{t}_threshold" for t in np.arange(1, 6, 1)], 'greedy1', 'greedy2', 'random'])
     # Print the kwargs
     # for key in kwargs:
     #     print(f"{key}: {kwargs[key]}")
