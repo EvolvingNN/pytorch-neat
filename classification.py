@@ -299,6 +299,8 @@ def ACE_warmup():
     # Clean up memory
     del neat, kwargs
 
+    wandb.finish()
+
     return solution, generation   
 
 def train():
