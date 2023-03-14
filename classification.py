@@ -361,7 +361,7 @@ if __name__ == '__main__':
 
     #test()
 
-    control("Trial 1 - Control")
+    control("Trial 2 - Control")
     #ACE("Trial 5 - ACE")
     #init_sweep()
     
