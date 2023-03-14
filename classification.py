@@ -56,6 +56,8 @@ def init_sweep():
             'GENOME_FITNESS_METRIC': {'values' : ['CE LOSS', 'ACCURACY']},
             'ENSEMBLE_FITNESS_METRIC': {'values' : ['CE LOSS', 'ACCURACY']},
             'SPECIATION_THRESHOLD': {'values' : [1, 3, 5]},
+            'POPULATION_SIZE' : {'values' : [5, 25, 100]},
+            'NUMBER_OF_GENERATIONS' : {'values' : [50, 200]},
             'CONNECTION_MUTATION_RATE': {'values' : [0.1, 0.5, 0.8]},
             'CONNECTION_PERTURBATION_RATE': {'values' : [0.1, 0.5, 0.8]},
             'ADD_NODE_MUTATION_RATE': {'values' : [0.1, 0.5, 0.8]},
@@ -364,5 +366,5 @@ if __name__ == '__main__':
     
     #ACE_warmup()
         
-    wandb.agent("kfqm4vup", function=control, project="Classification-4")
+    wandb.agent("kfqm4vup", function=control, project="Classification-4", count = 5)
 
