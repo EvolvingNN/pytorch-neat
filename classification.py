@@ -45,31 +45,28 @@ y_test = torch.squeeze(one_hot(torch.tensor(y_test.to_numpy().reshape(-1,1)))) #
 
 def init_sweep():
     sweep_configuration = {
-        'method': 'random',
-        'name': 'UCI Classification | Test Data Algo Evaluation',
+        'method': 'grid',
+        'name': 'UCI Classification | Trial Engine | Control',
         'metric': {
             'goal': 'maximize', 
-            'name': 'test/mean_constituent_ensemble_accuracy'
+            'name': 'greedy1'
             },
         'parameters': {
             'USE_BIAS': {'values': [False, True]},
-            'GENERATIONAL_ENSEMBLE_SIZE': {'max': 21, 'min':2},
-            'CANDIDATE_LIMIT': {'max': 50, 'min': 1},
-            'SCALE_ACTIVATION': {'max': 7.0, 'min': 1.0},
             'GENOME_FITNESS_METRIC': {'values' : ['CE LOSS', 'ACCURACY']},
             'ENSEMBLE_FITNESS_METRIC': {'values' : ['CE LOSS', 'ACCURACY']},
-            'SPECIATION_THRESHOLD': {'max': 3.0, 'min' : 0.1},
-            'CONNECTION_MUTATION_RATE': {'max': 1.0, 'min': 0.1},
-            'CONNECTION_PERTURBATION_RATE': {'max': 1.0, 'min': 0.1},
-            'ADD_NODE_MUTATION_RATE': {'max': 1.0, 'min': 0.1},
-            'ADD_CONNECTION_MUTATION_RATE': {'max': 1.0, 'min': 0.1},
-            'CROSSOVER_REENABLE_CONNECTION_GENE_RATE': {'max': 1.0, 'min': 0.1},
-            'PERCENTAGE_TO_SAVE': {'max': 0.25, 'min': 0.05}
+            'SPECIATION_THRESHOLD': {'values' : [1, 3, 5]},
+            'CONNECTION_MUTATION_RATE': {'values' : [0.1, 0.5, 0.8]},
+            'CONNECTION_PERTURBATION_RATE': {'values' : [0.1, 0.5, 0.8]},
+            'ADD_NODE_MUTATION_RATE': {'values' : [0.1, 0.5, 0.8]},
+            'ADD_CONNECTION_MUTATION_RATE': {'values' : [0.1, 0.5, 0.8]},
+            'CROSSOVER_REENABLE_CONNECTION_GENE_RATE': {'values' : [0.1, 0.5, 0.8]},
+            'PERCENTAGE_TO_SAVE': {'values' : [0.1, 0.5, 0.8]}
         }
     }
 
     #sweep_id = wandb.sweep(sweep=sweep_configuration, project="Classification-2", entity="evolvingnn")
-    sweep_id = wandb.sweep(sweep = sweep_config_fixed, project = "Classification-3", entity = "evolvingnn")
+    sweep_id = wandb.sweep(sweep = sweep_configuration, project = "Classification-4", entity = "evolvingnn")
     print(sweep_id)
     return sweep_id
 
@@ -361,11 +358,11 @@ if __name__ == '__main__':
 
     #test()
 
-    control("Trial 2 - Control")
+    #control("Trial 3 - Control")
     #ACE("Trial 5 - ACE")
     #init_sweep()
     
     #ACE_warmup()
         
-    #wandb.agent("3n24pyea", function=ACE_warmup, project="Classification-2", count = 10)
+    wandb.agent("kfqm4vup", function=control, project="Classification-4")
 
