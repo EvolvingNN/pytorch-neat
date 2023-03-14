@@ -78,6 +78,16 @@ def control():
 
     run = wandb.init(config=KWARGS, project="Classification-4")
 
+    wandb.define_metric("generation")
+
+    wandb.define_metric("greedy1", step_metric="generation")
+    wandb.define_metric("greedy2", step_metric="generation")
+    wandb.define_metric("random", step_metric="generation")
+
+    diversity_threshold_labels = [f"diversity_{t}_threshold" for t in np.arange(1, 6, 1)]
+    for l in diversity_threshold_labels:
+        wandb.define_metric(l, step_metric = "generation")
+
     kwargs = {
         'VERBOSE': wandb.config.VERBOSE,
         'NUM_INPUTS': wandb.config.NUM_INPUTS,

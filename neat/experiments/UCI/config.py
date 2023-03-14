@@ -217,7 +217,6 @@ class UCIConfig:
         
         self.wandb.log({"df_results" : self.wandb.Table(dataframe = self.df_results)})
 
-
         # df_results.to_csv('./df_results.csv')
     
         # # Save the csv to wandb
@@ -230,8 +229,8 @@ class UCIConfig:
         # self.wandb.save('genomes.pkl')  
 
         
-        # self.wandb.log({'generation' : generation})
-        # self.wandb.log(df_results.max(axis=0).to_dict())
+        self.wandb.log({'generation' : generation})
+        self.wandb.log(df_results.max(axis=0).to_dict())
         
         # Calculate the average fitness of the population
         population_fitness = np.mean([genome.fitness for genome in genomes])
