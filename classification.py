@@ -74,7 +74,7 @@ def init_sweep():
     return sweep_id
 
 
-def control():
+def control(name = None):
 
     KWARGS['NUM_INPUTS'] = X_train.shape[1]
     KWARGS['NUM_OUTPUTS'] = y_train.shape[1]
@@ -82,7 +82,7 @@ def control():
     KWARGS['USE_FITNESS_COEFFICIENT'] = False
     KWARGS['USE_GENOME_FITNESS'] = True
 
-    run = wandb.init(config=KWARGS, project="Classification-4")
+    run = wandb.init(config=KWARGS, project="Classification-4", name = name)
 
     wandb.define_metric("generation")
 
@@ -159,8 +159,6 @@ def ACE(name = None):
     diversity_threshold_labels = [f"diversity_{t}_threshold" for t in np.arange(1, 6, 1)]
     for l in diversity_threshold_labels:
         wandb.define_metric(l, step_metric = "generation")
-
-
     
     kwargs = {
         'VERBOSE': wandb.config.VERBOSE,
@@ -363,8 +361,8 @@ if __name__ == '__main__':
 
     #test()
 
-    #control()
-    ACE("Trial 4 - ACE")
+    control("Trial 1 - Control")
+    #ACE("Trial 5 - ACE")
     #init_sweep()
     
     #ACE_warmup()
