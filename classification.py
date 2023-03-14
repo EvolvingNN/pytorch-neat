@@ -68,17 +68,6 @@ def init_sweep():
         }
     }
 
-    sweep_config_fixed = {
-        'method': 'random',
-        'name': 'UCI Classification | Test Data Algo Evaluation',
-        'metric': {
-            'goal': 'maximize', 
-            'name': 'test/mean_constituent_ensemble_accuracy'
-        },
-        'parameters': {
-        }
-    }
-
     #sweep_id = wandb.sweep(sweep=sweep_configuration, project="Classification-2", entity="evolvingnn")
     sweep_id = wandb.sweep(sweep = sweep_config_fixed, project = "Classification-3", entity = "evolvingnn")
     print(sweep_id)
@@ -87,19 +76,8 @@ def init_sweep():
 
 def control():
 
-    run = wandb.init(config=KWARGS, project="Classification-2", group="control", job_type = 'fixed seed 888')
+    run = wandb.init(config=KWARGS, project="Classification-4")
 
-    wandb.define_metric("generation")
-    wandb.define_metric("train/step")
-
-    wandb.define_metric("greedy1", step_metric="generation")
-    wandb.define_metric("greedy2", step_metric="generation")
-    wandb.define_metric("random", step_metric="generation")
-
-    wandb.define_metric("train/*", step_metric="train/step")
-
-
-    
     kwargs = {
         'VERBOSE': wandb.config.VERBOSE,
         'NUM_INPUTS': wandb.config.NUM_INPUTS,
@@ -142,15 +120,10 @@ def control():
     kwargs['USE_FITNESS_COEFFICIENT'] = False
     kwargs['USE_GENOME_FITNESS'] = True
 
-    kwargs['df_genome']= pd.DataFrame(columns = ['generation', 'genome_loss', 'genome_accuracy', 'constituent_ensemble_losses', 'mean_constituent_ensemble_loss', 'constituent_ensemble_accuracies', 'mean_constituent_ensemble_accuracy'])
-    kwargs['df_results'] = pd.DataFrame(columns = ['generation', 'ensemble_size', *[f"diversity_{t}_threshold" for t in np.arange(0.1, 5.0001, 0.1)], 'greedy1', 'greedy2', 'random'])
-    # Print the kwargs
-    # for key in kwargs:
-    #     print(f"{key}: {kwargs[key]}")
+    kwargs['df_results'] = pd.DataFrame(columns = ['generation', 'ensemble_size', *[f"diversity_{t}_threshold" for t in np.arange(1, 6, 1)], 'greedy1', 'greedy2', 'random'])
 
     neat = pop.Population(c.UCIConfig(**kwargs))
     solution, generation = neat.run()
-
 
     # Clean up memory
     del neat, kwargs
@@ -380,10 +353,10 @@ if __name__ == '__main__':
 
     #test()
 
-    #control()
+    control()
     #init_sweep()
     
-    ACE_warmup()
+    #ACE_warmup()
         
     #wandb.agent("3n24pyea", function=ACE_warmup, project="Classification-2", count = 10)
 

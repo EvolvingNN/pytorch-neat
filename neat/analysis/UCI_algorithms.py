@@ -132,6 +132,6 @@ UCI_ALGORITHMS = {
         f"diversity_{t}_threshold": (lambda t: lambda p, _, m, e: diversity_rr_selection_accuracies(
             p, _, m, e, speciation_threshold=t
         ))(t)
-        for t in np.arange(0.1, 5.1, 0.1)
-    },
+        for t in np.arange(1, 6, 1)
+    },  
 }
