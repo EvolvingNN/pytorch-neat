@@ -140,7 +140,7 @@ def control():
 
     return solution, generation
 
-def ACE():
+def ACE(name = None):
 
     KWARGS['NUM_INPUTS'] = X_train.shape[1]
     KWARGS['NUM_OUTPUTS'] = y_train.shape[1]
@@ -148,7 +148,7 @@ def ACE():
     KWARGS['USE_FITNESS_COEFFICIENT'] = False
     KWARGS['USE_GENOME_FITNESS'] = False
 
-    run = wandb.init(config=KWARGS, project="Classification-4", tags = ["ACE", "fixed seed 888"])
+    run = wandb.init(config=KWARGS, project="Classification-4", tags = ["ACE", "fixed seed 888"], name = name)
 
     wandb.define_metric("generation")
 
@@ -364,7 +364,7 @@ if __name__ == '__main__':
     #test()
 
     #control()
-    ACE()
+    ACE("Trial 4 - ACE")
     #init_sweep()
     
     #ACE_warmup()
