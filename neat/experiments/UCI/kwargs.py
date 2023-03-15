@@ -7,10 +7,10 @@ KWARGS = {
 
         'NUM_INPUTS' : 784,
         'NUM_OUTPUTS' : 10,
-        'USE_BIAS' : False, 
+        'USE_BIAS' : True, 
 
-        'GENERATIONAL_ENSEMBLE_FRACTION' : 0.5,
-        'CANDIDATE_LIMIT' : 0.5,
+        'GENERATIONAL_ENSEMBLE_FRACTION' : 0.25,
+        'CANDIDATE_LIMIT' : 0.25,
 
         'ACTIVATION' : 'sigmoid',
         'SCALE_ACTIVATION' : 4.9,
@@ -23,10 +23,10 @@ KWARGS = {
 
         'USE_GENOME_FITNESS' : False,
         'GENOME_FITNESS_METRIC' : 'ACCURACY', #'CE LOSS',
-        'ENSEMBLE_FITNESS_METRIC' : 'ACCURACY', #CE LOSS
+        'ENSEMBLE_FITNESS_METRIC' : 'CE LOSS', #CE LOSS
 
-        'POPULATION_SIZE' : 50,
-        'NUMBER_OF_GENERATIONS' : 75,
+        'POPULATION_SIZE' : 25,
+        'NUMBER_OF_GENERATIONS' : 50,
         'SPECIATION_THRESHOLD' : 5.0,
 
         'CONNECTION_MUTATION_RATE' : 0.80,
