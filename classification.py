@@ -365,11 +365,11 @@ if __name__ == '__main__':
 
     #test()
 
-    #control("Trial 3 - Control")
+    #control("test")
     #ACE("Trial 5 - ACE")
     #init_sweep()
     
     #ACE_warmup()
         
-    wandb.agent("kfqm4vup", function=control, project="Classification-4", count = 5)
+    wandb.agent("kfqm4vup", function=control, project="Classification-4", count = 20)
 
