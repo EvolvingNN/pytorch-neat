@@ -45,7 +45,7 @@ y_test = torch.squeeze(one_hot(torch.tensor(y_test.to_numpy().reshape(-1,1)))) #
 
 def init_sweep():
     sweep_configuration = {
-        'method': 'grid',
+        'method': 'bayes',
         'name': 'UCI Classification | Trial Engine | Control',
         'metric': {
             'goal': 'maximize', 
@@ -371,5 +371,5 @@ if __name__ == '__main__':
     
     #ACE_warmup()
         
-    wandb.agent("kfqm4vup", function=control, project="Classification-4", count = 20)
+    wandb.agent("q0xjuw28", function=control, project="Classification-4", count = 50
 
