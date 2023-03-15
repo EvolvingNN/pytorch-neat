@@ -164,6 +164,8 @@ def control(name = None):
     neat = pop.Population(c.UCIConfig(**kwargs))
     solution, generation = neat.run()
 
+    wandb.finish()
+
     # Clean up memory
     del neat, kwargs
 
@@ -233,7 +235,7 @@ def ACE(name = None):
     neat = pop.Population(c.UCIConfig(**kwargs))
     solution, generation = neat.run()
 
-
+    wandb.finish()
     # Clean up memory
     del neat, kwargs
 
