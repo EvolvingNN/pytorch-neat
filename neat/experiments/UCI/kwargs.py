@@ -9,8 +9,8 @@ KWARGS = {
         'NUM_OUTPUTS' : 10,
         'USE_BIAS' : False, 
 
-        'GENERATIONAL_ENSEMBLE_SIZE' : 5,
-        'CANDIDATE_LIMIT' : 10,
+        'GENERATIONAL_ENSEMBLE_FRACTION' : 0.5,
+        'CANDIDATE_LIMIT' : 0.5,
 
         'ACTIVATION' : 'sigmoid',
         'SCALE_ACTIVATION' : 4.9,

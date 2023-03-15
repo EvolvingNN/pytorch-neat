@@ -12,7 +12,9 @@ import neat.analysis.wrapper as wrapper
 import numpy as np
 import pandas as pd
 
-# import wandb
+import math
+
+#import wandb
 
 class UCIConfig:
     
@@ -155,7 +157,9 @@ class UCIConfig:
             constituent_ensemble_accuracies = []
 
             # Generate a sample of all possible combinations of candidate genomes to ensemble for a given size k
-            sample_ensembles = random_ensemble_generator_for_static_genome(genome, genomes, k = self.GENERATIONAL_ENSEMBLE_SIZE, limit = self.CANDIDATE_LIMIT)  # type: ignore
+            k = int(len(genomes) * self.GENERATIONAL_ENSEMBLE_FRACTION)
+            limit = int(math.comb(len(genomes),k) * self.CANDIDATE_LIMIT)
+            sample_ensembles = random_ensemble_generator_for_static_genome(genome, genomes, k = k, limit = limit)  # type: ignore
 
             # Evaluate the fitness of each ensemble
             for sample_ensemble in sample_ensembles:

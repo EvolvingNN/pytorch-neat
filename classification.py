@@ -44,7 +44,7 @@ y_test = torch.squeeze(one_hot(torch.tensor(y_test.to_numpy().reshape(-1,1)))) #
 
 
 def init_sweep():
-    sweep_configuration = {
+    control_sweep_configuration = {
         'method': 'bayes',
         'name': 'UCI Classification | Trial Engine | Control',
         'metric': {
@@ -67,8 +67,33 @@ def init_sweep():
         }
     }
 
+    ACE_sweep_configuration = {
+        'method': 'random',
+        'name': 'UCI Classification | Trial Engine | ACE',
+        'metric': {
+            'goal': 'maximize', 
+            'name': 'greedy1'
+            },
+        'parameters': {
+            'USE_BIAS': {'values': [False, True]},
+            'GENOME_FITNESS_METRIC': {'values' : ['CE LOSS', 'ACCURACY']},
+            'ENSEMBLE_FITNESS_METRIC': {'values' : ['CE LOSS', 'ACCURACY']},
+            'SPECIATION_THRESHOLD': {'values' : [1, 3, 5]},
+            'POPULATION_SIZE' : {'values' : [5, 25, 100]},
+            'GENERATIONAL_ENSEMBLE_FRACTION' : {'values' : [0.05, 0.10, 0.25, 0.5, 0.75, 1]},
+            'CANDIDATE_LIMIT' : {'values' : [0.05, 0.10, 0.25, 0.5, 0.75, 1]},
+            'NUMBER_OF_GENERATIONS' : {'values' : [50, 200]},
+            'CONNECTION_MUTATION_RATE': {'values' : [0.1, 0.5, 0.8]},
+            'CONNECTION_PERTURBATION_RATE': {'values' : [0.1, 0.5, 0.8]},
+            'ADD_NODE_MUTATION_RATE': {'values' : [0.1, 0.5, 0.8]},
+            'ADD_CONNECTION_MUTATION_RATE': {'values' : [0.1, 0.5, 0.8]},
+            'CROSSOVER_REENABLE_CONNECTION_GENE_RATE': {'values' : [0.1, 0.5, 0.8]},
+            'PERCENTAGE_TO_SAVE': {'values' : [0.1, 0.5, 0.8]}
+        }
+    }
+
     #sweep_id = wandb.sweep(sweep=sweep_configuration, project="Classification-2", entity="evolvingnn")
-    sweep_id = wandb.sweep(sweep = sweep_configuration, project = "Classification-4", entity = "evolvingnn")
+    sweep_id = wandb.sweep(sweep = ACE_sweep_configuration, project = "Classification-4", entity = "evolvingnn")
     print(sweep_id)
     return sweep_id
 
@@ -103,7 +128,7 @@ def control(name = None):
         'NUM_INPUTS': wandb.config.NUM_INPUTS,
         'NUM_OUTPUTS': wandb.config.NUM_OUTPUTS,
         'USE_BIAS': wandb.config.USE_BIAS,
-        'GENERATIONAL_ENSEMBLE_SIZE': wandb.config.GENERATIONAL_ENSEMBLE_SIZE,
+        'GENERATIONAL_ENSEMBLE_FRACTION': wandb.config.GENERATIONAL_ENSEMBLE_FRACTION,
         'CANDIDATE_LIMIT': wandb.config.CANDIDATE_LIMIT,
         'ACTIVATION': wandb.config.ACTIVATION,
         'SCALE_ACTIVATION': wandb.config.SCALE_ACTIVATION,
@@ -169,7 +194,7 @@ def ACE(name = None):
         'NUM_INPUTS': wandb.config.NUM_INPUTS,
         'NUM_OUTPUTS': wandb.config.NUM_OUTPUTS,
         'USE_BIAS': wandb.config.USE_BIAS,
-        'GENERATIONAL_ENSEMBLE_SIZE': wandb.config.GENERATIONAL_ENSEMBLE_SIZE,
+        'GENERATIONAL_ENSEMBLE_FRACTION': wandb.config.GENERATIONAL_ENSEMBLE_FRACTION,
         'CANDIDATE_LIMIT': wandb.config.CANDIDATE_LIMIT,
         'ACTIVATION': wandb.config.ACTIVATION,
         'SCALE_ACTIVATION': wandb.config.SCALE_ACTIVATION,
@@ -241,7 +266,7 @@ def ACE_warmup():
         'NUM_INPUTS': wandb.config.NUM_INPUTS,
         'NUM_OUTPUTS': wandb.config.NUM_OUTPUTS,
         'USE_BIAS': wandb.config.USE_BIAS,
-        'GENERATIONAL_ENSEMBLE_SIZE': wandb.config.GENERATIONAL_ENSEMBLE_SIZE,
+        'GENERATIONAL_ENSEMBLE_FRACTION': wandb.config.GENERATIONAL_ENSEMBLE_FRACTION,
         'CANDIDATE_LIMIT': wandb.config.CANDIDATE_LIMIT,
         'ACTIVATION': wandb.config.ACTIVATION,
         'SCALE_ACTIVATION': wandb.config.SCALE_ACTIVATION,
@@ -371,5 +396,5 @@ if __name__ == '__main__':
     
     #ACE_warmup()
         
-    wandb.agent("q0xjuw28", function=control, project="Classification-4", count = 50)
+    wandb.agent("rjephjrw", function=ACE, project="Classification-4", count = 20)
 
