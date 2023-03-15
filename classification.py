@@ -266,7 +266,7 @@ def ACE(name = None):
 
     return solution, generation    
 
-def ACE_warmup():
+def ACE_warmup(name = None):
 
     KWARGS['NUM_INPUTS'] = X_train.shape[1]
     KWARGS['NUM_OUTPUTS'] = y_train.shape[1]
@@ -274,7 +274,7 @@ def ACE_warmup():
     KWARGS['USE_FITNESS_COEFFICIENT'] = True
     KWARGS['USE_GENOME_FITNESS'] = True
 
-    run = wandb.init(config=KWARGS, project="Classification-4", tags = ["ACE-with-warmup", "fixed seed 888"])
+    run = wandb.init(config=KWARGS, project="Classification-4", tags = ["ACE-with-warmup", "fixed seed 888"], name = name)
 
     wandb.define_metric("generation")
 
@@ -421,7 +421,9 @@ if __name__ == '__main__':
     #ACE("Trial 5 - ACE")
     #init_sweep()
     
-    #ACE_warmup()
+    ACE_warmup("ACE_Warmup Trial 1")
+
+    #print(sum(y_test))
         
-    wandb.agent("9y18e70x", function=ACE_warmup, project="Classification-4", count = 5)
+    #wandb.agent("9y18e70x", function=ACE_warmup, project="Classification-4", count = 5)
 
