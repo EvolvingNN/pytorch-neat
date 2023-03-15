@@ -89,9 +89,14 @@ def control(name = None):
     wandb.define_metric("greedy2", step_metric="generation")
     wandb.define_metric("random", step_metric="generation")
 
+    wandb.define_metric("greedy1_best_ensemble_size", step_metric="generation")
+    wandb.define_metric("greedy2_best_ensemble_size", step_metric="generation")
+    wandb.define_metric("random_best_ensemble_size", step_metric="generation")
+
     diversity_threshold_labels = [f"diversity_{t}_threshold" for t in np.arange(1, 6, 1)]
     for l in diversity_threshold_labels:
         wandb.define_metric(l, step_metric = "generation")
+        wandb.define_metric((l+"_best_ensemble_size"), step_metric = "generation")
 
     kwargs = {
         'VERBOSE': wandb.config.VERBOSE,
