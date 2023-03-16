@@ -15,7 +15,7 @@ KWARGS = {
         'ACTIVATION' : 'sigmoid',
         'SCALE_ACTIVATION' : 4.9,
 
-        'FITNESS_THRESHOLD' : float("inf"),
+        'FITNESS_THRESHOLD' : 0.7,
                            
         'USE_FITNESS_COEFFICIENT' : False,
         'INITIAL_FITNESS_COEFFICIENT' : 0.1,
@@ -26,7 +26,7 @@ KWARGS = {
         'ENSEMBLE_FITNESS_METRIC' : 'CE LOSS', #CE LOSS
 
         'POPULATION_SIZE' : 25,
-        'NUMBER_OF_GENERATIONS' : 50,
+        'NUMBER_OF_GENERATIONS' : 100,
         'SPECIATION_THRESHOLD' : 5.0,
 
         'CONNECTION_MUTATION_RATE' : 0.80,
