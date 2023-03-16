@@ -93,21 +93,19 @@ def init_sweep():
     }
 
     ACE_warmup_sweep_configuration = {
-        'method': 'random',
+        'method': 'bayes',
         'name': 'UCI Classification | Trial Engine | ACE_warmup',
         'metric': {
             'goal': 'maximize', 
-            'name': 'greedy1'
+            'name': 'random'
             },
         'parameters': {
-            'USE_BIAS': {'values': [False, True]},
             'GENOME_FITNESS_METRIC': {'values' : ['CE LOSS', 'ACCURACY']},
             'ENSEMBLE_FITNESS_METRIC': {'values' : ['CE LOSS', 'ACCURACY']},
             'SPECIATION_THRESHOLD': {'values' : [1, 3, 5]},
             'POPULATION_SIZE' : {'values' : [5, 25, 100]},
-            'GENERATIONAL_ENSEMBLE_FRACTION' : {'values' : [0.05, 0.10, 0.25, 0.5, 0.75, 1]},
-            'CANDIDATE_LIMIT' : {'values' : [0.05, 0.10, 0.25, 0.5, 0.75, 1]},
-            'NUMBER_OF_GENERATIONS' : {'values' : [50, 200]},
+            'GENERATIONAL_ENSEMBLE_FRACTION' : {'values' : [0.05, 0.25, 0.5]},
+            'CANDIDATE_LIMIT' : {'values' : [0.10, 0.25, 0.5]},
             'CONNECTION_MUTATION_RATE': {'values' : [0.1, 0.5, 0.8]},
             'CONNECTION_PERTURBATION_RATE': {'values' : [0.1, 0.5, 0.8]},
             'ADD_NODE_MUTATION_RATE': {'values' : [0.1, 0.5, 0.8]},
@@ -421,9 +419,8 @@ if __name__ == '__main__':
     #ACE("Trial 5 - ACE")
     #init_sweep()
     
-    ACE_warmup("ACE_Warmup Trial 1")
+    #ACE_warmup("ACE_Warmup Trial 1")
 
-    #print(sum(y_test))
         
-    #wandb.agent("9y18e70x", function=ACE_warmup, project="Classification-4", count = 5)
+    wandb.agent("hut78w0b", function=ACE_warmup, project="Classification-4", count = 5)
 
