@@ -419,8 +419,8 @@ if __name__ == '__main__':
     #ACE("Trial 5 - ACE")
     #init_sweep()
     
-    ACE_warmup("ACE_Warmup Trial 2")
-
+    #ACE_warmup("ACE_Warmup Trial 2")
+    #print(df)
         
-    #wandb.agent("hut78w0b", function=ACE_warmup, project="Classification-4", count = 5)
+    wandb.agent("9y18e70x", function=ACE, project="Classification-4", count = 5)
 
