@@ -419,7 +419,7 @@ if __name__ == '__main__':
     #ACE("Trial 5 - ACE")
     #init_sweep()
     
-    ACE_warmup("vocal-sweep-20")
+    ACE_warmup("gallant-sweep-15")
     #print(df)
         
     #wandb.agent("9y18e70x", function=ACE_warmup, project="Classification-4", count = 5)
