@@ -23,10 +23,9 @@ def init_sweep(name = "acrobot"):
             },
         'parameters': {
             'USE_BIAS': {'values': [False, True]},
-            'POPULATION_SIZE': {'max': 50, 'min': 3},
+            'POPULATION_SIZE': {'max': 10, 'min': 3},
             'GENERATIONAL_ENSEMBLE_SIZE': {'max': 21, 'min': 2},
-            'CANDIDATE_LIMIT': {'max': 100, 'min': 1},
-            'SCALE_ACTIVATION': {'max': 7, 'min': 2},
+            'CANDIDATE_LIMIT': {'max': 9, 'min': 1},
             'SPECIATION_THRESHOLD': {'max' : 5, 'min' : 1},
             'CONNECTION_MUTATION_RATE': {'max': 1.0, 'min': 0.1},
             'CONNECTION_PERTURBATION_RATE': {'max': 1.0, 'min': 0.1},
