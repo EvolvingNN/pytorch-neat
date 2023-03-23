@@ -117,10 +117,21 @@ ALGORITHMS = {
     "random": lambda p, e: random_selection_accuracies(p, e, ensembles_per_k=100),
     "greedy1": greedy_1_selection_accuracies,
     "greedy2": greedy_2_selection_accuracies,
-    "diversity": diversity_rr_selection_accuracies,
     # The following is an example of how to add other custom-param algos, in case we
     # want to try different parameters in the future (like lower speciation threshold).
+    "diversity_threshold_1.0": lambda p, e: diversity_rr_selection_accuracies(
+        p, e, speciation_threshold=1.0
+    ),
     "diversity_threshold_2.0": lambda p, e: diversity_rr_selection_accuracies(
         p, e, speciation_threshold=2.0
+    ),
+    "diversity_threshold_3.0": lambda p, e: diversity_rr_selection_accuracies(
+        p, e, speciation_threshold=3.0
+    ),
+    "diversity_threshold_4.0": lambda p, e: diversity_rr_selection_accuracies(
+        p, e, speciation_threshold=4.0
+    ),
+    "diversity_threshold_5.0": lambda p, e: diversity_rr_selection_accuracies(
+        p, e, speciation_threshold=5.0
     ),
 }

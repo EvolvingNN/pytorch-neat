@@ -212,7 +212,25 @@ class AcrobotBalanceConfig:
         if kwargs['generation'] == self.NUMBER_OF_GENERATIONS:
         
             df_results = wrapper.run_trial_analysis(population, self.eval_ensemble)
-            print(df_results.max(axis=0).to_dict())
+            # print(df_results.max(axis=0).to_dict())
+
+            df_results = df_results.reset_index().rename(columns = {"index" : "ensemble_size"})
+            df_results['ensemble_size'] += 1
+
+            def best_ensemble_sizes(df):
+                metric_cols = [col for col in df.columns if col != 'ensemble_size']
+                best_sizes = {}
+
+                for metric in metric_cols:
+                    # Find the ensemble size that achieved the highest performance on this metric
+                    best_size_idx = df[metric].idxmax()
+                    best_size = df.loc[best_size_idx, 'ensemble_size']
+                    best_sizes[metric + "_best_ensemble_size"] = best_size
+
+                return best_sizes
+            
+            self.wandb.log(best_ensemble_sizes(df_results))
+            self.wandb.log(df_results.max(axis=0).to_dict())
 
         best_genome = max(population, key=attrgetter('fitness'))
         best_ensemble = max(ensemble_rewards.items(), key=itemgetter(1))[0] if ensemble_rewards else None
