@@ -10,6 +10,8 @@ import neat.analysis.wrapper as wrapper
 
 from neat.utils import random_ensemble_generator_for_static_genome
 
+from tqdm import tqdm
+
 class Ensemble:
     def __init__(self, ensemble):
         #assumes ensemble is a list of phenotypes (FeedForwardNet)
@@ -152,7 +154,7 @@ class AcrobotBalanceConfig:
 
         ensemble_rewards = {}
 
-        for genome in population:
+        for genome in tqdm(population):
 
             # POLICY: CONTROL | evaluate each genome individually
             if self.USE_CONTROL: 
@@ -180,19 +182,6 @@ class AcrobotBalanceConfig:
                 genome.average_reward = total_height/step
                 genome.step_completed = step
 
-                # self.wandb.log({f"Genome {id(genome)} Max Height" : genome.max_height,
-                #                 f"Genome {id(genome)} Fitness" : genome.fitness,
-                #                 f"Genome {id(genome)} Average Reward" : genome.average_reward,
-                #                 f"Genome {id(genome)} Step Completed" : genome.step_completed
-                #                 }, step = kwargs['generation'])
-
-
-                    # Create a dataframe of the results of the trial analysis
-            df_results = wrapper.run_trial_analysis(population, self.eval_ensemble)
-            df_results.to_csv('./df_results.csv')
-
-            # Save the csv to wandb
-            self.wandb.save('./df_results.csv')
 
 
             #POLICY: ACER | use the average reward from a sample of constituent ensembles to score the genome.
@@ -221,10 +210,11 @@ class AcrobotBalanceConfig:
 
                 genome.fitness = genome_coefficient * (genome.total_height - genome.step_completed) + ACER_coefficient *  genome.fitness
 
-
+        # Save the csv to wandb
+        self.wandb.save('./df_results.csv')
 
         if kwargs['generation'] == self.NUMBER_OF_GENERATIONS:
-            df_results = wrapper.run_trial_analysis(population, self.constituent_ensemble_evaluation)
+            df_results = wrapper.run_trial_analysis(population, self.eval_ensemble)
             df_results.to_csv('./df_results.csv')
 
             self.wandb.save('./df_results.csv')

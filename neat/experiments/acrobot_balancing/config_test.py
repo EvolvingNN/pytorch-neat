@@ -112,7 +112,7 @@ class AcrobotBalanceConfig:
 
         env = gym.make('Acrobot-v1')
         done = False
-        observation = env.reset()
+        observation = env.reset(seed = 0)
         fitness = 0
         while not done:
             observation = np.array([observation])
@@ -211,13 +211,13 @@ class AcrobotBalanceConfig:
                 
         if kwargs['generation'] == self.NUMBER_OF_GENERATIONS:
         
-            df_results = wrapper.run_trial_analysis(population, self.constituent_ensemble_evaluation)
+            df_results = wrapper.run_trial_analysis(population, self.eval_ensemble)
             print(df_results.max(axis=0).to_dict())
 
         best_genome = max(population, key=attrgetter('fitness'))
         best_ensemble = max(ensemble_rewards.items(), key=itemgetter(1))[0] if ensemble_rewards else None
 
-        df_results = wrapper.run_trial_analysis(population, self.eval_ensemble)
+        #df_results = wrapper.run_trial_analysis(population, self.eval_ensemble)
 
         # self.wandb.log({"Best Max Height" : best_genome.max_height,
         #                 "Best Fitness" : best_genome.fitness,

@@ -273,7 +273,12 @@ def test():
 
 def train():
 
-    wandb.init(config = KWARGS, group = 'Acrobot Control')
+    KWARGS['POPULATION_SIZE'] = 5
+    KWARGS['MAX_EPISODE_STEPS'] = 100
+    KWARGS['GENERATIONAL_ENSEMBLE_SIZE'] = 3
+    KWARGS['CANDIDATE_LIMIT'] = 1
+
+    wandb.init(config = KWARGS, group = 'Acrobot Control', project = 'acrobot')
 
     kwargs = {
         'VERBOSE': wandb.config.VERBOSE,
@@ -315,9 +320,9 @@ def train():
 if __name__ == '__main__':
     # for _ in range(10):
         # train()
-    # train()
+    train()
     #control()
     #ACER()
     #ACER_with_warmup()
     # wandb.agent('ra2nl7hw', function=ACER_with_warmup, count = 50)
-    test()
+    #test()
