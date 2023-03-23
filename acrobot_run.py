@@ -13,35 +13,10 @@ import neat.experiments.acrobot_balancing.config_test as c_test
 from neat.visualize import draw_net
 from neat.phenotype.feed_forward import FeedForwardNet
 
-# sweep_configuration = {
-#     'method': 'bayes',
-#     'name': 'Control',
-#     'metric': {
-#         'goal': 'maximize', 
-#         'name': 'Best Fitness'
-# 		},
-#     'parameters': {
-#         'USE_BIAS': {'values': [False, True]},
-#         'POPULATION_SIZE': {'max': 20, 'min': 3},
-#         'CANDIDATE_LIMIT': {'values': [2, 3, 5, 7, 13, 25]},
-#         'SCALE_ACTIVATION': {'max': 7, 'min': 2},
-#         'SPECIATION_THRESHOLD': {'max' : 5, 'min' : 1},
-#         'CONNECTION_MUTATION_RATE': {'max': 1.0, 'min': 0.1},
-#         'CONNECTION_PERTURBATION_RATE': {'max': 1.0, 'min': 0.1},
-#         'ADD_NODE_MUTATION_RATE': {'max': 1.0, 'min': 0.1},
-#         'ADD_CONNECTION_MUTATION_RATE': {'max': 1.0, 'min': 0.1},
-#         'CROSSOVER_REENABLE_CONNECTION_GENE_RATE': {'max': 1.0, 'min': 0.1},
-#         'PERCENTAGE_TO_SAVE': {'max': 1.0, 'min': 0.1}
-#      }
-# }
-
-# sweep_id = wandb.sweep(sweep=sweep_configuration, project="acrobot", entity="evolvingnn")
-# print(sweep_id)
-
-def control():
+def init_sweep(name = "acrobot"):
     sweep_configuration = {
         'method': 'bayes',
-        'name': 'Acrobot Control',
+        'name': name,
         'metric': {
             'goal': 'maximize', 
             'name': 'Best Fitness'
@@ -61,6 +36,34 @@ def control():
             'PERCENTAGE_TO_SAVE': {'max': 1.0, 'min': 0.1}
         }
     }
+    sweep_id = wandb.sweep(sweep=sweep_configuration, project="acrobot", entity="evolvingnn")
+    print(sweep_id)
+    return sweep_id
+
+
+def control():
+    # sweep_configuration = {
+    #     'method': 'bayes',
+    #     'name': 'Acrobot Control',
+    #     'metric': {
+    #         'goal': 'maximize', 
+    #         'name': 'Best Fitness'
+    #         },
+    #     'parameters': {
+    #         'USE_BIAS': {'values': [False, True]},
+    #         'POPULATION_SIZE': {'max': 50, 'min': 3},
+    #         'GENERATIONAL_ENSEMBLE_SIZE': {'max': 21, 'min': 2},
+    #         'CANDIDATE_LIMIT': {'max': 100, 'min': 1},
+    #         'SCALE_ACTIVATION': {'max': 7, 'min': 2},
+    #         'SPECIATION_THRESHOLD': {'max' : 5, 'min' : 1},
+    #         'CONNECTION_MUTATION_RATE': {'max': 1.0, 'min': 0.1},
+    #         'CONNECTION_PERTURBATION_RATE': {'max': 1.0, 'min': 0.1},
+    #         'ADD_NODE_MUTATION_RATE': {'max': 1.0, 'min': 0.1},
+    #         'ADD_CONNECTION_MUTATION_RATE': {'max': 1.0, 'min': 0.1},
+    #         'CROSSOVER_REENABLE_CONNECTION_GENE_RATE': {'max': 1.0, 'min': 0.1},
+    #         'PERCENTAGE_TO_SAVE': {'max': 1.0, 'min': 0.1}
+    #     }
+    # }
 
     # sweep_id = wandb.sweep(sweep=sweep_configuration, project="acrobot", entity="evolvingnn")
     # print(sweep_id)
@@ -318,11 +321,11 @@ def train():
 
 
 if __name__ == '__main__':
-    # for _ in range(10):
-        # train()
-    train()
+
+
+    #init_sweep("Acrobot Control")
     #control()
     #ACER()
     #ACER_with_warmup()
-    # wandb.agent('ra2nl7hw', function=ACER_with_warmup, count = 50)
+    wandb.agent('7hyywee9', function=control, count = 50)
     #test()
