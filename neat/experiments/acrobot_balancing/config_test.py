@@ -98,7 +98,31 @@ class AcrobotBalanceConfig:
         soft_activations = torch.sum(torch.stack(ensemble_activations, dim = 0), dim = 0)
         vote = np.argmax(softmax(soft_activations).detach().numpy()[0])
         return vote
+        
+    def eval_ensemble(self, ensemble):
 
+        def vote(voting_ensemble, input):
+            softmax = nn.Softmax(dim=1)
+            ensemble_activations = [phenotype(input) for phenotype in voting_ensemble]
+            soft_activations = torch.sum(torch.stack(ensemble_activations, dim = 0), dim = 0)
+            vote = np.argmax(softmax(soft_activations).detach().numpy()[0])
+            return vote
+
+        voting_ensemble = [FeedForwardNet(genome, self) for genome in ensemble]
+
+        env = gym.make('Acrobot-v1')
+        done = False
+        observation = env.reset()
+        fitness = 0
+        while not done:
+            observation = np.array([observation])
+            input = torch.Tensor(observation).to(self.DEVICE)
+            pred = vote(voting_ensemble, input)
+            observation, reward, done, info = env.step(pred)
+            #height = -observation[0] - (observation[0]observation[2] - observation[1]observation[3])
+            fitness += reward
+
+        return fitness
 
     def constituent_ensemble_evaluation(self, genomes):
 
@@ -192,6 +216,8 @@ class AcrobotBalanceConfig:
 
         best_genome = max(population, key=attrgetter('fitness'))
         best_ensemble = max(ensemble_rewards.items(), key=itemgetter(1))[0] if ensemble_rewards else None
+
+        df_results = wrapper.run_trial_analysis(population, self.eval_ensemble)
 
         # self.wandb.log({"Best Max Height" : best_genome.max_height,
         #                 "Best Fitness" : best_genome.fitness,

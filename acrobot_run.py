@@ -315,9 +315,9 @@ def train():
 if __name__ == '__main__':
     # for _ in range(10):
         # train()
-    #train()
+    # train()
     #control()
     #ACER()
     #ACER_with_warmup()
-    wandb.agent('ra2nl7hw', function=ACER_with_warmup, count = 50)
-    #test()
+    # wandb.agent('ra2nl7hw', function=ACER_with_warmup, count = 50)
+    test()

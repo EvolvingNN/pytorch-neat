@@ -89,6 +89,30 @@ class AcrobotBalanceConfig:
 
     #Allow episode lengths of > than 200
 
+    def eval_ensemble(self, ensemble):
+
+        def vote(voting_ensemble, input):
+            softmax = nn.Softmax(dim=1)
+            ensemble_activations = [phenotype(input) for phenotype in voting_ensemble]
+            soft_activations = torch.sum(torch.stack(ensemble_activations, dim = 0), dim = 0)
+            vote = np.argmax(softmax(soft_activations).detach().numpy()[0])
+            return vote
+
+        voting_ensemble = [FeedForwardNet(genome, self) for genome in ensemble]
+
+        env = gym.make('Acrobot-v1')
+        done = False
+        observation = env.reset()
+        fitness = 0
+        while not done:
+            observation = np.array([observation])
+            input = torch.Tensor(observation).to(self.DEVICE)
+            pred = vote(voting_ensemble, input)
+            observation, reward, done, info = env.step(pred)
+            #height = -observation[0] - (observation[0]observation[2] - observation[1]observation[3])
+            fitness += reward
+
+        return fitness
 
     def vote(self, voting_ensemble, obs):
         softmax = nn.Softmax(dim=1)
@@ -161,6 +185,15 @@ class AcrobotBalanceConfig:
                 #                 f"Genome {id(genome)} Average Reward" : genome.average_reward,
                 #                 f"Genome {id(genome)} Step Completed" : genome.step_completed
                 #                 }, step = kwargs['generation'])
+
+
+                    # Create a dataframe of the results of the trial analysis
+            df_results = wrapper.run_trial_analysis(population, self.eval_ensemble)
+            df_results.to_csv('./df_results.csv')
+
+            # Save the csv to wandb
+            self.wandb.save('./df_results.csv')
+
 
             #POLICY: ACER | use the average reward from a sample of constituent ensembles to score the genome.
             if self.USE_ACER:
