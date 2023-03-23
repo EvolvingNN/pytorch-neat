@@ -274,5 +274,5 @@ if __name__ == '__main__':
     #control()
     #ACER()
     #ACER_with_warmup()
-    wandb.agent('f1wioo9o', function=ACER, count = 50, project = 'acrobot')
+    wandb.agent('3k7g1qn7', function=ACER_with_warmup, count = 50, project = 'acrobot')
     #test()
