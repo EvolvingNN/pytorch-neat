@@ -270,9 +270,9 @@ def train():
 if __name__ == '__main__':
 
 
-    #init_sweep("Acrobot ACER with Warm-Up")
+    #init_sweep("Acrobot ACER")
     #control()
     #ACER()
     #ACER_with_warmup()
-    wandb.agent('3k7g1qn7', function=ACER_with_warmup, count = 50, project = 'acrobot')
+    wandb.agent('3aytglth', function=ACER_with_warmup, count = 50, project = 'acrobot')
     #test()
