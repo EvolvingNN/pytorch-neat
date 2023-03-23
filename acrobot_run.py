@@ -145,39 +145,12 @@ def ACER():
         continue
 
 def ACER_with_warmup():
-    sweep_configuration = {
-        'method': 'random',
-        'name': 'Acrobot ACER with Warmup',
-        'metric': {
-            'goal': 'minimize', 
-            'name': 'Best Step Completed'
-            },
-        'parameters': {
-            'USE_BIAS': {'values': [False, True]},
-            'POPULATION_SIZE': {'max': 50, 'min': 3},
-            'GENERATIONAL_ENSEMBLE_SIZE': {'max': 21, 'min': 2},
-            'CANDIDATE_LIMIT': {'max': 100, 'min': 1},
-            'SCALE_ACTIVATION': {'max': 7, 'min': 2},
-            'SPECIATION_THRESHOLD': {'max' : 5, 'min' : 1},
-            'CONNECTION_MUTATION_RATE': {'max': 1.0, 'min': 0.1},
-            'CONNECTION_PERTURBATION_RATE': {'max': 1.0, 'min': 0.1},
-            'ADD_NODE_MUTATION_RATE': {'max': 1.0, 'min': 0.1},
-            'ADD_CONNECTION_MUTATION_RATE': {'max': 1.0, 'min': 0.1},
-            'CROSSOVER_REENABLE_CONNECTION_GENE_RATE': {'max': 1.0, 'min': 0.1},
-            'PERCENTAGE_TO_SAVE': {'max': 1.0, 'min': 0.1}
-        }
-    }
-
-    sweep_id = wandb.sweep(sweep=sweep_configuration, project="acrobot", entity="evolvingnn")
-    print(sweep_id)
 
     KWARGS['USE_CONTROL'] = True
     KWARGS['USE_ACER'] = True
     KWARGS['USE_ACER_WITH_WARMUP'] = True
-
-    KWARGS['NUMBER_OF_GENERATIONS'] = 30
     
-    wandb.init(config = KWARGS, group = '30 Generations')
+    wandb.init(config = KWARGS, group = 'Acrobot ACER with Warm-Up', project = 'acrobot')
 
     kwargs = {
         'VERBOSE': wandb.config.VERBOSE,
@@ -298,9 +271,9 @@ def train():
 if __name__ == '__main__':
 
 
-    #init_sweep("Acrobot ACER")
+    #init_sweep("Acrobot ACER with Warm-Up")
     #control()
     #ACER()
     #ACER_with_warmup()
-    wandb.agent('f1wioo9o', function=ACER, count = 50, project = 'acrobot')
+    wandb.agent('za5rbjc2', function=ACER_with_warmup, count = 50, project = 'acrobot')
     #test()
