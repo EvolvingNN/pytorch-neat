@@ -115,10 +115,27 @@ class Population:
 
             # Generation Stats
             if self.Config.VERBOSE:
-                logger.info(f'Finished Generation {generation}')
-                logger.info(f'Best Genome Fitness: {best_genome.fitness}')
-                logger.info(
-                    f'Best Genome Length {len(best_genome.connection_genes)}\n')
+                logger.info(f"Finished Generation {generation}")
+                logger.info(f"Best Genome Fitness: {best_genome.fitness}")
+                logger.info(f"Best Genome Length {len(best_genome.connection_genes)}\n")
+
+            # Limit population size
+            if self.Config.MAX_POPULATION_SIZE is not None:
+                max_pop_size = self.Config.MAX_POPULATION_SIZE
+                for species in self.species:
+                    species.sort(reverse=True, key=lambda g: g.fitness)
+
+                genomes_seen = 0
+                max_species_size = max(map(len, self.species))
+
+                for index in range(max_species_size):
+                    for species in self.species:
+                        if (index < len(species)):
+                            genome = species[index]
+                            genomes_seen += 1
+                            if genomes_seen > max_pop_size:
+                                self.population.remove(genome)
+                                species.remove(genome)
 
         return None, None
 
