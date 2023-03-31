@@ -126,16 +126,16 @@ class Population:
                     species.sort(reverse=True, key=lambda g: g.fitness)
 
                 genomes_seen = 0
-                max_species_size = max(map(len, self.species))
-
-                for index in range(max_species_size):
+                for index in range(max(map(len, self.species))):
                     for species in self.species:
-                        if (index < len(species)):
-                            genome = species[index]
+                        if index < len(species):
                             genomes_seen += 1
                             if genomes_seen > max_pop_size:
-                                self.population.remove(genome)
-                                species.remove(genome)
+                                for index_to_remove in range(index, len(species)):
+                                    self.population.remove(species[index_to_remove])
+                                limited_species = species[0:index]
+                                species.clear()
+                                species.extend(limited_species)
 
         return None, None
 
