@@ -121,6 +121,23 @@ class Population:
                 logger.info(f'Population Size: {len(self.population)}')
                 logger.info(f'Number of Species: {len(self.species)}\n')
 
+            # Limit population size
+            if self.Config.MAX_POPULATION_SIZE is not None:
+                max_pop_size = self.Config.MAX_POPULATION_SIZE
+                for species in self.species:
+                    species.sort(reverse=True, key=lambda g: g.fitness)
+
+                genomes_seen = 0
+                for index in range(max(map(len, self.species))):
+                    for species in self.species:
+                        if index < len(species):
+                            genomes_seen += 1
+                            if genomes_seen > max_pop_size:
+                                for index_to_remove in range(index, len(species)):
+                                    self.population.remove(species[index_to_remove])
+                                limited_species = species[0:index]
+                                species.clear()
+                                species.extend(limited_species)
 
         return None, None
 

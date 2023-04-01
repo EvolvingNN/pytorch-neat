@@ -98,6 +98,12 @@ def diversity_rr_selection_accuracies(genomes, eval_func, speciation_threshold=3
     return __accuracies_for_genomes_in_order(genomes_in_order, eval_func)
 
 
+def diversity_rr_algo_factory(speciation_threshold):
+    return lambda genomes, eval_func: diversity_rr_selection_accuracies(
+        genomes, eval_func, speciation_threshold
+    )
+
+
 def __accuracies_for_genomes_in_order(genomes_in_order, eval_func):
     """
     Creates the accuracies for a list of genomes in their ensemble order.
@@ -117,9 +123,7 @@ ALGORITHMS = {
     "greedy2": greedy_2_selection_accuracies,
     # Diversity algorithm requires varying speciation threshold
     **{
-        f"diversity_{t}_threshold": lambda p, e: diversity_rr_selection_accuracies(
-            p, e, speciation_threshold=t
-        )
-        for t in np.arange(0.1, 5.1, 0.1)
+        f"diversity_{round(t, 1)}_threshold": diversity_rr_algo_factory(t)
+        for t in np.arange(0.1, 5.0001, 0.1)
     },
 }
