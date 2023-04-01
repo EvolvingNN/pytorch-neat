@@ -129,7 +129,7 @@ def control(name = None):
     KWARGS['USE_FITNESS_COEFFICIENT'] = False
     KWARGS['USE_GENOME_FITNESS'] = True
 
-    run = wandb.init(config=KWARGS, project="Classification-4", name = name)
+    run = wandb.init(config=KWARGS, project="Classification-5", name = name)
 
     wandb.define_metric("generation")
 
@@ -181,6 +181,8 @@ def control(name = None):
     
     kwargs['wandb'] = wandb
     kwargs['run_id'] = run.id
+
+    kwargs['CHECKPOINTS'] = [5,25,50,100,150,200]
 
     kwargs['df_results'] = pd.DataFrame(columns = ['generation', 'ensemble_size', *[f"diversity_{t}_threshold" for t in np.arange(1, 6, 1)], 'greedy1', 'greedy2', 'random'])
 
@@ -397,8 +399,6 @@ def train():
 def test():
     kwargs = KWARGS
 
-    kwargs['POPULATION_SIZE'] = 5
-
     kwargs['DATA'] = X_train
     kwargs['TARGET'] = y_train
 
@@ -406,7 +406,9 @@ def test():
     kwargs['NUM_OUTPUTS'] = kwargs['TARGET'].shape[1]
 
     kwargs['TEST_DATA'] = X_test
-    kwargs['TEST_TARGET'] = y_test   
+    kwargs['TEST_TARGET'] = y_test
+
+    kwargs['ALGORITHM_CHECKPOINTS'] = [5,25,50,100,150,200]   
 
     neat = pop.Population(c_test.UCIConfig_test(**kwargs))
     solution, generation = neat.run()     
@@ -415,11 +417,11 @@ if __name__ == '__main__':
 
     #test()
 
-    #control("test")
+    control()
     #ACE("Trial 5 - ACE")
     #init_sweep()
     
-    ACE_warmup("solar-sweep-50")
+    #ACE_warmup("solar-sweep-50")
     #print(df)
         
     #wandb.agent("9y18e70x", function=ACE_warmup, project="Classification-4", count = 5)

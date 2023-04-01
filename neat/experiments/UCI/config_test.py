@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 from torch import autograd
+import math
 from neat.phenotype.feed_forward import FeedForwardNet
 #from torchvision import datasets
 from tqdm import tqdm
@@ -140,7 +141,9 @@ class UCIConfig_test:
             constituent_ensemble_accuracies = []
 
             # Generate a sample of all possible combinations of candidate genomes to ensemble for a given size k
-            sample_ensembles = random_ensemble_generator_for_static_genome(genome, genomes, k = self.GENERATIONAL_ENSEMBLE_SIZE, limit = self.CANDIDATE_LIMIT)  # type: ignore
+            k = int(len(genomes) * self.GENERATIONAL_ENSEMBLE_FRACTION)
+            limit = int(math.comb(len(genomes),k) * self.CANDIDATE_LIMIT)
+            sample_ensembles = random_ensemble_generator_for_static_genome(genome, genomes, k = k, limit = limit)  # type: ignore
 
             # Evaluate the fitness of each ensemble
             for sample_ensemble in sample_ensembles:
@@ -178,8 +181,10 @@ class UCIConfig_test:
 
         # Create a dataframe of the results of the trial analysis
         #df_results = wrapper.run_trial_analysis(train_activations_map, self.constituent_ensemble_evaluation)
-        df_results = wrapper.run_trial_analysis_UCI(train_activations_map, test_activations_map, self.constituent_ensemble_evaluation)
-        df_results.to_csv('df_results.csv')
+        if generation in self.ALGORITHM_CHECKPOINTS:
+            print("ALGO")
+            df_results = wrapper.run_trial_analysis_UCI(train_activations_map, test_activations_map, self.constituent_ensemble_evaluation)
+            df_results.to_csv('df_results.csv')
 
         # Take the mean for each column
         # df_results = 

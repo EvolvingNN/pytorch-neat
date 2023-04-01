@@ -210,34 +210,35 @@ class UCIConfig:
             # self.wandb.log({"train/step": i + len(genomes) * (generation - 1)})
 
         # Create a dataframe of the results of the trial analysis
-        df_results = wrapper.run_trial_analysis_UCI(train_activations_map, test_activations_map, self.constituent_ensemble_evaluation)
-        
-        self.wandb.log(df_results.max(axis=0).to_dict())
-        
-        df_results = df_results.reset_index().rename(columns = {"index" : "ensemble_size"})
-        df_results['ensemble_size'] += 1
+        if generation in self.CHECKPOINTS:
+            df_results = wrapper.run_trial_analysis_UCI(train_activations_map, test_activations_map, self.constituent_ensemble_evaluation)
+            
+            self.wandb.log(df_results.max(axis=0).to_dict())
+            
+            df_results = df_results.reset_index().rename(columns = {"index" : "ensemble_size"})
+            df_results['ensemble_size'] += 1
 
-        def best_ensemble_sizes(df):
-            metric_cols = [col for col in df.columns if col != 'ensemble_size']
-            best_sizes = {}
+            def best_ensemble_sizes(df):
+                metric_cols = [col for col in df.columns if col != 'ensemble_size']
+                best_sizes = {}
 
-            for metric in metric_cols:
-                # Find the ensemble size that achieved the highest performance on this metric
-                best_size_idx = df[metric].idxmax()
-                best_size = df.loc[best_size_idx, 'ensemble_size']
-                best_sizes[metric + "_best_ensemble_size"] = best_size
+                for metric in metric_cols:
+                    # Find the ensemble size that achieved the highest performance on this metric
+                    best_size_idx = df[metric].idxmax()
+                    best_size = df.loc[best_size_idx, 'ensemble_size']
+                    best_sizes[metric + "_best_ensemble_size"] = best_size
 
-            return best_sizes
-        
-        self.wandb.log(best_ensemble_sizes(df_results))
+                return best_sizes
+            
+            self.wandb.log(best_ensemble_sizes(df_results))
 
 
-        df_results['generation'] = generation
-        df_results['run_id'] = self.run_id
+            df_results['generation'] = generation
+            df_results['run_id'] = self.run_id
 
-        self.df_results = pd.concat([df_results, self.df_results], ignore_index=True)
-        
-        self.wandb.log({"df_results" : self.wandb.Table(dataframe = self.df_results)})
+            self.df_results = pd.concat([df_results, self.df_results], ignore_index=True)
+            
+            self.wandb.log({"df_results" : self.wandb.Table(dataframe = self.df_results)})
 
         # df_results.to_csv('./df_results.csv')
     
