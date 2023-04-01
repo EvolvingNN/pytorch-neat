@@ -415,9 +415,9 @@ def test():
 
 if __name__ == '__main__':
 
-    #test()
+    test()
 
-    control()
+    #control()
     #ACE("Trial 5 - ACE")
     #init_sweep()
     
