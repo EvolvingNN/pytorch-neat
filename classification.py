@@ -43,7 +43,7 @@ y_train = torch.squeeze(one_hot(torch.tensor(y_train.to_numpy().reshape(-1,1))))
 y_test = torch.squeeze(one_hot(torch.tensor(y_test.to_numpy().reshape(-1,1)))) # type: ignore
 
 
-def init_sweep(sweep_config = 'control'):
+def init_sweep(sweep_config = 'control', project = "Classification-5"):
     control_sweep_configuration = {
         'method': 'bayes',
         'name': 'UCI Classification | Control',
@@ -118,7 +118,7 @@ def init_sweep(sweep_config = 'control'):
              'ACE_warmup' : ACE_warmup_sweep_configuration}
 
     #sweep_id = wandb.sweep(sweep=sweep_configuration, project="Classification-2", entity="evolvingnn")
-    sweep_id = wandb.sweep(sweep = sweep[sweep_config], entity = "evolvingnn")
+    sweep_id = wandb.sweep(sweep = sweep[sweep_config], project = project, entity = "evolvingnn")
     print(sweep_id)
     return sweep_id
 
@@ -426,9 +426,10 @@ if __name__ == '__main__':
 
     #test()
     #init_sweep(sweep_config='ACE_warmup', project = 'Classification-Warmup')
+    #init_sweep(sweep_config='control', project="Classification-5")
     #control()
     #ACE()
     #ACE_warmup()
         
-    wandb.agent("qbi11z9t", function=ACE_warmup, project="Classification-Warmup", count = 3)
-
+    #wandb.agent("qbi11z9t", function=ACE_warmup, project="Classification-Warmup", count = 3)
+    wandb.agent("lwji681m", function=control, project = "Classification-5", count = 3)
