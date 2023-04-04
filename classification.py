@@ -425,8 +425,8 @@ if __name__ == '__main__':
     #test()
     #init_sweep()
     #control()
-    ACE()
-    #ACE_warmup()
+    #ACE()
+    ACE_warmup()
         
     #wandb.agent("9y18e70x", function=ACE_warmup, project="Classification-4", count = 5)
 
