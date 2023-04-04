@@ -181,7 +181,7 @@ class UCIConfig_test:
 
         # Create a dataframe of the results of the trial analysis
         #df_results = wrapper.run_trial_analysis(train_activations_map, self.constituent_ensemble_evaluation)
-        if generation in self.ALGORITHM_CHECKPOINTS:
+        if generation in self.CHECKPOINTS:
             print("ALGO")
             df_results = wrapper.run_trial_analysis_UCI(train_activations_map, test_activations_map, self.constituent_ensemble_evaluation)
             df_results.to_csv('df_results.csv')

@@ -408,16 +408,16 @@ def test():
     kwargs['TEST_DATA'] = X_test
     kwargs['TEST_TARGET'] = y_test
 
-    kwargs['ALGORITHM_CHECKPOINTS'] = [5,25,50,100,150,200]   
+    kwargs['CHECKPOINTS'] = [5,25,50,100,150,200]   
 
     neat = pop.Population(c_test.UCIConfig_test(**kwargs))
     solution, generation = neat.run()     
 
 if __name__ == '__main__':
 
-    test()
+    #test()
 
-    #control()
+    control()
     #ACE("Trial 5 - ACE")
     #init_sweep()
     
