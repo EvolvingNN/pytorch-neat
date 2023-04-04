@@ -423,13 +423,10 @@ def test():
 if __name__ == '__main__':
 
     #test()
-
-    control()
-    #ACE()
     #init_sweep()
-    
+    #control()
+    ACE()
     #ACE_warmup()
-    #print(df)
         
     #wandb.agent("9y18e70x", function=ACE_warmup, project="Classification-4", count = 5)
 
