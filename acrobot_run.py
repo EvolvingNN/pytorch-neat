@@ -149,7 +149,8 @@ def ACER_with_warmup():
     KWARGS['USE_ACER'] = True
     KWARGS['USE_ACER_WITH_WARMUP'] = True
     
-    wandb.init(config = KWARGS, group = 'Acrobot ACER with Warm-Up', project = 'acrobot')
+    # wandb.init(config = KWARGS, group = 'Acrobot ACER with Warm-Up', project = 'acrobot')
+    wandb.init(config = KWARGS, project = 'acrobot')
 
     kwargs = {
         'VERBOSE': wandb.config.VERBOSE,
@@ -175,6 +176,9 @@ def ACER_with_warmup():
         'ADD_CONNECTION_MUTATION_RATE': wandb.config.ADD_CONNECTION_MUTATION_RATE,
         'CROSSOVER_REENABLE_CONNECTION_GENE_RATE': wandb.config.CROSSOVER_REENABLE_CONNECTION_GENE_RATE,
         'PERCENTAGE_TO_SAVE': wandb.config.PERCENTAGE_TO_SAVE,
+        'NUMBER_OF_GENERATIONS': wandb.config.NUMBER_OF_GENERATIONS,
+        'MAX_POPULATION_SIZE': wandb.config.MAX_POPULATION_SIZE,
+        'CHECKPOINTS': wandb.config.CHECKPOINTS
     }
     kwargs['wandb'] = wandb
 
@@ -272,7 +276,7 @@ if __name__ == '__main__':
 
     #init_sweep("Acrobot Control")
     #control()
-    #ACER()
-    #ACER_with_warmup()
-    wandb.agent('3aytglth', function=ACER, count = 50, project = 'acrobot')
+    # ACER()
+    ACER_with_warmup()
+    # wandb.agent('3aytglth', function=ACER, count = 50, project = 'acrobot')
     #test()

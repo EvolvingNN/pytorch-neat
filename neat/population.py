@@ -26,7 +26,7 @@ class Population:
             self.speciate(genome, 0)
 
     def run(self):
-        for generation in range(1, self.Config.NUMBER_OF_GENERATIONS + 1):
+        for generation in range(1, self.Config.NUMBER_OF_GENERATIONS+1):
             # Get Fitness of Every Genome
             if hasattr(self.Config, 'eval_genomes'):
                 best_genome, best_ensemble = self.Config.eval_genomes(self.population, generation = generation)
@@ -36,13 +36,35 @@ class Population:
             elif hasattr(self.Config, 'fitness_fn'):
                 for genome in self.population:
                     genome.fitness = max(0, self.Config.fitness_fn(genome))
+            elif hasattr(self.Config, 'alt_fitness_fn'):
+                for genome in self.population:
+                    genome.fitness = self.Config.alt_fitness_fn(genome)
             else:
                 raise RuntimeError(
                     'Config does not have fitness_fn or eval_genomes!',
                 )
-            
+
             best_genome = utils.get_best_genome(self.population)
 
+            # Limit population size
+            if self.Config.MAX_POPULATION_SIZE is not None:
+                max_pop_size = self.Config.MAX_POPULATION_SIZE
+                for species in self.species:
+                    species.members.sort(reverse=True, key=lambda g: g.fitness)
+
+                genomes_seen = 0
+                for index in range(max([len(s.members) for s in self.species])):
+                    for species in self.species:
+                        if index < len(species.members):
+                            genomes_seen += 1
+                            if genomes_seen > max_pop_size:
+                                for index_to_remove in range(index, len(species.members)):
+                                    self.population.remove(species.members[index_to_remove])
+                                limited_species = species.members[0:index]
+                                species.members.clear()
+                                species.members.extend(limited_species)
+                        if not species.members: #species is empty
+                            self.species.remove(species)
             # Reproduce
             all_fitnesses = []
             remaining_species = []
@@ -111,12 +133,17 @@ class Population:
             if best_genome.fitness >= self.Config.FITNESS_THRESHOLD:
                 return best_genome, generation
 
+
+
+
+
             # Generation Stats
             if self.Config.VERBOSE:
                 logger.info(f'Finished Generation {generation}')
                 logger.info(f'Best Genome Fitness: {best_genome.fitness}')
-                logger.info(
-                    f'Best Genome Length {len(best_genome.connection_genes)}\n')
+                logger.info(f'Best Genome Length {len(best_genome.connection_genes)}')
+                logger.info(f'Population Size: {len(self.population)}')
+                logger.info(f'Number of Species: {len(self.species)}\n')
 
         return None, None
 

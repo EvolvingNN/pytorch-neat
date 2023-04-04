@@ -150,7 +150,7 @@ class AcrobotBalanceConfig:
 
 
 
-    def eval_genomes(self, population, **kwargs):
+    def eval_genomes(self, population, generation, **kwargs):
 
         ensemble_rewards = {}
 
@@ -205,15 +205,19 @@ class AcrobotBalanceConfig:
 
             #POLICY: ACER WITH WARMUP | use a weighted fitness function which intially favors genome fitness, then incremenetally favors ACER
             if self.USE_ACER_WITH_WARMUP:
-                ACER_coefficient = kwargs['generation']/self.NUMBER_OF_GENERATIONS
+                ACER_coefficient = generation/self.NUMBER_OF_GENERATIONS
                 genome_coefficient = 1 - ACER_coefficient
 
                 genome.fitness = genome_coefficient * (genome.total_height - genome.step_completed) + ACER_coefficient *  genome.fitness
 
-        # Save the csv to wandb
-        self.wandb.save('./df_results.csv')
+        best_genome = max(population, key=attrgetter('fitness'))
+        best_ensemble = max(ensemble_rewards.items(), key=itemgetter(1))[0] if ensemble_rewards else None
 
-        if kwargs['generation'] == self.NUMBER_OF_GENERATIONS:
+
+        if generation in self.CHECKPOINTS:
+            # Save the csv to wandb
+            self.wandb.save('./df_results.csv')
+
             df_results = wrapper.run_trial_analysis(population, self.eval_ensemble)
             # print(df_results.max(axis=0).to_dict())
 
@@ -231,19 +235,19 @@ class AcrobotBalanceConfig:
                     best_sizes[metric + "_best_ensemble_size"] = best_size
 
                 return best_sizes
-            
-            self.wandb.log(best_ensemble_sizes(df_results))
-            self.wandb.log(df_results.max(axis=0).to_dict())
+                
+                self.wandb.log(best_ensemble_sizes(df_results))
+                self.wandb.log(df_results.max(axis=0).to_dict())
 
 
-        best_genome = max(population, key=attrgetter('fitness'))
-        best_ensemble = max(ensemble_rewards.items(), key=itemgetter(1))[0] if ensemble_rewards else None
 
-        self.wandb.log({"Best Max Height" : best_genome.max_height,
-                        "Best Fitness" : best_genome.fitness,
-                        "Best Average Reward" : best_genome.average_reward,
-                        "Best Step Completed" : best_genome.step_completed
-                        }, step = kwargs['generation'])
+
+            self.wandb.log({"Best Max Height" : best_genome.max_height,
+                            "Best Fitness" : best_genome.fitness,
+                            "Best Average Reward" : best_genome.average_reward,
+                            "Best Step Completed" : best_genome.step_completed
+                            }, step = generation)
+
 
         return best_genome, best_ensemble
 
