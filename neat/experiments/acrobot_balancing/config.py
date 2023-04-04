@@ -228,6 +228,8 @@ class AcrobotBalanceConfig:
 
             self.wandb.save('./df_results.csv')
 
+            self.wandb.log(df_results.max(axis=0).to_dict())
+
             def best_ensemble_sizes(df):
                 metric_cols = [col for col in df.columns if col != 'ensemble_size']
                 best_sizes = {}
