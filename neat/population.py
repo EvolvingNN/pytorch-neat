@@ -53,7 +53,6 @@ class Population:
                     species.members.sort(reverse=True, key=lambda g: g.fitness)
 
                 genomes_seen = 0
-                print(max([len(s.members) for s in self.species]))
                 for index in range(max([len(s.members) for s in self.species])):
                     for species in self.species:
                         if index < len(species.members):
@@ -64,7 +63,8 @@ class Population:
                                 limited_species = species.members[0:index]
                                 species.members.clear()
                                 species.members.extend(limited_species)
-
+                        if not species.members: #species is empty
+                            self.species.remove(species)
             # Reproduce
             all_fitnesses = []
             remaining_species = []
