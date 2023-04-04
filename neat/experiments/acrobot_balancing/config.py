@@ -216,13 +216,17 @@ class AcrobotBalanceConfig:
 
         if generation in self.CHECKPOINTS:
             # Save the csv to wandb
-            self.wandb.save('./df_results.csv')
+            
 
             df_results = wrapper.run_trial_analysis(population, self.eval_ensemble)
             # print(df_results.max(axis=0).to_dict())
 
             df_results = df_results.reset_index().rename(columns = {"index" : "ensemble_size"})
             df_results['ensemble_size'] += 1
+
+            df_results.to_csv("./df_results.csv")
+
+            self.wandb.save('./df_results.csv')
 
             def best_ensemble_sizes(df):
                 metric_cols = [col for col in df.columns if col != 'ensemble_size']
