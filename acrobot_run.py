@@ -149,7 +149,7 @@ def ACER_with_warmup():
     KWARGS['USE_ACER'] = True
     KWARGS['USE_ACER_WITH_WARMUP'] = True
     
-    wandb.init(config = KWARGS, group = 'Acrobot ACER with Warm-Up with max population', project = 'acrobot')
+    wandb.init(config = KWARGS, group = 'Acrobot ACER with Warm-Up with max population 2', project = 'acrobot')
     # wandb.init(config = KWARGS, project = 'acrobot')
 
     kwargs = {
