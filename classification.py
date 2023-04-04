@@ -205,7 +205,7 @@ def ACE(name = None):
     KWARGS['USE_FITNESS_COEFFICIENT'] = False
     KWARGS['USE_GENOME_FITNESS'] = False
 
-    run = wandb.init(config=KWARGS, project="Classification-4", tags = ["ACE", "fixed seed 888"], name = name)
+    run = wandb.init(config=KWARGS, project="Classification-ACE", tags = ["ACE", "fixed seed 888"], name = name)
 
     wandb.define_metric("generation")
 
@@ -234,6 +234,7 @@ def ACE(name = None):
         'GENOME_FITNESS_METRIC': wandb.config.GENOME_FITNESS_METRIC,
         'ENSEMBLE_FITNESS_METRIC': wandb.config.ENSEMBLE_FITNESS_METRIC,
         'POPULATION_SIZE': wandb.config.POPULATION_SIZE,
+        'MAX_POPULATION_SIZE': wandb.config.MAX_POPULATION_SIZE,
         'NUMBER_OF_GENERATIONS': wandb.config.NUMBER_OF_GENERATIONS,
         'SPECIATION_THRESHOLD': wandb.config.SPECIATION_THRESHOLD,
         'CONNECTION_MUTATION_RATE': wandb.config.CONNECTION_MUTATION_RATE,
@@ -252,6 +253,8 @@ def ACE(name = None):
     
     kwargs['wandb'] = wandb
     kwargs['run_id'] = run.id
+
+    kwargs['CHECKPOINTS'] = [5,25,50,100,150,200]
 
     kwargs['df_results'] = pd.DataFrame(columns = ['generation', 'ensemble_size', *[f"diversity_{t}_threshold" for t in np.arange(1, 6, 1)], 'greedy1', 'greedy2', 'random'])
     # Print the kwargs
@@ -275,7 +278,7 @@ def ACE_warmup(name = None):
     KWARGS['USE_FITNESS_COEFFICIENT'] = True
     KWARGS['USE_GENOME_FITNESS'] = True
 
-    run = wandb.init(config=KWARGS, project="Classification-4", tags = ["ACE-with-warmup", "fixed seed 888"], name = name)
+    run = wandb.init(config=KWARGS, project="Classification-5", tags = ["ACE-with-warmup", "fixed seed 888"], name = name)
 
     wandb.define_metric("generation")
 
@@ -306,6 +309,7 @@ def ACE_warmup(name = None):
         'GENOME_FITNESS_METRIC': wandb.config.GENOME_FITNESS_METRIC,
         'ENSEMBLE_FITNESS_METRIC': wandb.config.ENSEMBLE_FITNESS_METRIC,
         'POPULATION_SIZE': wandb.config.POPULATION_SIZE,
+        'MAX_POPULATION_SIZE': wandb.config.MAX_POPULATION_SIZE,
         'NUMBER_OF_GENERATIONS': wandb.config.NUMBER_OF_GENERATIONS,
         'SPECIATION_THRESHOLD': wandb.config.SPECIATION_THRESHOLD,
         'CONNECTION_MUTATION_RATE': wandb.config.CONNECTION_MUTATION_RATE,
@@ -325,7 +329,9 @@ def ACE_warmup(name = None):
     kwargs['wandb'] = wandb
     kwargs['run_id'] = run.id
 
-    kwargs['df_results'] = pd.DataFrame(columns = ['generation', 'ensemble_size', *[f"diversity_{t}_threshold" for t in np.arange(0.1, 5.1, 0.1)], 'greedy1', 'greedy2', 'random'])
+    kwargs['CHECKPOINTS'] = [5,25,50,100,150,200]
+
+    kwargs['df_results'] = pd.DataFrame(columns = ['generation', 'ensemble_size', *[f"diversity_{t}_threshold" for t in np.arange(1, 6, 1)], 'greedy1', 'greedy2', 'random'])
     # Print the kwargs
     # for key in kwargs:
     #     print(f"{key}: {kwargs[key]}")
@@ -418,8 +424,8 @@ if __name__ == '__main__':
 
     #test()
 
-    control()
-    #ACE("Trial 5 - ACE")
+    #control()
+    ACE()
     #init_sweep()
     
     #ACE_warmup("solar-sweep-50")
