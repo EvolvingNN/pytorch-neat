@@ -278,7 +278,7 @@ def ACE_warmup(name = None):
     KWARGS['USE_FITNESS_COEFFICIENT'] = True
     KWARGS['USE_GENOME_FITNESS'] = True
 
-    run = wandb.init(config=KWARGS, project="Classification-5", tags = ["ACE-with-warmup", "fixed seed 888"], name = name)
+    run = wandb.init(config=KWARGS, project="Classification-Warmup", tags = ["ACE-with-warmup", "fixed seed 888"], name = name)
 
     wandb.define_metric("generation")
 
@@ -425,10 +425,10 @@ if __name__ == '__main__':
     #test()
 
     #control()
-    ACE()
+    #ACE()
     #init_sweep()
     
-    #ACE_warmup("solar-sweep-50")
+    ACE_warmup()
     #print(df)
         
     #wandb.agent("9y18e70x", function=ACE_warmup, project="Classification-4", count = 5)
