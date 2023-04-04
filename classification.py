@@ -43,10 +43,10 @@ y_train = torch.squeeze(one_hot(torch.tensor(y_train.to_numpy().reshape(-1,1))))
 y_test = torch.squeeze(one_hot(torch.tensor(y_test.to_numpy().reshape(-1,1)))) # type: ignore
 
 
-def init_sweep():
+def init_sweep(sweep_config = 'control'):
     control_sweep_configuration = {
         'method': 'bayes',
-        'name': 'UCI Classification | Trial Engine | Control',
+        'name': 'UCI Classification | Control',
         'metric': {
             'goal': 'maximize', 
             'name': 'greedy1'
@@ -69,7 +69,7 @@ def init_sweep():
 
     ACE_sweep_configuration = {
         'method': 'random',
-        'name': 'UCI Classification | Trial Engine | ACE',
+        'name': 'UCI Classification | ACE',
         'metric': {
             'goal': 'maximize', 
             'name': 'greedy1'
@@ -94,16 +94,14 @@ def init_sweep():
 
     ACE_warmup_sweep_configuration = {
         'method': 'bayes',
-        'name': 'UCI Classification | Trial Engine | ACE_warmup',
+        'name': 'UCI Classification | ACE_warmup',
         'metric': {
             'goal': 'maximize', 
             'name': 'random'
             },
         'parameters': {
-            'GENOME_FITNESS_METRIC': {'values' : ['CE LOSS', 'ACCURACY']},
-            'ENSEMBLE_FITNESS_METRIC': {'values' : ['CE LOSS', 'ACCURACY']},
             'SPECIATION_THRESHOLD': {'values' : [1, 3, 5]},
-            'POPULATION_SIZE' : {'values' : [5, 25, 100]},
+            'POPULATION_SIZE' : {'values' : [10, 50, 100]},
             'GENERATIONAL_ENSEMBLE_FRACTION' : {'values' : [0.05, 0.25, 0.5]},
             'CANDIDATE_LIMIT' : {'values' : [0.10, 0.25, 0.5]},
             'CONNECTION_MUTATION_RATE': {'values' : [0.1, 0.5, 0.8]},
@@ -115,8 +113,12 @@ def init_sweep():
         }
     }
 
+    sweep = {'control' : control_sweep_configuration,
+             'ACE' : ACE_sweep_configuration,
+             'ACE_warmup' : ACE_warmup_sweep_configuration}
+
     #sweep_id = wandb.sweep(sweep=sweep_configuration, project="Classification-2", entity="evolvingnn")
-    sweep_id = wandb.sweep(sweep = ACE_warmup_sweep_configuration, project = "Classification-4", entity = "evolvingnn")
+    sweep_id = wandb.sweep(sweep = sweep[sweep_config], entity = "evolvingnn")
     print(sweep_id)
     return sweep_id
 
@@ -423,10 +425,10 @@ def test():
 if __name__ == '__main__':
 
     #test()
-    #init_sweep()
+    #init_sweep(sweep_config='ACE_warmup', project = 'Classification-Warmup')
     #control()
     #ACE()
-    ACE_warmup()
+    #ACE_warmup()
         
-    #wandb.agent("9y18e70x", function=ACE_warmup, project="Classification-4", count = 5)
+    wandb.agent("qbi11z9t", function=ACE_warmup, project="Classification-Warmup", count = 1)
 
