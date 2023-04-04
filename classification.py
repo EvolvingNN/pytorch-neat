@@ -418,7 +418,7 @@ if __name__ == '__main__':
 
     #test()
 
-    control()
+    control("control - low mutation - high population")
     #ACE("Trial 5 - ACE")
     #init_sweep()
     
