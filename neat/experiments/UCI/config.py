@@ -120,7 +120,7 @@ class UCIConfig:
         ensemble_fitness_coefficient = next(self.ensemble_coefficients)
 
         # Evaluate the fitness of each genome
-        for i, genome in enumerate(genomes):
+        for genome in genomes:
 
             genome.generation = generation
             
@@ -257,6 +257,7 @@ class UCIConfig:
         
         # Calculate the average fitness of the population
         population_fitness = np.mean([genome.fitness for genome in genomes])
+
 
         # columns = ['generation', 'genome_loss', 'genome_accuracy', 'constituent_ensemble_losses', 'mean_constituent_ensemble_loss', 'constituent_ensemble_accuracies', 'mean_constituent_ensemble_accuracy']
         # df_genome = pd.DataFrame(columns = columns)
