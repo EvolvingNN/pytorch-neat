@@ -1,3 +1,4 @@
+import argparse
 import logging
 import wandb
 
@@ -71,7 +72,7 @@ def control():
     KWARGS['USE_ACER'] = False
     KWARGS['USE_ACER_WITH_WARMUP'] = False
     
-    wandb.init(config = KWARGS, group = 'Acrobot Control', project = 'acrobot')
+    wandb.init(config = KWARGS, group = 'Acrobot Control with Warm-Up with max population', project = 'acrobot')
 
     kwargs = {
         'VERBOSE': wandb.config.VERBOSE,
@@ -97,6 +98,9 @@ def control():
         'ADD_CONNECTION_MUTATION_RATE': wandb.config.ADD_CONNECTION_MUTATION_RATE,
         'CROSSOVER_REENABLE_CONNECTION_GENE_RATE': wandb.config.CROSSOVER_REENABLE_CONNECTION_GENE_RATE,
         'PERCENTAGE_TO_SAVE': wandb.config.PERCENTAGE_TO_SAVE,
+        'NUMBER_OF_GENERATIONS': wandb.config.NUMBER_OF_GENERATIONS,
+        'MAX_POPULATION_SIZE': wandb.config.MAX_POPULATION_SIZE,
+        'CHECKPOINTS': wandb.config.CHECKPOINTS
     }
     kwargs['wandb'] = wandb
 
@@ -110,7 +114,7 @@ def ACER():
     KWARGS['USE_ACER'] = True
     KWARGS['USE_ACER_WITH_WARMUP'] = False
     
-    wandb.init(config = KWARGS, group = 'Acrobot ACER', project = 'acrobot')
+    wandb.init(config = KWARGS, group = 'Acrobot ACER with Warm-Up with max population', project = 'acrobot')
 
     kwargs = {
         'VERBOSE': wandb.config.VERBOSE,
@@ -136,6 +140,9 @@ def ACER():
         'ADD_CONNECTION_MUTATION_RATE': wandb.config.ADD_CONNECTION_MUTATION_RATE,
         'CROSSOVER_REENABLE_CONNECTION_GENE_RATE': wandb.config.CROSSOVER_REENABLE_CONNECTION_GENE_RATE,
         'PERCENTAGE_TO_SAVE': wandb.config.PERCENTAGE_TO_SAVE,
+        'NUMBER_OF_GENERATIONS': wandb.config.NUMBER_OF_GENERATIONS,
+        'MAX_POPULATION_SIZE': wandb.config.MAX_POPULATION_SIZE,
+        'CHECKPOINTS': wandb.config.CHECKPOINTS
     }
     kwargs['wandb'] = wandb
 
@@ -272,11 +279,27 @@ def train():
 
 
 if __name__ == '__main__':
+    # Read in command line arguments
+    parser = argparse.ArgumentParser(description='Run NEAT on Acrobot-v1')
+    parser.add_argument('--control', action='store_true', help='Train a model')
+    parser.add_argument('--acer', action='store_true', help='Test a model')
+    parser.add_argument('--acer_with_warmup', action='store_true', help='Test a model')
+    parser.add_argument('--test', action='store_true', help='Test a model')
+    args = parser.parse_args()
+
+    if args.control:
+        control()
+    elif args.acer:
+        ACER()
+    elif args.acer_with_warmup:
+        ACER_with_warmup()
+    elif args.test:
+        test()
 
 
     #init_sweep("Acrobot Control")
-    #control()
+    # control()
     # ACER()
-    ACER_with_warmup()
+    # ACER_with_warmup()
     # wandb.agent('3aytglth', function=ACER, count = 50, project = 'acrobot')
     #test()
