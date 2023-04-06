@@ -72,7 +72,7 @@ def control():
     KWARGS['USE_ACER'] = False
     KWARGS['USE_ACER_WITH_WARMUP'] = False
     
-    wandb.init(config = KWARGS, group = 'Acrobot Control with Warm-Up with max population', project = 'acrobot')
+    wandb.init(config = KWARGS, group = 'Acrobot Control with Warm-Up with max population 3', project = 'acrobot')
 
     kwargs = {
         'VERBOSE': wandb.config.VERBOSE,
@@ -114,7 +114,7 @@ def ACER():
     KWARGS['USE_ACER'] = True
     KWARGS['USE_ACER_WITH_WARMUP'] = False
     
-    wandb.init(config = KWARGS, group = 'Acrobot ACER with Warm-Up with max population', project = 'acrobot')
+    wandb.init(config = KWARGS, group = 'Acrobot ACER with Warm-Up with max population 3', project = 'acrobot')
 
     kwargs = {
         'VERBOSE': wandb.config.VERBOSE,
@@ -156,7 +156,7 @@ def ACER_with_warmup():
     KWARGS['USE_ACER'] = True
     KWARGS['USE_ACER_WITH_WARMUP'] = True
     
-    wandb.init(config = KWARGS, group = 'Acrobot ACER with Warm-Up with max population 2', project = 'acrobot')
+    wandb.init(config = KWARGS, group = 'Acrobot ACER with Warm-Up with max population 3', project = 'acrobot')
     # wandb.init(config = KWARGS, project = 'acrobot')
 
     kwargs = {
