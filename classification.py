@@ -435,6 +435,6 @@ if __name__ == '__main__':
     #ACE()
     #ACE_warmup()
         
-    wandb.agent("mjx9afl3", function=ACE, project="Classification-ACE", count = 5)
-    # wandb.agent("ah8cnf9g", function=ACE_warmup, project="Classification-Warmup-6", count = 5)
+    # wandb.agent("mjx9afl3", function=ACE, project="Classification-ACE", count = 5)
+    wandb.agent("g0xonuol", function=ACE_warmup, project="Classification-Warmup-6", count = 5)
     # wandb.agent("1boo3i70", function=control, project = "Classification-6", count = 5)
