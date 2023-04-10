@@ -75,9 +75,6 @@ def init_sweep(sweep_config = 'control', project = "Classification-5"):
             'name': 'greedy1'
             },
         'parameters': {
-            'USE_BIAS': {'values': [False, True]},
-            'GENOME_FITNESS_METRIC': {'values' : ['CE LOSS', 'ACCURACY']},
-            'ENSEMBLE_FITNESS_METRIC': {'values' : ['CE LOSS', 'ACCURACY']},
             'SPECIATION_THRESHOLD': {'values' : [1, 3, 5]},
             'POPULATION_SIZE' : {'values' : [5, 25, 100]},
             'GENERATIONAL_ENSEMBLE_FRACTION' : {'values' : [0.05, 0.10, 0.25, 0.5, 0.75, 1]},
@@ -425,11 +422,15 @@ def test():
 if __name__ == '__main__':
 
     #test()
+
     #init_sweep(sweep_config='ACE_warmup', project = 'Classification-Warmup')
+    #init_sweep(sweep_config='ACE', project = 'Classification-ACE')
     #init_sweep(sweep_config='control', project="Classification-5")
+    
     #control()
     #ACE()
     #ACE_warmup()
         
     #wandb.agent("qbi11z9t", function=ACE_warmup, project="Classification-Warmup", count = 3)
-    wandb.agent("lwji681m", function=control, project = "Classification-5", count = 3)
+    wandb.agent("lpmcnezy", function=ACE_warmup, project="Classification-Warmup", count = 5)
+    #wandb.agent("lwji681m", function=control, project = "Classification-5", count = 3)
