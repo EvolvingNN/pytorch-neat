@@ -52,12 +52,11 @@ def init_sweep(sweep_config = 'control', project = "Classification-5"):
             'name': 'greedy1'
             },
         'parameters': {
-            'USE_BIAS': {'values': [False, True]},
             'GENOME_FITNESS_METRIC': {'values' : ['CE LOSS', 'ACCURACY']},
             'ENSEMBLE_FITNESS_METRIC': {'values' : ['CE LOSS', 'ACCURACY']},
             'SPECIATION_THRESHOLD': {'values' : [1, 3, 5]},
-            'POPULATION_SIZE' : {'values' : [5, 25, 100]},
-            'NUMBER_OF_GENERATIONS' : {'values' : [50, 200]},
+            'POPULATION_SIZE' : {'values' : [10, 100]},
+            'MAX_POPULATION_SIZE' : {'values' : [10, 50, 100]},
             'CONNECTION_MUTATION_RATE': {'values' : [0.1, 0.5, 0.8]},
             'CONNECTION_PERTURBATION_RATE': {'values' : [0.1, 0.5, 0.8]},
             'ADD_NODE_MUTATION_RATE': {'values' : [0.1, 0.5, 0.8]},
@@ -75,6 +74,8 @@ def init_sweep(sweep_config = 'control', project = "Classification-5"):
             'name': 'greedy1'
             },
         'parameters': {
+            'GENOME_FITNESS_METRIC': {'values' : ['CE LOSS', 'ACCURACY']},
+            'ENSEMBLE_FITNESS_METRIC': {'values' : ['CE LOSS', 'ACCURACY']},
             'SPECIATION_THRESHOLD': {'values' : [1, 3, 5]},
             'POPULATION_SIZE' : {'values' : [10, 100]},
             'MAX_POPULATION_SIZE' : {'values' : [10, 50, 100]},
@@ -97,6 +98,8 @@ def init_sweep(sweep_config = 'control', project = "Classification-5"):
             'name': 'random'
             },
         'parameters': {
+            'GENOME_FITNESS_METRIC': {'values' : ['CE LOSS', 'ACCURACY']},
+            'ENSEMBLE_FITNESS_METRIC': {'values' : ['CE LOSS', 'ACCURACY']},
             'SPECIATION_THRESHOLD': {'values' : [1, 3, 5]},
             'POPULATION_SIZE' : {'values' : [10, 100]},
             'MAX_POPULATION_SIZE' : {'values' : [10, 50, 100]},
@@ -432,6 +435,6 @@ if __name__ == '__main__':
     #ACE()
     #ACE_warmup()
         
-    wandb.agent("sdkzh0sj", function=ACE, project="Classification-ACE", count = 5)
+    #wandb.agent("sdkzh0sj", function=ACE, project="Classification-ACE", count = 5)
     #wandb.agent("7jpzjpcu", function=ACE_warmup, project="Classification-Warmup", count = 5)
-    #wandb.agent("qhicib9o", function=control, project = "Classification-5", count = 5)
+    wandb.agent("ybk276fd", function=control, project = "Classification-5", count = 5)
