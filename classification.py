@@ -124,6 +124,81 @@ def init_sweep(sweep_config = 'control', project = "Classification-5"):
     print(sweep_id)
     return sweep_id
 
+def init_test_sweep(sweep_config = 'control', project = "Classification-6"):
+    control_sweep_configuration = {
+        'method': 'bayes',
+        'name': 'UCI Classification | Control',
+        'metric': {
+            'goal': 'maximize', 
+            'name': 'diversity_3_threshold'
+            },
+        'parameters': {
+            'GENOME_FITNESS_METRIC': {'values' : ['CE LOSS', 'ACCURACY']},
+            'SPECIATION_THRESHOLD': {'values' : [1, 3, 5]},
+            'POPULATION_SIZE' : {'values' : [5, 25]},
+            'MAX_POPULATION_SIZE' : {'values' : [10, 50]},
+            'CONNECTION_MUTATION_RATE': {'values' : [0.1]},
+            'CONNECTION_PERTURBATION_RATE': {'values' : [0.1]},
+            'ADD_NODE_MUTATION_RATE': {'values' : [0.1]},
+            'ADD_CONNECTION_MUTATION_RATE': {'values' : [0.5]},
+            'CROSSOVER_REENABLE_CONNECTION_GENE_RATE': {'values' : [0.1]},
+            'PERCENTAGE_TO_SAVE': {'values' : [0.1]}
+        }
+    }
+
+    ACE_warmup_sweep_configuration = {
+        'method': 'bayes',
+        'name': 'UCI Classification | ACE_warmup',
+        'metric': {
+            'goal': 'maximize', 
+            'name': 'diversity_3_threshold'
+            },
+        'parameters': {
+            'SPECIATION_THRESHOLD': {'values' : [1, 3, 5]},
+            'POPULATION_SIZE' : {'values' : [5, 25]},
+            'MAX_POPULATION_SIZE' : {'values' : [10, 50]},
+            'GENERATIONAL_ENSEMBLE_FRACTION' : {'values' : [0.05, 0.5, 1]},
+            'CANDIDATE_LIMIT' : {'values' : [0.1, 0.25, 1]},
+            'CONNECTION_MUTATION_RATE': {'values' : [0.5]},
+            'CONNECTION_PERTURBATION_RATE': {'values' : [0.1]},
+            'ADD_NODE_MUTATION_RATE': {'values' : [0.1]},
+            'ADD_CONNECTION_MUTATION_RATE': {'values' : [0.1]},
+            'CROSSOVER_REENABLE_CONNECTION_GENE_RATE': {'values' : [0.1]},
+            'PERCENTAGE_TO_SAVE': {'values' : [0.8]}
+        }
+    }
+
+    ACE_sweep_configuration = {
+        'method': 'bayes',
+        'name': 'UCI Classification | ACE_warmup',
+        'metric': {
+            'goal': 'maximize', 
+            'name': 'diversity_3_threshold'
+            },
+        'parameters': {
+            'SPECIATION_THRESHOLD': {'values' : [1, 3, 5]},
+            'POPULATION_SIZE' : {'values' : [5, 25]},
+            'MAX_POPULATION_SIZE' : {'values' : [10, 50]},
+            'GENERATIONAL_ENSEMBLE_FRACTION' : {'values' : [0.25, 1]},
+            'CANDIDATE_LIMIT' : {'values' : [0.10, 0.25, 1]},
+            'CONNECTION_MUTATION_RATE': {'values' : [0.8]},
+            'CONNECTION_PERTURBATION_RATE': {'values' : [0.1, 0.5]},
+            'ADD_NODE_MUTATION_RATE': {'values' : [0.5, 0.8]},
+            'ADD_CONNECTION_MUTATION_RATE': {'values' : [0.8]},
+            'CROSSOVER_REENABLE_CONNECTION_GENE_RATE': {'values' : [0.1]},
+            'PERCENTAGE_TO_SAVE': {'values' : [0.1, 0.8]}
+        }
+    }
+
+    sweep = {'control' : control_sweep_configuration,
+             'ACE' : ACE_sweep_configuration,
+             'ACE_warmup' : ACE_warmup_sweep_configuration}
+
+    #sweep_id = wandb.sweep(sweep=sweep_configuration, project="Classification-2", entity="evolvingnn")
+    sweep_id = wandb.sweep(sweep = sweep[sweep_config], project = project, entity = "evolvingnn")
+    print(sweep_id)
+    return sweep_id
+
 
 def control(name = None):
 
@@ -410,6 +485,12 @@ def train():
 def test():
     kwargs = KWARGS
 
+    kwargs['USE_FITNESS_COEFFICIENT'] = True
+    kwargs['USE_GENOME_FITNESS'] = True
+
+    kwargs['POPULATION_SIZE'] = 25
+    kwargs['MAX_POPULATION_SIZE'] = 50
+
     kwargs['DATA'] = X_train
     kwargs['TARGET'] = y_train
 
@@ -427,21 +508,40 @@ def test():
 if __name__ == '__main__':
     # Read command line arguments 
         # Read in command line arguments
-    parser = argparse.ArgumentParser(description='Run NEAT on Acrobot-v1')
+    parser = argparse.ArgumentParser(description='Run NEAT on Classification-')
+    parser.add_argument('--init_sweep', action = 'store_true', help='init sweep')
     parser.add_argument('--control', action='store_true', help='Train a model')
     parser.add_argument('--ace', action='store_true', help='Test a model')
     parser.add_argument('--ace_with_warmup', action='store_true', help='Test a model')
+    parser.add_argument('--test', action='store_true', help='Test a model')
     # parser.add_argument('--test', action='store_true', help='Test a model')
     args = parser.parse_args()
 
     #test()
-
+        
     if args.control:
-         wandb.agent("ybk276fd", function=control, project = "Classification-5", count = 5)
+        if args.init_sweep:
+            #init_sweep(sweep_config='control', project="Classification-5")
+            init_test_sweep(sweep_config='control', project="Classification-6")
+        else:     
+            #wandb.agent("ybk276fd", function=control, project = "Classification-5", count = 5)
+            wandb.agent("1eoz7fqt", function=control, project = "Classification-6", count = 5)
     elif args.ace:
-        wandb.agent("sdkzh0sj", function=ACE, project="Classification-ACE", count = 5)
+        if args.init_sweep:
+            #init_sweep(sweep_config='ACE', project = 'Classification-ACE')
+            init_test_sweep(sweep_config='ACE', project = 'Classification-6')
+        else:
+            wandb.agent("zv64rkmn", function=ACE, project="Classification-6", count = 5)
+            #wandb.agent("sdkzh0sj", function=ACE, project="Classification-ACE", count = 5)
     elif args.ace_with_warmup:
-        wandb.agent("7jpzjpcu", function=ACE_warmup, project="Classification-Warmup", count = 5)
+        if args.init_sweep:
+            #init_sweep(sweep_config='ACE_warmup', project = 'Classification-Warmup')
+            init_test_sweep(sweep_config='ACE_warmup', project = 'Classification-6')
+        else:
+            wandb.agent("nrjxmfqd", function=ACE_warmup, project="Classification-6", count = 5)
+            #wandb.agent("7jpzjpcu", function=ACE_warmup, project="Classification-Warmup", count = 5)
+    elif args.test:
+        test()
     else:
         print("Please specify either --control or --ace or --ace_with_warmup")
         exit()

@@ -6,6 +6,8 @@ from neat.phenotype.feed_forward import FeedForwardNet
 #from torchvision import datasets
 from tqdm import tqdm
 import pickle
+import math
+import random
 
 from neat.utils import create_prediction_map, random_ensemble_generator_for_static_genome, speciate
 import neat.analysis.wrapper as wrapper
@@ -98,6 +100,24 @@ class UCIConfig_test:
         
 
         return ensemble_accuracy
+    
+    def random_ensemble_generator(self, genome, genomes, k, limit):
+        limit = min(limit, math.comb(len(genomes) - 1, k))
+
+        genomes_ = genomes.copy()
+        genomes_.remove(genome)
+        
+        def random_combination(iterable, r):
+            "Random selection from itertools.combinations(iterable, r)"
+            pool = tuple(iterable)
+            n = len(pool)
+            indices = sorted(random.sample(range(n), r))
+            return list(tuple(pool[i] for i in indices))
+        
+        for _ in range(limit):
+            ens_ = random_combination(genomes_, k)
+            ens_.append(genome)
+            yield(ens_)
 
     def eval_genomes(self, genomes, generation):
 
@@ -144,6 +164,7 @@ class UCIConfig_test:
             k = int(len(genomes) * self.GENERATIONAL_ENSEMBLE_FRACTION)
             limit = int(math.comb(len(genomes),k) * self.CANDIDATE_LIMIT)
             sample_ensembles = random_ensemble_generator_for_static_genome(genome, genomes, k = k, limit = limit)  # type: ignore
+            #sample_ensembles = self.random_ensemble_generator(genome, genomes, k=k, limit=limit)
 
             # Evaluate the fitness of each ensemble
             for sample_ensemble in sample_ensembles:

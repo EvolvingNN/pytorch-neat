@@ -4,7 +4,6 @@ from torch import autograd
 from neat.phenotype.feed_forward import FeedForwardNet
 #from torchvision import datasets
 from tqdm import tqdm
-import pickle
 
 from neat.utils import create_prediction_map, random_ensemble_generator_for_static_genome, speciate
 import neat.analysis.wrapper as wrapper
@@ -108,7 +107,6 @@ class UCIConfig:
 
         return ensemble_accuracy
 
-
     def eval_genomes(self, genomes, generation):
 
         # Create an activation map for all the genomes using the provided data
@@ -120,7 +118,7 @@ class UCIConfig:
         ensemble_fitness_coefficient = next(self.ensemble_coefficients)
 
         # Evaluate the fitness of each genome
-        for genome in genomes:
+        for genome in tqdm(genomes):
 
             genome.generation = generation
             
@@ -162,14 +160,10 @@ class UCIConfig:
             sample_ensembles = random_ensemble_generator_for_static_genome(genome, genomes, k = k, limit = limit)  # type: ignore
 
             # Evaluate the fitness of each ensemble
-            for sample_ensemble in sample_ensembles:
+            for sample_ensemble in sample_ensembles: 
 
                 # Create a list to store the activations of the ensemble members
-                ensemble_activations = [train_activations_map[genome]]
-
-                # Append the activations of the candidate genomes to the list
-                for candidate in sample_ensemble:
-                    ensemble_activations.append(train_activations_map[candidate])
+                ensemble_activations = [train_activations_map[candidate] for candidate in sample_ensemble]
                     
                 # Sum the activations of all ensemble members
                 soft_activations = torch.sum(torch.stack(ensemble_activations, dim = 0), dim = 0)

@@ -3,6 +3,8 @@ import copy
 import math
 import random
 
+import tqdm
+
 import torch
 import numpy as np
 
@@ -67,7 +69,6 @@ def create_prediction_map(genomes, dataset, config):
             results.append(prediction)
         genomes_to_results[genome] = results
     return genomes_to_results
-
 
 def random_ensemble_generator(genomes, k=None, limit=None):
     """
