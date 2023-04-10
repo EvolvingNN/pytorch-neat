@@ -427,14 +427,14 @@ if __name__ == '__main__':
 
     #test()
 
-    #init_sweep(sweep_config='ACE_warmup', project = 'Classification-Warmup')
-    #init_sweep(sweep_config='ACE', project = 'Classification-ACE')
-    #init_sweep(sweep_config='control', project="Classification-5")
+    # init_sweep(sweep_config='ACE_warmup', project = 'Classification-Warmup-6')
+    # init_sweep(sweep_config='ACE', project = 'Classification-ACE-6')
+    # init_sweep(sweep_config='control', project="Classification-6")
     
     #control()
     #ACE()
     #ACE_warmup()
         
     #wandb.agent("sdkzh0sj", function=ACE, project="Classification-ACE", count = 5)
-    #wandb.agent("7jpzjpcu", function=ACE_warmup, project="Classification-Warmup", count = 5)
-    wandb.agent("ybk276fd", function=control, project = "Classification-5", count = 5)
+    # wandb.agent("ah8cnf9g", function=ACE_warmup, project="Classification-Warmup-6", count = 5)
+    wandb.agent("1boo3i70", function=control, project = "Classification-6", count = 5)
