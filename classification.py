@@ -1,3 +1,4 @@
+import argparse
 import contextlib
 import logging
 import wandb
@@ -424,8 +425,26 @@ def test():
     solution, generation = neat.run()     
 
 if __name__ == '__main__':
+    # Read command line arguments 
+        # Read in command line arguments
+    parser = argparse.ArgumentParser(description='Run NEAT on Acrobot-v1')
+    parser.add_argument('--control', action='store_true', help='Train a model')
+    parser.add_argument('--ace', action='store_true', help='Test a model')
+    parser.add_argument('--ace_with_warmup', action='store_true', help='Test a model')
+    # parser.add_argument('--test', action='store_true', help='Test a model')
+    args = parser.parse_args()
 
     #test()
+
+    if args.control:
+         wandb.agent("ybk276fd", function=control, project = "Classification-5", count = 5)
+    elif args.ace:
+        wandb.agent("sdkzh0sj", function=ACE, project="Classification-ACE", count = 5)
+    elif args.ace_with_warmup:
+        wandb.agent("7jpzjpcu", function=ACE_warmup, project="Classification-Warmup", count = 5)
+    else:
+        print("Please specify either --control or --ace or --ace_with_warmup")
+        exit()
 
     # init_sweep(sweep_config='ACE_warmup', project = 'Classification-Warmup-6')
     # init_sweep(sweep_config='ACE', project = 'Classification-ACE-6')
@@ -434,7 +453,3 @@ if __name__ == '__main__':
     #control()
     #ACE()
     #ACE_warmup()
-        
-    # wandb.agent("mjx9afl3", function=ACE, project="Classification-ACE", count = 5)
-    wandb.agent("g0xonuol", function=ACE_warmup, project="Classification-Warmup-6", count = 5)
-    # wandb.agent("1boo3i70", function=control, project = "Classification-6", count = 5)
