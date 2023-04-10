@@ -98,7 +98,8 @@ def init_sweep(sweep_config = 'control', project = "Classification-5"):
             },
         'parameters': {
             'SPECIATION_THRESHOLD': {'values' : [1, 3, 5]},
-            'POPULATION_SIZE' : {'values' : [10, 50, 100]},
+            'POPULATION_SIZE' : {'values' : [10, 100]},
+            'MAX_POPULATION_SIZE' : {'values' : [10, 50, 100]},
             'GENERATIONAL_ENSEMBLE_FRACTION' : {'values' : [0.05, 0.25, 0.5]},
             'CANDIDATE_LIMIT' : {'values' : [0.10, 0.25, 0.5]},
             'CONNECTION_MUTATION_RATE': {'values' : [0.1, 0.5, 0.8]},
@@ -423,7 +424,7 @@ if __name__ == '__main__':
 
     #test()
 
-    #init_sweep(sweep_config='ACE_warmup', project = 'Classification-Warmup')
+    init_sweep(sweep_config='ACE_warmup', project = 'Classification-Warmup')
     #init_sweep(sweep_config='ACE', project = 'Classification-ACE')
     #init_sweep(sweep_config='control', project="Classification-5")
     
@@ -432,5 +433,5 @@ if __name__ == '__main__':
     #ACE_warmup()
         
     #wandb.agent("6n8lx0gq", function=ACE, project="Classification-ACE", count = 5)
-    #wandb.agent("sgw8giu9", function=ACE_warmup, project="Classification-Warmup", count = 5)
-    wandb.agent("qhicib9o", function=control, project = "Classification-5", count = 5)
+    wandb.agent("7jpzjpcu", function=ACE_warmup, project="Classification-Warmup", count = 5)
+    #wandb.agent("qhicib9o", function=control, project = "Classification-5", count = 5)
