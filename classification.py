@@ -497,7 +497,7 @@ def custom_trial(name = None, tags = None):
 
     kwargs['df_results'] = pd.DataFrame(columns = ['generation', 'ensemble_size', *[f"diversity_{t}_threshold" for t in np.arange(1, 6, 1)], 'greedy1', 'greedy2', 'random'])
 
-    kwargs['CHECKPOINTS'] = [5,25,50,100,150,200] 
+    kwargs['CHECKPOINTS'] = [5,25,50,100,150,200,250,300,350,400,450,499] 
     
     kwargs['wandb'] = wandb
 
