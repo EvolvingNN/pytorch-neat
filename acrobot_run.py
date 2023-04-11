@@ -15,6 +15,7 @@ from neat.visualize import draw_net
 from neat.phenotype.feed_forward import FeedForwardNet
 
 def init_sweep(name = "acrobot"):
+    wandb.init(group = args.group, project=args.project_name)
     sweep_configuration = {
         'method': 'bayes',
         'name': name,
@@ -36,7 +37,7 @@ def init_sweep(name = "acrobot"):
             'PERCENTAGE_TO_SAVE': {'max': 1.0, 'min': 0.1}
         }
     }
-    sweep_id = wandb.sweep(sweep=sweep_configuration, project="acrobot", entity="evolvingnn")
+    sweep_id = wandb.sweep(sweep=sweep_configuration, project=args.project_name entity="evolvingnn")
     print(sweep_id)
     return sweep_id
 
@@ -72,7 +73,7 @@ def control():
     KWARGS['USE_ACER'] = False
     KWARGS['USE_ACER_WITH_WARMUP'] = False
     
-    wandb.init(config = KWARGS, group = 'Acrobot Control with Warm-Up with max population 4', project = 'acrobot')
+    wandb.init(config = KWARGS, group = args.group, project=args.project_name)
 
     kwargs = {
         'VERBOSE': wandb.config.VERBOSE,
@@ -114,7 +115,7 @@ def ACER():
     KWARGS['USE_ACER'] = True
     KWARGS['USE_ACER_WITH_WARMUP'] = False
     
-    wandb.init(config = KWARGS, group = 'Acrobot ACER with max population 4', project = 'acrobot')
+    wandb.init(config = KWARGS, group = args.group, project=args.project_name)
 
     kwargs = {
         'VERBOSE': wandb.config.VERBOSE,
@@ -156,7 +157,7 @@ def ACER_with_warmup():
     KWARGS['USE_ACER'] = True
     KWARGS['USE_ACER_WITH_WARMUP'] = True
     
-    wandb.init(config = KWARGS, group = 'Acrobot ACER with Warm-Up with max population 4', project = 'acrobot')
+    wandb.init(config = KWARGS, group = args.group, project=args.project_name)
     # wandb.init(config = KWARGS, project = 'acrobot')
 
     kwargs = {
@@ -239,7 +240,7 @@ def train():
     KWARGS['GENERATIONAL_ENSEMBLE_SIZE'] = 3
     KWARGS['CANDIDATE_LIMIT'] = 1
 
-    wandb.init(config = KWARGS, group = 'Acrobot Control', project = 'acrobot')
+    wandb.init(config = KWARGS, group = args.group, project=args.project_name)
 
     kwargs = {
         'VERBOSE': wandb.config.VERBOSE,
@@ -288,6 +289,7 @@ if __name__ == '__main__':
     parser.add_argument('--sweep_id', type=str, help='Sweep ID')
     parser.add_argument('--project_name', type=str, help='Project name')
     parser.add_argument('--init_sweep', action='store_true', help="Init sweep id")
+    parser.add_argument('--group', type=str, help="Group for the runs")
     args = parser.parse_args()
 
 
