@@ -230,6 +230,7 @@ def control(name = None):
         'NUM_INPUTS': wandb.config.NUM_INPUTS,
         'NUM_OUTPUTS': wandb.config.NUM_OUTPUTS,
         'USE_BIAS': wandb.config.USE_BIAS,
+        'USE_SPECIES_ENSEMBLE': wandb.config.USE_SPECIES_ENSEMBLE,
         'GENERATIONAL_ENSEMBLE_FRACTION': wandb.config.GENERATIONAL_ENSEMBLE_FRACTION,
         'CANDIDATE_LIMIT': wandb.config.CANDIDATE_LIMIT,
         'ACTIVATION': wandb.config.ACTIVATION,
@@ -301,6 +302,7 @@ def ACE(name = None):
         'NUM_INPUTS': wandb.config.NUM_INPUTS,
         'NUM_OUTPUTS': wandb.config.NUM_OUTPUTS,
         'USE_BIAS': wandb.config.USE_BIAS,
+        'USE_SPECIES_ENSEMBLE': wandb.config.USE_SPECIES_ENSEMBLE,
         'GENERATIONAL_ENSEMBLE_FRACTION': wandb.config.GENERATIONAL_ENSEMBLE_FRACTION,
         'CANDIDATE_LIMIT': wandb.config.CANDIDATE_LIMIT,
         'ACTIVATION': wandb.config.ACTIVATION,
@@ -376,6 +378,7 @@ def ACE_warmup(name = None):
         'NUM_INPUTS': wandb.config.NUM_INPUTS,
         'NUM_OUTPUTS': wandb.config.NUM_OUTPUTS,
         'USE_BIAS': wandb.config.USE_BIAS,
+        'USE_SPECIES_ENSEMBLE': wandb.config.USE_SPECIES_ENSEMBLE,
         'GENERATIONAL_ENSEMBLE_FRACTION': wandb.config.GENERATIONAL_ENSEMBLE_FRACTION,
         'CANDIDATE_LIMIT': wandb.config.CANDIDATE_LIMIT,
         'ACTIVATION': wandb.config.ACTIVATION,
@@ -426,14 +429,38 @@ def ACE_warmup(name = None):
 
     return solution, generation   
 
-def train():
-    wandb.init(config=KWARGS)
+def custom_trial(name = None, tags = None):
+
+    KWARGS['NUM_INPUTS'] = X_train.shape[1]
+    KWARGS['NUM_OUTPUTS'] = y_train.shape[1]
+
+    KWARGS['USE_FITNESS_COEFFICIENT'] = True
+    KWARGS['USE_GENOME_FITNESS'] = True
+    KWARGS['USE_SPECIES_ENSEMBLE'] = True
+
+    KWARGS['SPECIATION_THRESHOLD'] = 2.0
+    KWARGS['POPULATION_SIZE'] = 25
+    KWARGS['MAX_POPULATION_SIZE'] = 50
+    KWARGS['NUMBER_OF_GENERATIONS'] = 500
+
+    wandb.define_metric("generation")
+
+    wandb.define_metric("algorithm results/greedy1", step_metric="generation")
+    wandb.define_metric("algorithm results/greedy2", step_metric="generation")
+    wandb.define_metric("algorithm results/random", step_metric="generation")
+
+    diversity_threshold_labels = [f"algorithm results/diversity_{t}_threshold" for t in np.arange(1, 6, 1)]
+    for l in diversity_threshold_labels:
+        wandb.define_metric(l, step_metric = "generation")
+
+    run = wandb.init(config=KWARGS, project="Classification-7", tags = tags, name = name)
     
     kwargs = {
         'VERBOSE': wandb.config.VERBOSE,
         'NUM_INPUTS': wandb.config.NUM_INPUTS,
         'NUM_OUTPUTS': wandb.config.NUM_OUTPUTS,
         'USE_BIAS': wandb.config.USE_BIAS,
+        'USE_SPECIES_ENSEMBLE': wandb.config.USE_SPECIES_ENSEMBLE,
         'GENERATIONAL_ENSEMBLE_SIZE': wandb.config.GENERATIONAL_ENSEMBLE_SIZE,
         'CANDIDATE_LIMIT': wandb.config.CANDIDATE_LIMIT,
         'ACTIVATION': wandb.config.ACTIVATION,
@@ -488,8 +515,8 @@ def test():
     kwargs['USE_FITNESS_COEFFICIENT'] = True
     kwargs['USE_GENOME_FITNESS'] = True
 
-    kwargs['POPULATION_SIZE'] = 25
-    kwargs['MAX_POPULATION_SIZE'] = 50
+    kwargs['POPULATION_SIZE'] = 10
+    kwargs['MAX_POPULATION_SIZE'] = None
 
     kwargs['DATA'] = X_train
     kwargs['TARGET'] = y_train
@@ -501,6 +528,10 @@ def test():
     kwargs['TEST_TARGET'] = y_test
 
     kwargs['CHECKPOINTS'] = [5,25,50,100,150,200]   
+
+    kwargs['SPECIATION_THRESHOLD'] = 2.0
+
+    kwargs['VERBOSE'] = True
 
     neat = pop.Population(c_test.UCIConfig_test(**kwargs))
     solution, generation = neat.run()     
@@ -514,6 +545,7 @@ if __name__ == '__main__':
     parser.add_argument('--ace', action='store_true', help='Test a model')
     parser.add_argument('--ace_with_warmup', action='store_true', help='Test a model')
     parser.add_argument('--test', action='store_true', help='Test a model')
+    parser.add_argument('--custom_trial', action = 'store_true', help='test a custom config')
     # parser.add_argument('--test', action='store_true', help='Test a model')
     args = parser.parse_args()
 
@@ -542,6 +574,8 @@ if __name__ == '__main__':
             wandb.agent("7jpzjpcu", function=ACE_warmup, project="Classification-Warmup", count = 5)
     elif args.test:
         test()
+    elif args.custom_trial:
+        custom_trial(name = "Species Ensemble")
     else:
         print("Please specify either --control or --ace or --ace_with_warmup")
         exit()

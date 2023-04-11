@@ -119,6 +119,25 @@ def random_ensemble_generator_for_static_genome(genome, genomes, k=None, limit=N
     for ensemble in random_ensemble_generator(genomes=genomes, k=k, limit=limit):
         yield {genome, *ensemble}
 
+def random_species_ensemble_generator_for_static_genome(genome, genomes, k=None, limit=None):
+    """
+    A generator that randomly picks the rest of an ensemble of size k including a given genome
+    Has the condition that ensembles are only formed from members of other species
+
+    Parameters:
+        genome: the genome to include in the resulting ensembles
+        genomes (iterable): the whole population of genomes to sample from
+        k (None | int): None (for random size ensembles) or the size of ensembles to create
+        limit: the number of ensembles to yield before iterable exhaustion
+
+    Yields:
+        A set of genomes to use in an ensemble
+    """
+    genomes = [g for g in genomes if g != genome and g.species != genome.species]
+    k = None if k is None else k - 1
+    for ensemble in random_ensemble_generator(genomes=genomes, k=k, limit=limit):
+        yield {genome, *ensemble}
+
 
 def speciate(genomes, speciation_threshold):
     """

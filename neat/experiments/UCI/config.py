@@ -5,7 +5,7 @@ from neat.phenotype.feed_forward import FeedForwardNet
 #from torchvision import datasets
 from tqdm import tqdm
 
-from neat.utils import create_prediction_map, random_ensemble_generator_for_static_genome, speciate
+from neat.utils import create_prediction_map, random_ensemble_generator_for_static_genome, speciate, random_species_ensemble_generator_for_static_genome
 import neat.analysis.wrapper as wrapper
 
 import numpy as np
@@ -157,7 +157,11 @@ class UCIConfig:
             # Generate a sample of all possible combinations of candidate genomes to ensemble for a given size k
             k = int(len(genomes) * self.GENERATIONAL_ENSEMBLE_FRACTION)
             limit = int(math.comb(len(genomes),k) * self.CANDIDATE_LIMIT)
-            sample_ensembles = random_ensemble_generator_for_static_genome(genome, genomes, k = k, limit = limit)  # type: ignore
+
+            if self.USE_SPECIES_ENSEMBLE:
+                sample_ensembles = random_species_ensemble_generator_for_static_genome(genome, genomes, k = k, limit = limit) #type: ignore
+            else:
+                sample_ensembles = random_ensemble_generator_for_static_genome(genome, genomes, k = k, limit = limit)  # type: ignore
 
             # Evaluate the fitness of each ensemble
             for sample_ensemble in sample_ensembles: 
@@ -182,19 +186,19 @@ class UCIConfig:
             # Calculate the ensemble fitness as the average loss of the candidate ensembles
             genome.constituent_ensemble_losses = constituent_ensemble_losses
 
-            mean_constituent_ensemble_loss = np.mean(constituent_ensemble_losses)
+            mean_constituent_ensemble_loss = np.mean(constituent_ensemble_losses) if constituent_ensemble_losses else 0
             genome.mean_constituent_ensemble_loss = mean_constituent_ensemble_loss
 
             genome.constituent_ensemble_accuracies = [c.item() for c in constituent_ensemble_accuracies]
-            mean_constituent_ensemble_accuracy = np.mean(constituent_ensemble_accuracies)
+            mean_constituent_ensemble_accuracy = np.mean(constituent_ensemble_accuracies) if constituent_ensemble_accuracies else 0
             genome.mean_constituent_ensemble_accuracy = mean_constituent_ensemble_accuracy
 
             # self.wandb.log({"train/mean_constituent_ensemble_loss": mean_constituent_ensemble_loss}, commit = False)
             # self.wandb.log({"train/mean_constituent_ensemble_accuracy": mean_constituent_ensemble_accuracy}, commit = False)
             if self.ENSEMBLE_FITNESS_METRIC == "CE LOSS":
-                ensemble_fitness = np.exp(-1 * np.mean(constituent_ensemble_losses))
+                ensemble_fitness = np.exp(-1 * mean_constituent_ensemble_loss)
             elif self.ENSEMBLE_FITNESS_METRIC == "ACCURACY":
-                ensemble_fitness = np.mean(constituent_ensemble_accuracies)
+                ensemble_fitness = mean_constituent_ensemble_accuracy
             else:
                 ensemble_fitness = 0
             

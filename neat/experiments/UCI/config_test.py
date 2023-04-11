@@ -9,7 +9,7 @@ import pickle
 import math
 import random
 
-from neat.utils import create_prediction_map, random_ensemble_generator_for_static_genome, speciate
+from neat.utils import create_prediction_map, random_ensemble_generator_for_static_genome, speciate, random_species_ensemble_generator_for_static_genome
 import neat.analysis.wrapper as wrapper
 
 import numpy as np
@@ -163,12 +163,12 @@ class UCIConfig_test:
             # Generate a sample of all possible combinations of candidate genomes to ensemble for a given size k
             k = int(len(genomes) * self.GENERATIONAL_ENSEMBLE_FRACTION)
             limit = int(math.comb(len(genomes),k) * self.CANDIDATE_LIMIT)
-            sample_ensembles = random_ensemble_generator_for_static_genome(genome, genomes, k = k, limit = limit)  # type: ignore
-            #sample_ensembles = self.random_ensemble_generator(genome, genomes, k=k, limit=limit)
+            #sample_ensembles = random_ensemble_generator_for_static_genome(genome, genomes, k = k, limit = limit) #type :ignore
+            sample_ensembles = random_species_ensemble_generator_for_static_genome(genome, genomes, k = k, limit = limit)  # type: ignore
 
             # Evaluate the fitness of each ensemble
             for sample_ensemble in sample_ensembles:
-
+                
                 # Create a list to store the activations of the ensemble members
                 ensemble_activations = [train_activations_map[candidate] for candidate in sample_ensemble]
                     
@@ -187,13 +187,13 @@ class UCIConfig_test:
                 constituent_ensemble_losses.append(constituent_ensemble_loss)
 
             # Calculate the ensemble fitness as the average loss of the candidate ensembles
-            mean_constituent_ensemble_loss = np.mean(constituent_ensemble_losses)
-            mean_constituent_ensemble_accuracy = np.mean(constituent_ensemble_accuracies)
+            mean_constituent_ensemble_loss = np.mean(constituent_ensemble_losses) if constituent_ensemble_losses else 0
+            mean_constituent_ensemble_accuracy = np.mean(constituent_ensemble_accuracies) if constituent_ensemble_accuracies else 0
 
             if self.ENSEMBLE_FITNESS_METRIC == "CE LOSS":
-                ensemble_fitness = np.exp(-1 * np.mean(constituent_ensemble_losses))
+                ensemble_fitness = np.exp(-1 * mean_constituent_ensemble_loss)
             elif self.ENSEMBLE_FITNESS_METRIC == "ACCURACY":
-                ensemble_fitness = np.mean(constituent_ensemble_accuracies)
+                ensemble_fitness = mean_constituent_ensemble_accuracy
             else:
                 ensemble_fitness = 0
             
