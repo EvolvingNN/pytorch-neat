@@ -170,7 +170,7 @@ def init_test_sweep(sweep_config = 'control', project = "Classification-6"):
 
     ACE_sweep_configuration = {
         'method': 'bayes',
-        'name': 'UCI Classification | ACE_warmup',
+        'name': 'UCI Classification | ACE',
         'metric': {
             'goal': 'maximize', 
             'name': 'diversity_3_threshold'
@@ -524,22 +524,22 @@ if __name__ == '__main__':
             #init_sweep(sweep_config='control', project="Classification-5")
             init_test_sweep(sweep_config='control', project="Classification-6")
         else:     
-            #wandb.agent("ybk276fd", function=control, project = "Classification-5", count = 5)
-            wandb.agent("1eoz7fqt", function=control, project = "Classification-6", count = 5)
+            wandb.agent("ybk276fd", function=control, project = "Classification-5", count = 5)
+            #wandb.agent("1eoz7fqt", function=control, project = "Classification-6", count = 5)
     elif args.ace:
         if args.init_sweep:
             #init_sweep(sweep_config='ACE', project = 'Classification-ACE')
             init_test_sweep(sweep_config='ACE', project = 'Classification-6')
         else:
-            wandb.agent("zv64rkmn", function=ACE, project="Classification-6", count = 5)
-            #wandb.agent("sdkzh0sj", function=ACE, project="Classification-ACE", count = 5)
+            #wandb.agent("zv64rkmn", function=ACE, project="Classification-6", count = 5)
+            wandb.agent("sdkzh0sj", function=ACE, project="Classification-ACE", count = 5)
     elif args.ace_with_warmup:
         if args.init_sweep:
             #init_sweep(sweep_config='ACE_warmup', project = 'Classification-Warmup')
             init_test_sweep(sweep_config='ACE_warmup', project = 'Classification-6')
         else:
-            wandb.agent("nrjxmfqd", function=ACE_warmup, project="Classification-6", count = 5)
-            #wandb.agent("7jpzjpcu", function=ACE_warmup, project="Classification-Warmup", count = 5)
+            #wandb.agent("nrjxmfqd", function=ACE_warmup, project="Classification-6", count = 5)
+            wandb.agent("7jpzjpcu", function=ACE_warmup, project="Classification-Warmup", count = 5)
     elif args.test:
         test()
     else:
