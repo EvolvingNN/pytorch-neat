@@ -24,8 +24,8 @@ def init_sweep(name = "acrobot"):
             },
         'parameters': {
             'USE_BIAS': {'values': [False, True]},
-            'POPULATION_SIZE': {'max': 10, 'min': 3},
-            'GENERATIONAL_ENSEMBLE_SIZE': {'max': 21, 'min': 2},
+            'POPULATION_SIZE': {'max': 25, 'min': 3},
+            'GENERATIONAL_ENSEMBLE_SIZE': {'max': 40, 'min': 2},
             'CANDIDATE_LIMIT': {'max': 9, 'min': 1},
             'SPECIATION_THRESHOLD': {'max' : 5, 'min' : 1},
             'CONNECTION_MUTATION_RATE': {'max': 1.0, 'min': 0.1},
@@ -285,17 +285,34 @@ if __name__ == '__main__':
     parser.add_argument('--acer', action='store_true', help='Test a model')
     parser.add_argument('--acer_with_warmup', action='store_true', help='Test a model')
     parser.add_argument('--test', action='store_true', help='Test a model')
+    parser.add_argument('--sweep_id', type=str, help='Sweep ID')
+    parser.add_argument('--project_name', type=str, help='Project name')
+    parser.add_argument('--init_sweep', action='store_true', help="Init sweep id")
     args = parser.parse_args()
 
-    if args.control:
-        control()
-    elif args.acer:
-        ACER()
-    elif args.acer_with_warmup:
-        ACER_with_warmup()
-    elif args.test:
-        test()
 
+    if args.control:
+        if args.sweep_id is not None:
+            wandb.agent(args.sweep_id, function=control, count = 50, project = args.project_name)
+        else:
+            control()
+    elif args.acer:
+        if args.sweep_id is not None:
+            wandb.agent(args.sweep_id, function=ACER, count = 50, project = args.project_name)
+        else:
+            ACER()
+    elif args.acer_with_warmup:
+        if args.sweep_id is not None:
+            wandb.agent(args.sweep_id, function=ACER_with_warmup, count = 50, project = args.project_name)
+        else:
+            ACER_with_warmup()
+    elif args.test:
+        if args.sweep_id is not None:
+            wandb.agent(args.sweep_id, function=test, count = 50, project = args.project_name)
+        else:
+            test()
+    elif args.init_sweep:
+        init_sweep(args.project_name)
 
     #init_sweep("Acrobot Control")
     # control()
