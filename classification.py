@@ -438,20 +438,20 @@ def custom_trial(name = None, tags = None):
     KWARGS['USE_GENOME_FITNESS'] = True
     KWARGS['USE_SPECIES_ENSEMBLE'] = True
 
-    KWARGS['SPECIATION_THRESHOLD'] = 2.0
+    KWARGS['SPECIATION_THRESHOLD'] = 3.0
     KWARGS['POPULATION_SIZE'] = 25
-    KWARGS['MAX_POPULATION_SIZE'] = 50
+    KWARGS['MAX_POPULATION_SIZE'] = 25
     KWARGS['NUMBER_OF_GENERATIONS'] = 500
 
     run = wandb.init(config=KWARGS, project="Classification-7", tags = tags, name = name)
 
     wandb.define_metric("generation")
 
-    wandb.define_metric("algorithm results/greedy1", step_metric="generation")
-    wandb.define_metric("algorithm results/greedy2", step_metric="generation")
-    wandb.define_metric("algorithm results/random", step_metric="generation")
+    wandb.define_metric("greedy1", step_metric="generation")
+    wandb.define_metric("greedy2", step_metric="generation")
+    wandb.define_metric("random", step_metric="generation")
 
-    diversity_threshold_labels = [f"algorithm results/diversity_{t}_threshold" for t in np.arange(1, 6, 1)]
+    diversity_threshold_labels = [f"diversity_{t}_threshold" for t in np.arange(1, 6, 1)]
     for l in diversity_threshold_labels:
         wandb.define_metric(l, step_metric = "generation")
     
@@ -461,7 +461,7 @@ def custom_trial(name = None, tags = None):
         'NUM_OUTPUTS': wandb.config.NUM_OUTPUTS,
         'USE_BIAS': wandb.config.USE_BIAS,
         'USE_SPECIES_ENSEMBLE': wandb.config.USE_SPECIES_ENSEMBLE,
-        'GENERATIONAL_ENSEMBLE_SIZE': wandb.config.GENERATIONAL_ENSEMBLE_SIZE,
+        'GENERATIONAL_ENSEMBLE_FRACTION': wandb.config.GENERATIONAL_ENSEMBLE_FRACTION,
         'CANDIDATE_LIMIT': wandb.config.CANDIDATE_LIMIT,
         'ACTIVATION': wandb.config.ACTIVATION,
         'SCALE_ACTIVATION': wandb.config.SCALE_ACTIVATION,
@@ -473,6 +473,7 @@ def custom_trial(name = None, tags = None):
         'GENOME_FITNESS_METRIC': wandb.config.GENOME_FITNESS_METRIC,
         'ENSEMBLE_FITNESS_METRIC': wandb.config.ENSEMBLE_FITNESS_METRIC,
         'POPULATION_SIZE': wandb.config.POPULATION_SIZE,
+        'MAX_POPULATION_SIZE': wandb.config.MAX_POPULATION_SIZE,
         'NUMBER_OF_GENERATIONS': wandb.config.NUMBER_OF_GENERATIONS,
         'SPECIATION_THRESHOLD': wandb.config.SPECIATION_THRESHOLD,
         'CONNECTION_MUTATION_RATE': wandb.config.CONNECTION_MUTATION_RATE,
@@ -491,12 +492,18 @@ def custom_trial(name = None, tags = None):
 
     kwargs['TEST_DATA'] = X_test
     kwargs['TEST_TARGET'] = y_test
+
+    kwargs['run_id'] = run.id
+
+    kwargs['df_results'] = pd.DataFrame(columns = ['generation', 'ensemble_size', *[f"diversity_{t}_threshold" for t in np.arange(1, 6, 1)], 'greedy1', 'greedy2', 'random'])
+
+    kwargs['CHECKPOINTS'] = [5,25,50,100,150,200] 
     
     kwargs['wandb'] = wandb
 
-    # Print the kwargs
-    for key in kwargs:
-        print(f"{key}: {kwargs[key]}")
+    # # Print the kwargs
+    # for key in kwargs:
+    #     print(f"{key}: {kwargs[key]}")
 
     neat = pop.Population(c.UCIConfig(**kwargs))
     solution, generation = neat.run()
@@ -530,8 +537,6 @@ def test():
     kwargs['CHECKPOINTS'] = [5,25,50,100,150,200]   
 
     kwargs['SPECIATION_THRESHOLD'] = 2.0
-
-    kwargs['VERBOSE'] = True
 
     neat = pop.Population(c_test.UCIConfig_test(**kwargs))
     solution, generation = neat.run()     
