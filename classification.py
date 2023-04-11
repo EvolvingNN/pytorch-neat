@@ -443,6 +443,8 @@ def custom_trial(name = None, tags = None):
     KWARGS['MAX_POPULATION_SIZE'] = 50
     KWARGS['NUMBER_OF_GENERATIONS'] = 500
 
+    run = wandb.init(config=KWARGS, project="Classification-7", tags = tags, name = name)
+
     wandb.define_metric("generation")
 
     wandb.define_metric("algorithm results/greedy1", step_metric="generation")
@@ -452,8 +454,6 @@ def custom_trial(name = None, tags = None):
     diversity_threshold_labels = [f"algorithm results/diversity_{t}_threshold" for t in np.arange(1, 6, 1)]
     for l in diversity_threshold_labels:
         wandb.define_metric(l, step_metric = "generation")
-
-    run = wandb.init(config=KWARGS, project="Classification-7", tags = tags, name = name)
     
     kwargs = {
         'VERBOSE': wandb.config.VERBOSE,
