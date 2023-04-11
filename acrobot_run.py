@@ -37,7 +37,7 @@ def init_sweep(name = "acrobot"):
             'PERCENTAGE_TO_SAVE': {'max': 1.0, 'min': 0.1}
         }
     }
-    sweep_id = wandb.sweep(sweep=sweep_configuration, project=args.project_name entity="evolvingnn")
+    sweep_id = wandb.sweep(sweep=sweep_configuration, project=args.project_name, entity="evolvingnn")
     print(sweep_id)
     return sweep_id
 
