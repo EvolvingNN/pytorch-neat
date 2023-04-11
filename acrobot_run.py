@@ -295,26 +295,26 @@ if __name__ == '__main__':
 
     if args.control:
         if args.sweep_id is not None:
-            wandb.agent(args.sweep_id, function=control, count = 50, project = args.project_name)
+            wandb.agent(args.sweep_id, function=control, count = 50, project = args.project_name, entity="evolvingnn")
         else:
             control()
     elif args.acer:
         if args.sweep_id is not None:
-            wandb.agent(args.sweep_id, function=ACER, count = 50, project = args.project_name)
+            wandb.agent(args.sweep_id, function=ACER, count = 50, project = args.project_name, entity="evolvingnn")
         else:
             ACER()
     elif args.acer_with_warmup:
         if args.sweep_id is not None:
-            wandb.agent(args.sweep_id, function=ACER_with_warmup, count = 50, project = args.project_name)
+            wandb.agent(args.sweep_id, function=ACER_with_warmup, count = 50, project = args.project_name, entity="evolvingnn")
         else:
             ACER_with_warmup()
     elif args.test:
         if args.sweep_id is not None:
-            wandb.agent(args.sweep_id, function=test, count = 50, project = args.project_name)
+            wandb.agent(args.sweep_id, function=test, count = 50, project = args.project_name, entity="evolvingnn")
         else:
             test()
     elif args.init_sweep:
-        init_sweep(args.project_name)
+        init_sweep(args.group)
 
     #init_sweep("Acrobot Control")
     # control()
