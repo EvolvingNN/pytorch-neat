@@ -20,7 +20,7 @@ KWARGS = {
         'USE_ACER' : True,
         'USE_ACER_WITH_WARMUP' : True,
 
-        'POPULATION_SIZE' : 25,
+        'POPULATION_SIZE' : 15,
         'NUMBER_OF_GENERATIONS' : 200,
         'SPECIATION_THRESHOLD' : 3.0,
 
