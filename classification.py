@@ -32,7 +32,7 @@ df = uci.load_heart_disease().dropna()
 features = df.iloc[:,:-1]
 target = df.iloc[:,-1]
 
-X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=0.2, random_state=888)
+X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=0.5, random_state=888)
 
 scaler = StandardScaler()
 scaler.fit(X_train)
@@ -580,7 +580,7 @@ if __name__ == '__main__':
     elif args.test:
         test()
     elif args.custom_trial:
-        custom_trial(name = "Species Ensemble")
+        custom_trial(name = "Species Ensemble 50/50 split")
     else:
         print("Please specify either --control or --ace or --ace_with_warmup")
         exit()
