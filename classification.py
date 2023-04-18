@@ -438,9 +438,9 @@ def custom_trial(name = None, tags = None):
     KWARGS['USE_GENOME_FITNESS'] = True
     KWARGS['USE_SPECIES_ENSEMBLE'] = True
 
-    KWARGS['SPECIATION_THRESHOLD'] = 1.0
-    KWARGS['POPULATION_SIZE'] = 25
-    KWARGS['MAX_POPULATION_SIZE'] = 25
+    KWARGS['SPECIATION_THRESHOLD'] = 5.0
+    KWARGS['POPULATION_SIZE'] = 50
+    KWARGS['MAX_POPULATION_SIZE'] = 50
     KWARGS['NUMBER_OF_GENERATIONS'] = 500
 
     run = wandb.init(config=KWARGS, project="Classification-7", tags = tags, name = name)
