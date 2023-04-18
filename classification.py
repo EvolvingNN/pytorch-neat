@@ -177,8 +177,8 @@ def init_test_sweep(sweep_config = 'control', project = "Classification-6"):
             },
         'parameters': {
             'SPECIATION_THRESHOLD': {'values' : [1, 3, 5]},
-            'POPULATION_SIZE' : {'values' : [5, 25]},
-            'MAX_POPULATION_SIZE' : {'values' : [10, 50]},
+            'POPULATION_SIZE' : {'values' : [10]},
+            'MAX_POPULATION_SIZE' : {'values' : [10, 25, 50]},
             'GENERATIONAL_ENSEMBLE_FRACTION' : {'values' : [0.25, 1]},
             'CANDIDATE_LIMIT' : {'values' : [0.10, 0.25, 1]},
             'CONNECTION_MUTATION_RATE': {'values' : [0.8]},
@@ -186,7 +186,7 @@ def init_test_sweep(sweep_config = 'control', project = "Classification-6"):
             'ADD_NODE_MUTATION_RATE': {'values' : [0.5, 0.8]},
             'ADD_CONNECTION_MUTATION_RATE': {'values' : [0.8]},
             'CROSSOVER_REENABLE_CONNECTION_GENE_RATE': {'values' : [0.1]},
-            'PERCENTAGE_TO_SAVE': {'values' : [0.1, 0.8]}
+            'PERCENTAGE_TO_SAVE': {'values' : [0.1, 0.5, 0.8]}
         }
     }
 
@@ -568,8 +568,8 @@ if __name__ == '__main__':
             #init_sweep(sweep_config='ACE', project = 'Classification-ACE')
             init_test_sweep(sweep_config='ACE', project = 'Classification-6')
         else:
-            #wandb.agent("zv64rkmn", function=ACE, project="Classification-6", count = 5)
-            wandb.agent("sdkzh0sj", function=ACE, project="Classification-ACE", count = 5)
+            wandb.agent("ee4fz90z", function=ACE, project="Classification-6", count = 5)
+            #wandb.agent("sdkzh0sj", function=ACE, project="Classification-ACE", count = 5)
     elif args.ace_with_warmup:
         if args.init_sweep:
             #init_sweep(sweep_config='ACE_warmup', project = 'Classification-Warmup')
