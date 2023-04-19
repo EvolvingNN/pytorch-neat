@@ -32,7 +32,7 @@ df = uci.load_heart_disease().dropna()
 features = df.iloc[:,:-1]
 target = df.iloc[:,-1]
 
-X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=0.5, random_state=888)
+X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=0.2, random_state=888)
 
 scaler = StandardScaler()
 scaler.fit(X_train)
@@ -56,7 +56,7 @@ def init_sweep(sweep_config = 'control', project = "Classification-5"):
             'GENOME_FITNESS_METRIC': {'values' : ['CE LOSS', 'ACCURACY']},
             'ENSEMBLE_FITNESS_METRIC': {'values' : ['CE LOSS', 'ACCURACY']},
             'SPECIATION_THRESHOLD': {'values' : [1, 3, 5]},
-            'POPULATION_SIZE' : {'values' : [10, 100]},
+            'POPULATION_SIZE' : {'values' : [10, 50]},
             'MAX_POPULATION_SIZE' : {'values' : [10, 50, 100]},
             'CONNECTION_MUTATION_RATE': {'values' : [0.1, 0.5, 0.8]},
             'CONNECTION_PERTURBATION_RATE': {'values' : [0.1, 0.5, 0.8]},
@@ -78,7 +78,7 @@ def init_sweep(sweep_config = 'control', project = "Classification-5"):
             'GENOME_FITNESS_METRIC': {'values' : ['CE LOSS', 'ACCURACY']},
             'ENSEMBLE_FITNESS_METRIC': {'values' : ['CE LOSS', 'ACCURACY']},
             'SPECIATION_THRESHOLD': {'values' : [1, 3, 5]},
-            'POPULATION_SIZE' : {'values' : [10, 100]},
+            'POPULATION_SIZE' : {'values' : [10, 50]},
             'MAX_POPULATION_SIZE' : {'values' : [10, 50, 100]},
             'GENERATIONAL_ENSEMBLE_FRACTION' : {'values' : [0.05, 0.25, 0.5]},
             'CANDIDATE_LIMIT' : {'values' : [0.10, 0.25, 0.5]},
@@ -102,7 +102,7 @@ def init_sweep(sweep_config = 'control', project = "Classification-5"):
             'GENOME_FITNESS_METRIC': {'values' : ['CE LOSS', 'ACCURACY']},
             'ENSEMBLE_FITNESS_METRIC': {'values' : ['CE LOSS', 'ACCURACY']},
             'SPECIATION_THRESHOLD': {'values' : [1, 3, 5]},
-            'POPULATION_SIZE' : {'values' : [10, 100]},
+            'POPULATION_SIZE' : {'values' : [10, 50]},
             'MAX_POPULATION_SIZE' : {'values' : [10, 50, 100]},
             'GENERATIONAL_ENSEMBLE_FRACTION' : {'values' : [0.05, 0.25, 0.5]},
             'CANDIDATE_LIMIT' : {'values' : [0.10, 0.25, 0.5]},
@@ -285,7 +285,11 @@ def ACE(name = None):
     KWARGS['USE_FITNESS_COEFFICIENT'] = False
     KWARGS['USE_GENOME_FITNESS'] = False
 
-    run = wandb.init(config=KWARGS, project="Classification-ACE", tags = ["ACE", "fixed seed 888"], name = name)
+    KWARGS['USE_SPECIES_ENSEMBLE'] = True
+
+    KWARGS['NUMBER_OF_GENERATIONS'] = 500
+
+    run = wandb.init(config=KWARGS, project="Classification-7", tags = ["ACE", "fixed seed 888"], name = name)
 
     wandb.define_metric("generation")
 
@@ -335,7 +339,7 @@ def ACE(name = None):
     kwargs['wandb'] = wandb
     kwargs['run_id'] = run.id
 
-    kwargs['CHECKPOINTS'] = [5,25,50,100,150,200]
+    kwargs['CHECKPOINTS'] = [5,25,50,100,150,200,250,300,350,400,450,499]
 
     kwargs['df_results'] = pd.DataFrame(columns = ['generation', 'ensemble_size', *[f"diversity_{t}_threshold" for t in np.arange(1, 6, 1)], 'greedy1', 'greedy2', 'random'])
     # Print the kwargs
@@ -359,7 +363,11 @@ def ACE_warmup(name = None):
     KWARGS['USE_FITNESS_COEFFICIENT'] = True
     KWARGS['USE_GENOME_FITNESS'] = True
 
-    run = wandb.init(config=KWARGS, project="Classification-Warmup", tags = ["ACE-with-warmup", "fixed seed 888"], name = name)
+    KWARGS['USE_SPECIES_ENSEMBLE'] = True
+
+    KWARGS['NUMBER_OF_GENERATIONS'] = 500
+
+    run = wandb.init(config=KWARGS, project="Classification-7", tags = ["ACE-with-warmup", "fixed seed 888"], name = name)
 
     wandb.define_metric("generation")
 
@@ -411,7 +419,7 @@ def ACE_warmup(name = None):
     kwargs['wandb'] = wandb
     kwargs['run_id'] = run.id
 
-    kwargs['CHECKPOINTS'] = [5,25,50,100,150,200]
+    kwargs['CHECKPOINTS'] = [5,25,50,100,150,200,250,300,350,400,450,499]
 
     kwargs['df_results'] = pd.DataFrame(columns = ['generation', 'ensemble_size', *[f"diversity_{t}_threshold" for t in np.arange(1, 6, 1)], 'greedy1', 'greedy2', 'random'])
     # Print the kwargs
@@ -565,18 +573,18 @@ if __name__ == '__main__':
             #wandb.agent("1eoz7fqt", function=control, project = "Classification-6", count = 5)
     elif args.ace:
         if args.init_sweep:
-            #init_sweep(sweep_config='ACE', project = 'Classification-ACE')
-            init_test_sweep(sweep_config='ACE', project = 'Classification-6')
+            init_sweep(sweep_config='ACE', project = 'Classification-7')
+            #init_test_sweep(sweep_config='ACE', project = 'Classification-6')
         else:
-            wandb.agent("ee4fz90z", function=ACE, project="Classification-6", count = 5)
+            wandb.agent("ycse4kdr", function=ACE, project="Classification-7", count = 5)
             #wandb.agent("sdkzh0sj", function=ACE, project="Classification-ACE", count = 5)
     elif args.ace_with_warmup:
         if args.init_sweep:
-            #init_sweep(sweep_config='ACE_warmup', project = 'Classification-Warmup')
-            init_test_sweep(sweep_config='ACE_warmup', project = 'Classification-6')
+            init_sweep(sweep_config='ACE_warmup', project = 'Classification-7')
+            #init_test_sweep(sweep_config='ACE_warmup', project = 'Classification-6')
         else:
             #wandb.agent("nrjxmfqd", function=ACE_warmup, project="Classification-6", count = 5)
-            wandb.agent("7jpzjpcu", function=ACE_warmup, project="Classification-Warmup", count = 5)
+            wandb.agent("vymjblnc", function=ACE_warmup, project="Classification-7", count = 5)
     elif args.test:
         test()
     elif args.custom_trial:
